@@ -10,7 +10,7 @@ Ext.define('OgamDesktop.Application', {
 		'OgamDesktop.ux.window.Toast'
 	],
 	models: [
-		'map.LayerNode',
+		'map.LayerTreeNode',
 		'map.Layer',
 		'map.LayerService',
 		'request.fieldset.Criterion',
@@ -18,9 +18,7 @@ Ext.define('OgamDesktop.Application', {
 		'request.object.field.Code'
 	],
 	stores: [
-		'map.LayerNode',
-		'map.Layer',
-		'map.LayerService',
+		'map.LayerTreeNode',
 		'result.Grid'
 	],
 	controllers: [
@@ -37,6 +35,7 @@ Ext.define('OgamDesktop.Application', {
 		'map.LayersPanel',
 		'map.LegendsPanel',
 		'map.MainWin',
+		'map.MapComponent',
 		'request.AdvancedRequest',
 		'request.AdvancedRequestController',
 		'request.AdvancedRequestModel',
@@ -134,6 +133,10 @@ Ext.define('OgamDesktop.Application', {
 		        	toastHtml = application.toastHtml_500;
 					break;
 				default:
+		    		if (response.aborted) {//may be a userchoice don't alert him
+		    			Ext.log({'level':"info"}, 'an connection is aborted');
+		    			return;
+		    		}
 					toastTitle = application.toastTitle_default + ' ' + statusCode + ' : ' + response.statusText + '.';
 		        	toastHtml = application.toastHtml_default;
 					break;

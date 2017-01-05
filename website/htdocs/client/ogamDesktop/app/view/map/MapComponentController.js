@@ -29,7 +29,9 @@ Ext.define('OgamDesktop.view.map.MapComponentController', {
 //</locale>
 
    /**
-    * @cfg {Object} requestLayers A array of ol layers dependents of the request
+    * A array of ol layers dependents of the request
+    * @type {Array}
+    * @property requestLayers 
     */
     requestLayers : [],
 

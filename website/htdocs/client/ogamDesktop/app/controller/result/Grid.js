@@ -61,7 +61,7 @@ Ext.define('OgamDesktop.controller.result.Grid',{
 		        url : Ext.manifest.OgamDesktop.requestServiceUrl + 'ajaxgetresultcolumns',
 				reader: {
 				    type : 'json',
-				    rootProperty : 'root',
+				    rootProperty : 'data',
 				    successProperty: 'success',
 				    messageProperty: 'errorMessage'
 				}

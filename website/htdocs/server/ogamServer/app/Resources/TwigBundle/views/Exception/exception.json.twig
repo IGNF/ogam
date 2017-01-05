@@ -1,0 +1,1 @@
+{{ { 'success':false, 'errorMessage':message|default(exception.message)|default('Error')|trans, 'error': { 'code': status_code, 'message': status_text, 'exception': exception.toarray }}|json_encode|raw}}

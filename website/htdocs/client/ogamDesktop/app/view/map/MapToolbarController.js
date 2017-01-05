@@ -4,15 +4,6 @@
 Ext.define('OgamDesktop.view.map.MapToolbarController', {
     extend: 'Ext.app.ViewController',
     alias: 'controller.maptoolbar',
-    config: {
-        listen: {
-            store:{
-                '#vectorLayerStore': {
-                    load: 'onVectorLayerStoreLoad'
-                }
-            }
-        }
-    },
 
 //<locale>
     /**
@@ -24,7 +15,7 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
      */
     noDrawingFeatureErrorMessage : 'The drawing layer contains no feature on which to zoom.',
 //</locale>
-
+    
     /**
      * Initializes the controller.
      * @private
@@ -41,28 +32,24 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
     /**
      * Fonction handling the load event on the vector layer store.
      * @private
-     * @param {Ext.data.Store} store The store
-     * @param {Ext.data.Model[]} records An array of records
-     * @param {Boolean} successful True if the operation was successful.
-     * @param {Ext.data.operation.Read} operation The 
-     * {@link Ext.data.operation.Read Operation} object that was used in the data 
+     * @param {OgamDesktop.model.map.Layer[]} vectorLayers A array of layers with a feature service
      */
-    onVectorLayerStoreLoad : function(store, records, successful, eOpts) {
+    setupButtonsMenus : function(vectorLayers) {
+        this.vectorLayers = vectorLayers;
         var menuItems = [];
         var curRes = this.map.getView().getResolution();
-        store.each( function(record) {
-            var isDisabled = false, resolutions = record.get('resolutions');
-            if (resolutions !== undefined 
-                && (curRes < resolutions[resolutions.length - 1] || curRes >= resolutions[0])) {
+        vectorLayers.each( function(layer) {
+            var isDisabled = false;
+            if (layer.isOutOfResolution(curRes)) {
                 isDisabled = true;
             }
             menuItems.push({
-                itemId : record.get('layerName'),
-                text : record.get('layerLabel'),
+                itemId : layer.get('name'),
+                text : layer.get('label'),
                 disabled : isDisabled,
                 data : {
-                    featureServiceUrl : record.get('featureServiceUrl'),
-                    serviceLayerName : record.get('serviceLayerName')
+                    featureServiceUrl : layer.getFeatureService().getFullUrls()[0],
+                    serviceLayerName : layer.get('serviceLayerName')
                 }
             });
         });

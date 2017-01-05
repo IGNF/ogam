@@ -188,13 +188,23 @@ Ext.define('OgamDesktop.controller.map.Drawing', {
 			this.currentEditionField.onUnpress();
 		}
 		this.currentEditionField = field;
-		this.currentEditionFieldOldValue = field.getValue();
-		this.setDrawingLayerFeaturesFromWKT(field.getValue());
+		var wkt = field.getValue();
+		this.currentEditionFieldOldValue = wkt;
+		this.setDrawingLayerFeaturesFromWKT(wkt);
 		this.toggleDrawingTbar(true);
 		var consultationPanel = this.getConsultationpanel();
 		consultationPanel.ownerCt.setActiveTab(consultationPanel);
 		var mapMainWin = this.getMapmainwin();
 		mapMainWin.ownerCt.setActiveTab(mapMainWin);
+		
+		// Zoom and center on the geometry
+		var map = this.getMapcmp().map;
+		if (!Ext.isEmpty(wkt)) {
+	        map.getView().fit(
+	            this.wktFormat.readGeometry(wkt).getExtent(), 
+	            map.getSize()
+	        );
+		}
 	},
 
 	/**

@@ -21,21 +21,21 @@ import org.apache.log4j.Logger;
 import fr.ifn.ogam.common.business.AbstractService;
 import fr.ifn.ogam.common.business.MappingTypes;
 import fr.ifn.ogam.common.business.Schemas;
+import fr.ifn.ogam.common.business.processing.ProcessingService;
+import fr.ifn.ogam.common.business.processing.ProcessingStep;
+import fr.ifn.ogam.common.business.submissions.SubmissionStatus;
+import fr.ifn.ogam.common.business.submissions.SubmissionStep;
+import fr.ifn.ogam.common.database.GenericDAO;
+import fr.ifn.ogam.common.database.mapping.GeometryDAO;
 import fr.ifn.ogam.common.database.metadata.FileFormatData;
 import fr.ifn.ogam.common.database.metadata.MetadataDAO;
 import fr.ifn.ogam.common.database.metadata.TableFormatData;
-import fr.ifn.ogam.common.database.GenericDAO;
-import fr.ifn.ogam.common.database.mapping.GeometryDAO;
 import fr.ifn.ogam.common.database.rawdata.SubmissionDAO;
 import fr.ifn.ogam.common.database.rawdata.SubmissionData;
 import fr.ifn.ogam.common.database.referentiels.CommuneDAO;
 import fr.ifn.ogam.common.database.referentiels.DepartementDAO;
 import fr.ifn.ogam.common.database.referentiels.MailleDAO;
 import fr.ifn.ogam.integration.business.IntegrationService;
-import fr.ifn.ogam.common.business.processing.ProcessingService;
-import fr.ifn.ogam.common.business.processing.ProcessingStep;
-import fr.ifn.ogam.common.business.submissions.SubmissionStatus;
-import fr.ifn.ogam.common.business.submissions.SubmissionStep;
 
 /**
  * Service managing plot and tree data.
@@ -55,10 +55,6 @@ public class DataService extends AbstractService {
 	private SubmissionDAO submissionDAO = new SubmissionDAO();
 	private MetadataDAO metadataDAO = new MetadataDAO();
 	private GenericDAO genericDAO = new GenericDAO();
-	private GeometryDAO geometryDAO = new GeometryDAO();
-	private CommuneDAO communeDAO = new CommuneDAO();
-	private DepartementDAO departementDAO = new DepartementDAO();
-	private MailleDAO mailleDAO = new MailleDAO();
 
 	/**
 	 * The integration service.
@@ -168,10 +164,8 @@ public class DataService extends AbstractService {
 			String tableFormat = tableIter.next();
 			TableFormatData tableFormatData = metadataDAO.getTableFormat(tableFormat);
 			genericDAO.deleteRawData(tableFormatData.getTableName(), submissionId);
-			geometryDAO.deleteGeometriesFromFormat(tableFormatData.getFormat());
-			communeDAO.deleteCommunesFromFormat(tableFormatData.getFormat());
-			departementDAO.deleteDepartmentsFromFormat(tableFormatData.getFormat());
-			mailleDAO.deleteMaillesFromFormat(tableFormatData.getFormat());
+			deleteFromGincoBacsData(tableFormatData.getFormat());
+
 		}
 
 		// Update the status of the submission
@@ -179,6 +173,26 @@ public class DataService extends AbstractService {
 
 		logger.debug("Submission " + submissionId + " cancelled");
 
+	}
+
+	/**
+	 * Specific to GINCO. Deletes all data related to the submission inside tables used for visualization.
+	 * 
+	 * @param tableFormatData
+	 *            the tableFormatData
+	 * @throws Exception
+	 */
+	public void deleteFromGincoBacsData(String format) throws Exception {
+
+		GeometryDAO geometryDAO = new GeometryDAO();
+		CommuneDAO communeDAO = new CommuneDAO();
+		DepartementDAO departementDAO = new DepartementDAO();
+		MailleDAO mailleDAO = new MailleDAO();
+
+		geometryDAO.deleteGeometriesFromFormat(format);
+		communeDAO.deleteCommunesFromFormat(format);
+		departementDAO.deleteDepartmentsFromFormat(format);
+		mailleDAO.deleteMaillesFromFormat(format);
 	}
 
 	/**

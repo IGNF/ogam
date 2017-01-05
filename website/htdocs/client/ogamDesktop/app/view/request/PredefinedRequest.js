@@ -13,7 +13,7 @@ Ext.define('OgamDesktop.view.request.PredefinedRequest', {
 		'OgamDesktop.view.request.PredefinedRequestController',
 		'OgamDesktop.ux.request.AdvancedRequestFieldSet',
 		'Ext.grid.feature.Grouping',
-		'OgamDesktop.store.request.PredefinedGroup',
+		'OgamDesktop.store.request.predefined.Group',
 		'OgamDesktop.view.request.PredefinedRequestSelector',
 		'Ext.grid.Panel',
 		'OgamDesktop.ux.request.AdvancedRequestSelector'
@@ -81,9 +81,7 @@ Ext.define('OgamDesktop.view.request.PredefinedRequest', {
 			itemId:'launchRequest',
 			margin: '5 5 5 5',
 			text: this.launchRequestButtonText,
-			tooltip:this.launchRequestButtonTooltip,
-			handler:'onLaunchRequest'
-				
+			tooltip:this.launchRequestButtonTooltip
 		}]
 		
 		this.callParent();
@@ -93,7 +91,7 @@ Ext.define('OgamDesktop.view.request.PredefinedRequest', {
      * Initializes the items.
      */
     initItems: function() {
-		var store = new OgamDesktop.store.request.PredefinedGroup({
+		var store = new OgamDesktop.store.request.predefined.Group({
 			groupField:'group_label'});
 		var columns = [{
 			text:this.labelColumnHeader,

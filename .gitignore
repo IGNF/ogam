@@ -28,3 +28,9 @@ tmp
 upload
 .idea
 .gradle
+vendor
+/website/htdocs/server/ogamServer/bin/doctrine
+/website/htdocs/server/ogamServer/bin/doctrine-dbal
+/website/htdocs/server/ogamServer/bin/doctrine.php
+/website/htdocs/server/ogamServer/bin/phpunit
+/website/htdocs/server/ogamServer/bin/security-checker

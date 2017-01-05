@@ -1,6 +1,6 @@
 // Install Composer
 task installComposer(type:Exec, description: 'Download and install Composer.') {
-  workingDir '.'
+  workingDir './ogamServer'
   if (System.getProperty('os.name').toLowerCase().contains('windows')) {
   	commandLine "cmd", "/c php -r \"readfile('https://getcomposer.org/installer');\" | php"
   } else {
@@ -11,7 +11,7 @@ task installComposer(type:Exec, description: 'Download and install Composer.') {
 
 // Install Libraries
 task installLibraries(type:Exec, description: 'Download and install Librairies needed for the project using Composer.') {
-  workingDir '.'
+  workingDir './ogamServer'
   commandLine "php" 
   args "composer.phar", "install"
 } 
@@ -23,18 +23,18 @@ task phpdoc(type:Exec, description: 'Launch PHPDoc for documentation generation.
   workingDir '.'
   
   if (System.getProperty('os.name').toLowerCase().contains('windows')) {
-  	commandLine './vendor/phpdocumentor/phpdocumentor/bin/phpdoc.bat'
+  	commandLine './ogamServer/vendor/phpdocumentor/phpdocumentor/bin/phpdoc.bat'
   } else {
-  	commandLine './vendor/bin/phpdoc'
+  	commandLine './ogamServer/vendor/bin/phpdoc'
   }
-  args "-d", "./ogamServer/app/", "-t", "./build/docs/", '--template=responsive-twig'
+  args "-d", "./ogamServer/", "-t", "./build/docs/", '--template=responsive-twig'
 }
 
 // Launch PHPCheckstyle
 task phpcheckstyle(type:Exec, description: 'Launch PHPCHeckstyle for static analysis.') {
   workingDir '.'
   commandLine "php" 
-  args "./vendor/phpcheckstyle/phpcheckstyle/run.php", "--src", "./ogamServer/app/", "--outdir", "./build/reports/checkstyle_result/", "--config", "../../config/checkstyle_ogam.cfg.xml", "--format", "xml,html", "--linecount"
+  args "./ogamServer/vendor/phpcheckstyle/phpcheckstyle/run.php", "--src", "./ogamServer/src/", "--outdir", "./build/reports/checkstyle_result/", "--config", "../../config/checkstyle_ogam.cfg.xml", "--format", "xml,html", "--linecount"
 }
 
 
@@ -43,11 +43,11 @@ task phpcheckstyle(type:Exec, description: 'Launch PHPCHeckstyle for static anal
 task phpunit(type:Exec, description: 'Launch PHPUnit for unit testing.') {
   workingDir '.'
   if (System.getProperty('os.name').toLowerCase().contains('windows')) {
-  	commandLine "cmd", "/c", "php ./vendor/phpunit/phpunit/phpunit"
+  	commandLine "cmd", "/c", "php ./ogamServer/vendor/phpunit/phpunit/phpunit"
   } else {
-  	commandLine './vendor/phpunit/phpunit/phpunit'
+  	commandLine './ogamServer/vendor/phpunit/phpunit/phpunit'
   }
-  args "--configuration", "./test/phpunit.xml"
+  args "--configuration", "./ogamServer/phpunit.xml"
 }
 
 // Clean the deploy directory
@@ -59,28 +59,33 @@ task cleanDeploy(type: Delete, description: 'Clean the deploy directory.') {
 }
 
 
+// Copy the PHP application files to the deploy directory
+task deploy(type: Copy, description: 'Copy the PHP files to the deploy directory.') {
+
+	// On CI server, $deployDir = /var/www/html
+	def deployDir = project.hasProperty('deployDir') ? project.getProperty('deployDir') : 'build/deploy'
+
+	// recopie de l'application
+    from 'ogamServer'     
+    into "${deployDir}/server/ogamServer"    
+    exclude "**/var/cache/**"
+    exclude "**/var/logs/**"
+    exclude "**/var/sessions/**"
+    exclude "**/var/upload/**"
+            
+    doLast {
+    	println "The server file have been deployed to ${deployDir}/server/ogamServer"
+    }
+}
+
+
+
 //for Ant filter
 import org.apache.tools.ant.filters.ReplaceTokens
 
 
-// Copy the PHP libraries to the deploy directory
-task deployLibraries(type: Copy, description: 'Copy the PHP libraries files to the deploy directory.') {
-
-    // On CI server, $deployDir = /var/www/html
-	def deployDir = project.hasProperty('deployDir') ? project.getProperty('deployDir') : 'build/deploy'
-
-	// recopie des librairies
-    from 'ogamServer/lib'
-	into "${deployDir}/server/ogamServer/lib"
-	
-	doLast {
-    	println "The libraries have been deployed to ${deployDir}/server/ogamServer/lib"
-    }
-
-}
-
 // Copy the PHP application files to the deploy directory
-task deploy(type: Copy, description: 'Copy the PHP files to the deploy directory.', dependsOn: 'deployLibraries') {
+task setBuildNumber(type: Copy, description: 'Update the build number.', dependsOn: 'deploy') {
 
 	// On CI server, $deployDir = /var/www/html
 	def deployDir = project.hasProperty('deployDir') ? project.getProperty('deployDir') : 'build/deploy'
@@ -89,15 +94,40 @@ task deploy(type: Copy, description: 'Copy the PHP files to the deploy directory
 	ant.buildnumber()
 
 	// recopie de l'application
-    from 'ogamServer/app'     
-    into "${deployDir}/server/ogamServer/app"    
-    exclude '**/*.ini'    
+    from 'ogamServer'     
+    into "${deployDir}/server/ogamServer"    
+    include "**/base.html.twig"
+    
     
     eachFile {
 		filter(ReplaceTokens, tokens: ['version_number': project.version, 'build_number': ant.antProject.properties['build.number']])
 	}	
         
     doLast {
-    	println "The server file have been deployed to ${deployDir}/server/ogamServer/app"
+    	println "Base template updated with build number"
     }
+}
+
+
+// Clear cache
+task clearCache(type:Exec, description: 'Clear symfony cache.') {
+  workingDir './ogamServer'
+  commandLine "php" 
+  args "app/console", "cache:clear", "--env=prod"
+} 
+
+
+// install assets
+task installAssets(type:Exec, description: 'Install assets.') {
+  workingDir './ogamServer'
+  commandLine "php" 
+  args "app/console", "assets:install", "--env=prod", "--no-debug"
+} 
+
+
+
+
+// Deploy the application
+task deployAll(description: 'Copy the PHP files to the deploy directory.', dependsOn: [deploy, setBuildNumber, installAssets]) {
+
 }

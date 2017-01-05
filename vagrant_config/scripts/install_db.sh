@@ -100,9 +100,9 @@ sudo -n -u $USERNAME psql -d $DATABASE -c "UPDATE website.application_parameters
 sudo -n -u $USERNAME psql -d $DATABASE -c "UPDATE website.application_parameters SET value = '/vagrant/ogam/website/htdocs/server/ogamServer/upload' WHERE name = 'uploadDir';" 2>> $logfileError >> $logfile
 sudo -n -u $USERNAME psql -d $DATABASE -c "UPDATE website.application_parameters SET value = '/vagrant/ogam/website/htdocs/server/ogamServer/upload/images/' WHERE name = 'image_upload_dir';" 2>> $logfileError >> $logfile
 
-#sudo -n -u $USERNAME psql -d $DATABASE -c $"UPDATE mapping.layer_service SET config = '{\"urls\":[\"http://localhost:8000/mapProxy.php?\"],\"params\":{\"SERVICE\":\"WMS\",\"VERSION\":\"1.1.1\",\"REQUEST\":\"GetMap\"}}' WHERE service_name = 'local_mapProxy';" 2>> $logfileError >> $logfile
-sudo -n -u $USERNAME psql -d $DATABASE -c $"UPDATE mapping.layer_service SET config = '{\"urls\":[\"http://localhost/mapserv-ogam?\"],\"params\":{\"SERVICE\":\"WMS\",\"VERSION\":\"1.1.1\",\"REQUEST\":\"GetMap\"}}' WHERE service_name = 'local_mapserver';" 2>> $logfileError >> $logfile
-#sudo -n -u $USERNAME psql -d $DATABASE -c $"UPDATE mapping.layer_service SET config = '{\"urls\":[\"http://localhost:8000/cgi-bin/tilecache.fcgi?\"],\"params\":{\"SERVICE\":\"WMS\",\"VERSION\":\"1.0.0\",\"REQUEST\":\"GetMap\"}}' WHERE service_name = 'local_tilecache';" 2>> $logfileError >> $logfile
+#sudo -n -u $USERNAME psql -d $DATABASE -c $"UPDATE mapping.layer_service SET config = '{\"urls\":[\"http://localhost:8000/mapProxy.php?\"],\"params\":{\"SERVICE\":\"WMS\",\"VERSION\":\"1.1.1\",\"REQUEST\":\"GetMap\"}}' WHERE name = 'local_mapProxy';" 2>> $logfileError >> $logfile
+sudo -n -u $USERNAME psql -d $DATABASE -c $"UPDATE mapping.layer_service SET config = '{\"urls\":[\"http://localhost/mapserv-ogam?\"],\"params\":{\"SERVICE\":\"WMS\",\"VERSION\":\"1.1.1\",\"REQUEST\":\"GetMap\"}}' WHERE name = 'local_mapserver';" 2>> $logfileError >> $logfile
+#sudo -n -u $USERNAME psql -d $DATABASE -c $"UPDATE mapping.layer_service SET config = '{\"urls\":[\"http://localhost:8000/cgi-bin/tilecache.fcgi?\"],\"params\":{\"SERVICE\":\"WMS\",\"VERSION\":\"1.0.0\",\"REQUEST\":\"GetMap\"}}' WHERE name = 'local_tilecache';" 2>> $logfileError >> $logfile
 
 if [ -s $logfileError  ];
 then

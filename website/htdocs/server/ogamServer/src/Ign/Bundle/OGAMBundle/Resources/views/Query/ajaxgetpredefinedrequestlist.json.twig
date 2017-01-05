@@ -1,0 +1,28 @@
+{% extends "base_with_total.json.twig" %}
+
+{%- block predefined_request -%}{% autoescape false %}
+[
+    {{ datum.name|json_encode }},
+    {{ datum.label|json_encode }},
+    {{ datum.definition|json_encode }},
+    {{ datum.date.format('Y-m-d')|json_encode }},
+    {# We assume that there is only one group per request #}
+    {{ datum.groups[0].position|json_encode }},
+    {{ datum.groups[0].groupName.name|json_encode }},
+    {{ datum.groups[0].groupName.label|json_encode }},
+    {{ datum.groups[0].groupName.position|json_encode }},
+    {{ datum.datasetId.id|json_encode }}
+]
+{% endautoescape %}{%- endblock -%}
+
+
+{%- block response_data -%}
+[
+    {% for datum in data %}
+        {{ block('predefined_request') }}
+        {%- if not loop.last -%}
+            ,
+        {%- endif -%}
+    {% endfor %}
+]
+{%- endblock -%}

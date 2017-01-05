@@ -32,7 +32,16 @@ Ext.define('OgamDesktop.view.map.MapAddonsPanelController', {
      * @param {Boolean} checked True if the node is checked
      */
     onLayerCheckChange : function(node, checked) {
-        this.legendsPanelCtrl.setLegendsVisible([node.getOlLayer()], checked);
+        var setLegendVisibleFn = function(layer, checked){
+            if (layer instanceof ol.layer.Group) {
+                layer.getLayers().forEach(function(el, index, layers){
+                    setLegendVisibleFn.call(this, el, checked);
+                }, this);
+            } else {
+                this.legendsPanelCtrl.setLegendsVisible([layer], checked);
+            }
+        };
+        setLegendVisibleFn.call(this, node.getOlLayer(), checked);
     },
 
     /**

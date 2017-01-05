@@ -23,6 +23,10 @@ $$
 $$
 LANGUAGE 'sql' IMMUTABLE;
 
+/**
+ * PG 9.3
+ */
+CREATE EXTENSION pg_trgm;
 
 /**
  * This function is used to do accent-insensitive search.
@@ -164,11 +168,13 @@ create table MODE_TAXREF (
 UNIT                 VARCHAR(36)          not null,
 CODE                 VARCHAR(36)          not null,
 PARENT_CODE          VARCHAR(36)          null,
-NAME                 VARCHAR(500)         null,
+LABEL                VARCHAR(500)         null,
+DEFINITION           VARCHAR(500)         null,
 COMPLETE_NAME        VARCHAR(500)         null,
-VERNACULAR_NAME      VARCHAR(1000)         null,
+VERNACULAR_NAME      VARCHAR(1000)        null,
 IS_LEAF			     CHAR(1)              null,
 IS_REFERENCE	     CHAR(1)              null,
+POSITION		     INTEGER              null,
 constraint PK_MODE_TAXREF primary key (UNIT, CODE)
 );
 
@@ -176,24 +182,26 @@ constraint PK_MODE_TAXREF primary key (UNIT, CODE)
 COMMENT ON COLUMN MODE_TAXREF.UNIT IS 'The unit';
 COMMENT ON COLUMN MODE_TAXREF.CODE IS 'The code of the mode';
 COMMENT ON COLUMN MODE_TAXREF.PARENT_CODE IS 'The parent code';
-COMMENT ON COLUMN MODE_TAXREF.NAME IS 'The short name of the taxon';
+COMMENT ON COLUMN MODE_TAXREF.LABEL IS 'The short name of the taxon';
+COMMENT ON COLUMN MODE_TAXREF.DEFINITION IS 'The definition of the mode';
 COMMENT ON COLUMN MODE_TAXREF.COMPLETE_NAME IS 'The complete name of the taxon (name and author)';
 COMMENT ON COLUMN MODE_TAXREF.VERNACULAR_NAME IS 'The vernacular name';
 COMMENT ON COLUMN MODE_TAXREF.IS_LEAF IS 'Indicate if the node is a taxon (1 for true)';
 COMMENT ON COLUMN MODE_TAXREF.IS_REFERENCE IS 'Indicate if the taxon is a reference (1) or a synonym (0)';
+COMMENT ON COLUMN MODE_TAXREF.POSITION IS 'The position of the mode';
 
 
 CREATE INDEX mode_taxref_parent_code_idx
   ON metadata.mode_taxref USING btree (parent_code);
   
 CREATE INDEX mode_taxref_NAME_idx
-  ON metadata.mode_taxref USING btree (unaccent(NAME));
+  ON metadata.mode_taxref USING gist (unaccent(LABEL) gist_trgm_ops);
   
 CREATE INDEX mode_taxref_COMPLETE_NAME_idx
-  ON metadata.mode_taxref USING btree (unaccent(COMPLETE_NAME));
+  ON metadata.mode_taxref USING gist (unaccent(COMPLETE_NAME) gist_trgm_ops);
   
 CREATE INDEX mode_taxref_VERNACULAR_NAME_idx
-  ON metadata.mode_taxref USING btree (unaccent(VERNACULAR_NAME));
+  ON metadata.mode_taxref USING gist (unaccent(VERNACULAR_NAME) gist_trgm_ops);
 
 
 /*==============================================================*/

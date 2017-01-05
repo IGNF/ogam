@@ -124,7 +124,9 @@ Ext.define('OgamDesktop.view.navigation.Tab', {
 					'<div class="o-navigation-fieldset">',
 						'<div class="o-navigation-fieldset-title">',
                             '<tpl if="xindex &lt; xcount">',
-                                '<div class="o-navigation-fieldset-title-link" onclick="Ext.ComponentQuery.query(\'navigation-mainwin\')[0].openDetails(\'{editURL}\');"></div>',
+                                '<tpl if="!Ext.isEmpty(editURL)">',
+                                    '<div class="o-navigation-fieldset-title-link" onclick="Ext.ComponentQuery.query(\'navigation-mainwin\')[0].openDetails(\'{editURL}\');"></div>',
+                                '</tpl>',
                             '</tpl>',
                             '<span>{title}</span>',
                         '</div>',
@@ -138,7 +140,7 @@ Ext.define('OgamDesktop.view.navigation.Tab', {
 						            	'<tpl if="type ==\'STRING\' && subtype==\'LINK\' && value.length &gt; 0">',
 						            		'<span><b>{label} :</b> <a class="external" href="{value}" target="_blank"><span>' + this.linkFieldDefaultText + '</span></a></span>',
 						            	'<tpl else>',
-						            		'<span><b>{label} :</b> {[(Ext.isEmpty(values.value) || (Ext.isEmpty(values.value.toString().trim()))) ? "-" : values.value.toString()]}</span>',
+						            		'<span><b>{label} :</b> {[(Ext.isEmpty(values.valueLabel) || (Ext.isEmpty(values.valueLabel.toString().trim()))) ? "-" : values.valueLabel.toString()]}</span>',
 						            	'</tpl>',
 						        '</tpl>',
 							'</tpl>',
@@ -190,7 +192,7 @@ Ext.define('OgamDesktop.view.navigation.Tab', {
         	url: Ext.manifest.OgamDesktop.requestServiceUrl +'ajaxgetdetails',
 			actionMethods: {create: 'POST', read: 'POST', update: 'POST', destroy: 'POST'},
             success :function(response, options){
-                var data = Ext.decode(response.responseText);
+                var data = Ext.decode(response.responseText).data;
                 var title = data.title;
                 if(data.title.length > this.titleCharsMaxLength){
                     title = data.title.substring(0,this.titleCharsMaxLength) + '...';

@@ -50,6 +50,11 @@ public class HarmonisationProcessDAO {
 	private static final String UPDATE_HARMONIZATION_PROCESS_STATUS_STMT = "UPDATE harmonization_process SET harmonization_status = ? WHERE harmonization_process_id = ?";
 
 	/**
+	 * Update the process status for a provider.
+	 */
+	private static final String UPDATE_HARMONIZATION_PROCESS_STATUS_BY_PROVIDER_STMT = "UPDATE harmonization_process SET harmonization_status = ? WHERE dataset_id = ? AND provider_id = ? AND harmonization_status <> 'REMOVED'";
+
+	/**
 	 * Update the process submission.
 	 */
 	private static final String UPDATE_HARMONIZATION_PROCESS_SUBMISSION_STMT = "INSERT INTO harmonization_process_submissions (harmonization_process_id, raw_data_submission_id) VALUES (?, ?)";
@@ -228,6 +233,52 @@ public class HarmonisationProcessDAO {
 			logger.trace(UPDATE_HARMONIZATION_PROCESS_STATUS_STMT);
 			ps.setString(1, status);
 			ps.setInt(2, processId);
+			ps.execute();
+
+		} finally {
+			try {
+				if (ps != null) {
+					ps.close();
+				}
+			} catch (SQLException e) {
+				logger.error("Error while closing statement : " + e.getMessage());
+			}
+			try {
+				if (con != null) {
+					con.close();
+				}
+			} catch (SQLException e) {
+				logger.error("Error while closing connexion : " + e.getMessage());
+			}
+		}
+	}
+
+	/**
+	 * Update the harmonization process status.
+	 * 
+	 * @param datasetId
+	 *            the dataset id
+	 * @param providerId
+	 *            the provider id
+	 * @param status
+	 *            the new status of the process
+	 */
+	public void updateHarmonizationProcessStatusByProvider(String datasetId, String providerId, String status) throws Exception {
+
+		Connection con = null;
+		PreparedStatement ps = null;
+		try {
+
+			con = getConnection();
+
+			logger.trace(UPDATE_HARMONIZATION_PROCESS_STATUS_BY_PROVIDER_STMT.replaceFirst("\\?", "'" + status + "'").replaceFirst("\\?", "'" + datasetId + "'")
+					.replaceFirst("\\?", "'" + providerId + "'"));
+
+			// updaet the status
+			ps = con.prepareStatement(UPDATE_HARMONIZATION_PROCESS_STATUS_BY_PROVIDER_STMT);
+			ps.setString(1, status);
+			ps.setString(2, datasetId);
+			ps.setString(3, providerId);
 			ps.execute();
 
 		} finally {

@@ -180,7 +180,7 @@ public class GeometryDAO {
 
 	/**
 	 * Deletes from tables "observation_geometrie" and "bac_geometrie" all the geometries and associations linked to the format. Deleting from "bac_geometrie"
-	 * has a cascade effect on "observation_geometrie".
+	 * has a cascade effect on "observation_geometrie". Code is executed only if tables above exist.
 	 * 
 	 * @param format
 	 *            the table format
@@ -190,6 +190,7 @@ public class GeometryDAO {
 		logger.debug("deleteGeometriesFromFormat");
 		Connection con = null;
 		PreparedStatement ps = null;
+		ResultSet rs = null;
 
 		try {
 
@@ -197,14 +198,29 @@ public class GeometryDAO {
 
 			StringBuffer stmt = new StringBuffer();
 
-			stmt.append("DELETE FROM mapping.bac_geometrie ");
-			stmt.append("USING mapping.observation_geometrie as og ");
-			stmt.append("WHERE og.table_format = '" + format + "' ");
-			stmt.append("AND id_geometrie = og.id_geom ;");
-
+			stmt.append("SELECT to_regclass('mapping.observation_geometrie') as og_reg, to_regclass('mapping.bac_geometrie') as bg_reg");
 			ps = con.prepareStatement(stmt.toString());
 			logger.debug(stmt.toString());
-			ps.executeUpdate();
+			rs = ps.executeQuery();
+			String ogReg;
+			String bgReg;
+
+			if (rs.next()) {
+				ogReg = rs.getString("og_reg");
+				bgReg = rs.getString("bg_reg");
+				if (ogReg != null && bgReg != null) {
+					stmt = new StringBuffer();
+					stmt.append("DELETE FROM mapping.bac_geometrie ");
+					stmt.append("USING mapping.observation_geometrie as og ");
+					stmt.append("WHERE og.table_format = '" + format + "' ");
+					stmt.append("AND id_geometrie = og.id_geom ;");
+
+					ps = con.prepareStatement(stmt.toString());
+					logger.debug(stmt.toString());
+					ps.executeUpdate();
+
+				}
+			}
 
 		} finally {
 			try {
@@ -249,10 +265,86 @@ public class GeometryDAO {
 			con = getConnection();
 
 			StringBuffer stmt = new StringBuffer();
+			// stmt.append("BEGIN;");
 			stmt.append("INSERT INTO mapping.bac_geometrie (geom) ");
 			stmt.append("SELECT St_Transform(m.geometrie, 3857) FROM raw_data." + tableName + " AS m ");
 			stmt.append("WHERE m.ogam_id_" + format + " = '" + parameters.get(DSRConstants.OGAM_ID) + "' ");
-			stmt.append("AND m.provider_id = '" + parameters.get(DSRConstants.PROVIDER_ID) + "';");
+			stmt.append("AND m.provider_id = '" + parameters.get(DSRConstants.PROVIDER_ID) + "' ;");
+
+			ps = con.prepareStatement(stmt.toString());
+			logger.trace(stmt.toString());
+			ps.executeUpdate();
+
+			stmt = new StringBuffer();
+			stmt.append("select last_value FROM mapping.bac_geometrie_id_geometrie_seq;");
+			ps = con.prepareStatement(stmt.toString());
+			rs = ps.executeQuery();
+			int geomId = 0;
+			if (rs.next()) {
+				geomId = rs.getInt(1);
+			}
+			stmt = new StringBuffer();
+			stmt.append("INSERT INTO mapping.observation_geometrie VALUES ('" + parameters.get(DSRConstants.OGAM_ID) + "', '");
+			stmt.append(parameters.get(DSRConstants.PROVIDER_ID) + "', '");
+			stmt.append(format + "', ");
+			stmt.append(geomId + ");");
+
+			ps = con.prepareStatement(stmt.toString());
+			logger.trace(stmt.toString());
+			ps.executeUpdate();
+			// }
+
+		} finally
+
+		{
+			try {
+				if (ps != null) {
+					ps.close();
+				}
+			} catch (SQLException e) {
+				logger.error("Error while closing statement : " + e.getMessage());
+			}
+			try {
+				if (con != null) {
+					con.close();
+				}
+			} catch (SQLException e) {
+				logger.error("Error while closing statement : " + e.getMessage());
+			}
+		}
+
+	}
+
+	/**
+	 * Populates the table "bac_geometrie" with the envelope geometry of the union the communes. Populates the table "observation_geometrie" by associating this
+	 * geometry to the observation.
+	 * 
+	 * @param format
+	 *            the table_format of the table
+	 * @param tableName
+	 *            the tablename in raw_data schema
+	 * @param parameters
+	 *            values including : ogam_id, provider_id
+	 * @throws Exception
+	 */
+	public void createGeometryLinksFromCommunes(String format, String tableName, Map<String, Object> parameters) throws Exception {
+		logger.debug("createGeometryLinksFromCommunes");
+
+		Connection con = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+
+		try {
+
+			con = getConnection();
+
+			StringBuffer stmt = new StringBuffer();
+			stmt.append("INSERT INTO mapping.bac_geometrie (geom) ");
+			stmt.append("SELECT St_Envelope(St_Union(bac.geom)) ");
+			stmt.append("FROM raw_data." + tableName + " AS m, mapping.bac_commune as bac ");
+			stmt.append("WHERE m.ogam_id_" + format + " = '" + parameters.get(DSRConstants.OGAM_ID) + "' ");
+			stmt.append("AND m.provider_id = '" + parameters.get(DSRConstants.PROVIDER_ID) + "' ");
+			stmt.append("AND bac.id_commune = ANY (m.codecommune::text[]);");
 
 			ps = con.prepareStatement(stmt.toString());
 			logger.trace(stmt.toString());
@@ -297,4 +389,151 @@ public class GeometryDAO {
 
 	}
 
+	/**
+	 * Populates the table "bac_geometrie" with the envelope geometry of the union the mailles. Populates the table "observation_geometrie" by associating this
+	 * geometry to the observation.
+	 * 
+	 * @param format
+	 *            the table_format of the table
+	 * @param tableName
+	 *            the tablename in raw_data schema
+	 * @param parameters
+	 *            values including : ogam_id, provider_id
+	 * @throws Exception
+	 */
+	public void createGeometryLinksFromMailles(String format, String tableName, Map<String, Object> parameters) throws Exception {
+		logger.debug("createGeometryLinksFromMailles");
+
+		Connection con = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+
+		try {
+
+			con = getConnection();
+
+			StringBuffer stmt = new StringBuffer();
+			stmt.append("INSERT INTO mapping.bac_geometrie (geom) ");
+			stmt.append("SELECT St_Envelope(St_Union(bac.geom)) ");
+			stmt.append("FROM raw_data." + tableName + " AS m, mapping.bac_maille as bac ");
+			stmt.append("WHERE m.ogam_id_" + format + " = '" + parameters.get(DSRConstants.OGAM_ID) + "' ");
+			stmt.append("AND m.provider_id = '" + parameters.get(DSRConstants.PROVIDER_ID) + "' ");
+			stmt.append("AND bac.id_maille = ANY (m.codemaille::text[]);");
+
+			ps = con.prepareStatement(stmt.toString());
+			logger.trace(stmt.toString());
+			ps.executeUpdate();
+
+			stmt = new StringBuffer();
+			stmt.append("select currval('bac_geometrie_id_geometrie_seq');");
+			ps = con.prepareStatement(stmt.toString());
+			rs = ps.executeQuery();
+			int geomId = 0;
+			if (rs.next()) {
+				geomId = rs.getInt(1);
+				stmt = new StringBuffer();
+				stmt.append("INSERT INTO mapping.observation_geometrie VALUES ('" + parameters.get(DSRConstants.OGAM_ID) + "', '");
+				stmt.append(parameters.get(DSRConstants.PROVIDER_ID) + "', '");
+				stmt.append(format + "', ");
+				stmt.append(geomId + ");");
+
+				ps = con.prepareStatement(stmt.toString());
+				logger.trace(stmt.toString());
+				ps.executeUpdate();
+			}
+
+		} finally
+
+		{
+			try {
+				if (ps != null) {
+					ps.close();
+				}
+			} catch (SQLException e) {
+				logger.error("Error while closing statement : " + e.getMessage());
+			}
+			try {
+				if (con != null) {
+					con.close();
+				}
+			} catch (SQLException e) {
+				logger.error("Error while closing statement : " + e.getMessage());
+			}
+		}
+
+	}
+
+	/**
+	 * Populates the table "bac_geometrie" with the envelope geometry of the union the departements. Populates the table "observation_geometrie" by associating
+	 * this geometry to the observation.
+	 * 
+	 * @param format
+	 *            the table_format of the table
+	 * @param tableName
+	 *            the tablename in raw_data schema
+	 * @param parameters
+	 *            values including : ogam_id, provider_id
+	 * @throws Exception
+	 */
+	public void createGeometryLinksFromDepartements(String format, String tableName, Map<String, Object> parameters) throws Exception {
+		logger.debug("createGeometryLinksFromDepartements");
+
+		Connection con = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+
+		try {
+
+			con = getConnection();
+
+			StringBuffer stmt = new StringBuffer();
+			stmt.append("INSERT INTO mapping.bac_geometrie (geom) ");
+			stmt.append("SELECT St_Envelope(St_Union(bac.geom)) ");
+			stmt.append("FROM raw_data." + tableName + " AS m, mapping.bac_departement as bac ");
+			stmt.append("WHERE m.ogam_id_" + format + " = '" + parameters.get(DSRConstants.OGAM_ID) + "' ");
+			stmt.append("AND m.provider_id = '" + parameters.get(DSRConstants.PROVIDER_ID) + "' ");
+			stmt.append("AND bac.id_departement = ANY (m.codedepartement::text[]);");
+
+			ps = con.prepareStatement(stmt.toString());
+			logger.trace(stmt.toString());
+			ps.executeUpdate();
+
+			stmt = new StringBuffer();
+			stmt.append("select currval('bac_geometrie_id_geometrie_seq');");
+			ps = con.prepareStatement(stmt.toString());
+			rs = ps.executeQuery();
+			int geomId = 0;
+			if (rs.next()) {
+				geomId = rs.getInt(1);
+				stmt = new StringBuffer();
+				stmt.append("INSERT INTO mapping.observation_geometrie VALUES ('" + parameters.get(DSRConstants.OGAM_ID) + "', '");
+				stmt.append(parameters.get(DSRConstants.PROVIDER_ID) + "', '");
+				stmt.append(format + "', ");
+				stmt.append(geomId + ");");
+
+				ps = con.prepareStatement(stmt.toString());
+				logger.trace(stmt.toString());
+				ps.executeUpdate();
+			}
+
+		} finally
+
+		{
+			try {
+				if (ps != null) {
+					ps.close();
+				}
+			} catch (SQLException e) {
+				logger.error("Error while closing statement : " + e.getMessage());
+			}
+			try {
+				if (con != null) {
+					con.close();
+				}
+			} catch (SQLException e) {
+				logger.error("Error while closing statement : " + e.getMessage());
+			}
+		}
+
+	}
 }

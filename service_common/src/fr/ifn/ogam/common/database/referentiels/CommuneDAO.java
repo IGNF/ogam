@@ -8,6 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -24,7 +25,7 @@ import fr.ifn.ogam.common.util.DSRConstants;
  * 
  * DAO for methods involving communes georeferencing.
  * 
- * @author gautam
+ * @author gpastakia
  *
  */
 public class CommuneDAO {
@@ -295,7 +296,172 @@ public class CommuneDAO {
 	}
 
 	/**
-	 * Deletes from tables "observation_commune" all the associations linked to the format.
+	 * Populates the table "observation_commune" by getting the communes from a list of mailles codes.
+	 * 
+	 * @param format
+	 *            the table_format of the table
+	 * @param tableName
+	 *            the tablename in raw_data schema
+	 * @param parameters
+	 *            values including : ogam_id, provider_id, the codemaille
+	 * @throws Exception
+	 */
+	@SuppressWarnings("resource")
+	public void createCommunesLinksFromMailles(String format, Map<String, Object> parameters) throws Exception {
+		logger.debug("createCommunesLinksFromMailles");
+
+		Connection con = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+
+		try {
+
+			con = getConnection();
+
+			String[] codesMailles = ((String[]) parameters.get(DSRConstants.CODE_MAILLE));
+			String providerId = (String) parameters.get(DSRConstants.PROVIDER_ID);
+			String ogamId = (String) parameters.get(DSRConstants.OGAM_ID);
+
+			StringBuffer stmt = null;
+
+			// Récupérer l'union des géométries
+			stmt = new StringBuffer();
+			stmt.append("SELECT St_AsText(St_union(grille.geom)) as union ");
+			stmt.append("FROM referentiels.codemaillevalue as grille ");
+			stmt.append("WHERE grille.code_10km = '" + codesMailles[0] + "' ");
+			for (int i = 1; i < codesMailles.length; ++i) {
+				stmt.append("OR grille.code_10km  = '" + codesMailles[i] + "' ");
+			}
+
+			ps = con.prepareStatement(stmt.toString());
+			logger.trace(stmt.toString());
+			rs = ps.executeQuery();
+			rs.next();
+			String maillesUnion = "ST_GeomFromText('" + rs.getString("union") + "', 4326)";
+
+			// Récupérer la liste des codes communes
+			stmt = new StringBuffer();
+			stmt.append("SELECT commune.insee_com ");
+			stmt.append("FROM referentiels.geofla_commune AS commune ");
+			stmt.append("WHERE st_intersects(" + maillesUnion + ", commune.geom) = true ;");
+
+			ps = con.prepareStatement(stmt.toString());
+			logger.trace(stmt.toString());
+			rs = ps.executeQuery();
+
+			List<String> codesCommunes = new ArrayList<String>();
+			while (rs.next()) {
+				codesCommunes.add(rs.getString("insee_com"));
+			}
+			String codesCommunesStr = codesCommunes.toString().replace("[", "{").replace("]", "}").replace("'", "''");
+			logger.debug(codesCommunesStr.toString());
+
+			stmt = new StringBuffer();
+			stmt.append("INSERT INTO mapping.observation_commune ");
+			stmt.append("SELECT '" + ogamId + "', '" + providerId + "', '" + format + "', commune.insee_com, ");
+			stmt.append("round(cast(" + 1 / codesCommunes.size() + "AS numeric(4,3)), 3) AS pct ");
+			stmt.append("FROM referentiels.geofla_commune AS commune ");
+			stmt.append("WHERE commune.insee_com = ANY ('" + codesCommunesStr + "'::text[]);");
+
+			ps = con.prepareStatement(stmt.toString());
+			ps.executeUpdate();
+
+		} finally {
+			try {
+				if (ps != null) {
+					ps.close();
+				}
+			} catch (SQLException e) {
+				logger.error("Error while closing statement : " + e.getMessage());
+			}
+			try {
+				if (con != null) {
+					con.close();
+				}
+			} catch (SQLException e) {
+				logger.error("Error while closing statement : " + e.getMessage());
+			}
+		}
+	}
+
+	/**
+	 * Populates the table "observation_commune" by getting the communes from a list of departements codes.
+	 * 
+	 * @param format
+	 *            the table_format of the table
+	 * @param tableName
+	 *            the tablename in raw_data schema
+	 * @param parameters
+	 *            values including : ogam_id, provider_id, the codemaille
+	 * @throws Exception
+	 */
+	@SuppressWarnings("resource")
+	public void createCommunesLinksFromDepartements(String format, Map<String, Object> parameters) throws Exception {
+		logger.debug("createCommunesLinksFromDepartements");
+
+		Connection con = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+
+		try {
+
+			con = getConnection();
+
+			String[] codesDepartements = ((String[]) parameters.get(DSRConstants.CODE_DEPARTEMENT));
+			String providerId = (String) parameters.get(DSRConstants.PROVIDER_ID);
+			String ogamId = (String) parameters.get(DSRConstants.OGAM_ID);
+			String codesDepartementsStr = Arrays.asList(codesDepartements).toString().replace("[", "{").replace("]", "}").replace("'", "''");
+			logger.debug(codesDepartementsStr);
+
+			StringBuffer stmt = null;
+			// Récupérer la liste des codes communes
+			stmt = new StringBuffer();
+			stmt.append("SELECT commune.insee_com ");
+			stmt.append("FROM referentiels.geofla_commune AS commune, referentiels.geofla_departement AS departement ");
+			stmt.append("WHERE commune.code_dept = departement.code_dept ");
+			stmt.append("AND departement.code_dept = ANY('" + codesDepartementsStr + "'::text[]);");
+
+			ps = con.prepareStatement(stmt.toString());
+			logger.trace(stmt.toString());
+			rs = ps.executeQuery();
+
+			List<String> codesCommunes = new ArrayList<String>();
+			while (rs.next()) {
+				codesCommunes.add(rs.getString("insee_com"));
+			}
+			String codesCommunesStr = codesCommunes.toString().replace("[", "{").replace("]", "}").replace("'", "''");
+			logger.debug(codesCommunesStr.toString());
+
+			stmt = new StringBuffer();
+			stmt.append("INSERT INTO mapping.observation_commune ");
+			stmt.append("SELECT '" + ogamId + "', '" + providerId + "', '" + format + "', commune.insee_com, ");
+			stmt.append("round(cast(" + 1 / codesCommunes.size() + "AS numeric(4,3)), 3) AS pct ");
+			stmt.append("FROM referentiels.geofla_commune AS commune ");
+			stmt.append("WHERE commune.insee_com = ANY ('" + codesCommunesStr + "'::text[]);");
+
+			ps = con.prepareStatement(stmt.toString());
+			logger.trace(stmt.toString());
+			ps.executeUpdate();
+		} finally {
+			try {
+				if (ps != null) {
+					ps.close();
+				}
+			} catch (SQLException e) {
+				logger.error("Error while closing statement : " + e.getMessage());
+			}
+			try {
+				if (con != null) {
+					con.close();
+				}
+			} catch (SQLException e) {
+				logger.error("Error while closing statement : " + e.getMessage());
+			}
+		}
+	}
+
+	/**
+	 * Deletes from tables "observation_commune" all the associations linked to the format. Code is executed only if table above exists.
 	 * 
 	 * @param format
 	 *            the table format
@@ -306,19 +472,35 @@ public class CommuneDAO {
 
 		Connection con = null;
 		PreparedStatement ps = null;
+		ResultSet rs = null;
 
 		try {
 
 			con = getConnection();
 
 			StringBuffer stmt = new StringBuffer();
-			stmt.append("DELETE FROM mapping.observation_commune ");
-			stmt.append("USING metadata.table_format as tf ");
-			stmt.append("WHERE tf.format = format");
 
+			stmt.append("SELECT to_regclass('mapping.observation_commune') as oc_reg");
 			ps = con.prepareStatement(stmt.toString());
 			logger.debug(stmt.toString());
-			ps.executeUpdate();
+			rs = ps.executeQuery();
+
+			String ocReg;
+
+			if (rs.next()) {
+				ocReg = rs.getString("oc_reg");
+				if (ocReg != null) {
+					stmt = new StringBuffer();
+					stmt.append("DELETE FROM mapping.observation_commune ");
+					stmt.append("USING metadata.table_format as tf ");
+					stmt.append("WHERE tf.format = format");
+
+					ps = con.prepareStatement(stmt.toString());
+					logger.debug(stmt.toString());
+					ps.executeUpdate();
+
+				}
+			}
 
 		} finally {
 			try {
@@ -350,6 +532,7 @@ public class CommuneDAO {
 	 *            values including : ogam_id, provider_id, natureobjetgeo
 	 * @throws Exception
 	 */
+	@SuppressWarnings("resource")
 	public void setCodeCommuneCalcule(String format, String tableName, Map<String, Object> parameters) throws Exception {
 		logger.debug("setCodeCommuneCalcule");
 
@@ -448,6 +631,7 @@ public class CommuneDAO {
 	 *            values including : ogam_id, provider_id, natureobjetgeo
 	 * @throws Exception
 	 */
+	@SuppressWarnings("resource")
 	public void setNomCommuneCalcule(String format, String tableName, Map<String, Object> parameters) throws Exception {
 		logger.debug("setNomCommuneCalcule");
 
@@ -465,7 +649,7 @@ public class CommuneDAO {
 			String ogamId = (String) parameters.get(DSRConstants.OGAM_ID);
 			String natureObjetGeo = (String) parameters.get(DSRConstants.NATURE_OBJET_GEO);
 
-			// Get the list of the mailles
+			// Get the list of the communes
 			stmt = new StringBuffer();
 			stmt.append("SELECT id_commune ");
 			stmt.append("FROM mapping.observation_commune ");
@@ -515,7 +699,7 @@ public class CommuneDAO {
 
 			stmt = new StringBuffer();
 			stmt.append("UPDATE raw_data." + tableName + " ");
-			stmt.append("SET " + DSRConstants.NOM_COMMUNE_CALC + " = '" + nomCommuneCalcule.toString() + "' ");
+			stmt.append("SET " + DSRConstants.NOM_COMMUNE_CALC + " = '" + nomCommuneCalcule.toString().replace("'", "''") + "' ");
 			stmt.append("WHERE provider_id = '" + providerId + "' ");
 			stmt.append("AND ogam_id_" + format + " = '" + ogamId + "' ");
 

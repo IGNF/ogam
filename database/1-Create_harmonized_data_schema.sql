@@ -157,7 +157,6 @@ constraint PK_HARMONIZED_TREE_DATA primary key (PROVIDER_ID, PLOT_CODE, CYCLE, T
 constraint FK_HARMONIZED_TREE_ASSOCIATE_PLOT_DAT foreign key (PROVIDER_ID, PLOT_CODE, CYCLE) references HARMONIZED_PLOT_DATA (PROVIDER_ID, PLOT_CODE, CYCLE) on delete restrict on update restrict,
 unique (PROVIDER_ID, PLOT_CODE, CYCLE, TREE_ID)   
 );
-
 -- Ajout de la colonne point PostGIS
 SELECT AddGeometryColumn('harmonized_data','harmonized_tree_data','the_geom',4326,'POINT',2);
 

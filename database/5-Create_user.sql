@@ -28,10 +28,10 @@ GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE website.role_to_schema TO ogam;
 GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE website."role" TO ogam;
 GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE website.permission_per_role TO ogam;
 GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE website.predefined_request TO ogam;
-GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE website.predefined_request_criteria TO ogam;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE website.predefined_request_criterion TO ogam;
 GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE website.predefined_request_group TO ogam;
 GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE website.predefined_request_group_asso TO ogam;
-GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE website.predefined_request_result TO ogam;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE website.predefined_request_column TO ogam;
 GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE website.providers TO ogam;
 GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE website.dataset_role_restriction TO ogam;
 GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE website.layer_role_restriction TO ogam;
@@ -113,13 +113,13 @@ ALTER TABLE metadata."mode" OWNER TO ogam;
 
 -- mapping
 GRANT ALL ON SCHEMA "mapping" TO ogam;
-GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "mapping".bounding_box TO ogam;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "mapping".provider_map_params TO ogam;
 GRANT SELECT ON TABLE "mapping".layer TO ogam;
 GRANT SELECT ON TABLE "mapping".layer_service TO ogam;
-GRANT SELECT ON TABLE "mapping".layer_tree TO ogam;
+GRANT SELECT ON TABLE "mapping".layer_tree_node TO ogam;
 GRANT ALL ON TABLE "mapping".result_location TO ogam;
 
-GRANT SELECT ON TABLE "mapping".scales TO ogam;
+GRANT SELECT ON TABLE "mapping".zoom_level TO ogam;
 GRANT ALL ON TABLE "mapping".nuts_0 TO ogam;
 GRANT ALL ON SEQUENCE "mapping".nuts_0_gid_seq TO ogam;
 GRANT ALL ON TABLE "mapping".departements TO ogam;
