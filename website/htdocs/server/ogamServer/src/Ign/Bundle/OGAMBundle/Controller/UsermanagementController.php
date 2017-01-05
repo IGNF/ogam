@@ -9,7 +9,7 @@ use Ign\Bundle\OGAMBundle\Entity\Website\Role;
 use Ign\Bundle\OGAMBundle\Entity\Website\Provider;
 use Ign\Bundle\OGAMBundle\Form\UserType;
 use Ign\Bundle\OGAMBundle\Form\ChangePasswordType;
-use Ign\Bundle\OGAMBundle\Form\RawData\ProviderType;
+use Ign\Bundle\OGAMBundle\Form\ProviderType;
 use Ign\Bundle\OGAMBundle\Form\RawData\RoleType;
 
 /**
