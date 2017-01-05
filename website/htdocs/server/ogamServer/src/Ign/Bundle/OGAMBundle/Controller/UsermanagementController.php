@@ -10,7 +10,7 @@ use Ign\Bundle\OGAMBundle\Entity\Website\Provider;
 use Ign\Bundle\OGAMBundle\Form\UserType;
 use Ign\Bundle\OGAMBundle\Form\ChangePasswordType;
 use Ign\Bundle\OGAMBundle\Form\ProviderType;
-use Ign\Bundle\OGAMBundle\Form\RawData\RoleType;
+use Ign\Bundle\OGAMBundle\Form\RoleType;
 
 /**
  * @Route("/usermanagement")
