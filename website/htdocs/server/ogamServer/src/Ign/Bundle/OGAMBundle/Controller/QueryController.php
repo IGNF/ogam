@@ -32,7 +32,8 @@ class QueryController extends Controller {
 	private $traductions = array();
 
 	/**
-	 * @Route("/", name = "query_home")
+	 * @Route("/index", name = "query_home")
+	 * The "/" route is disabled for security raison (see security.yml)
 	 */
 	public function indexAction() {
 		return $this->redirectToRoute('query_show-query-form');

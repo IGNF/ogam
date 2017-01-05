@@ -76,8 +76,18 @@ class AbstractControllerTest extends WebTestCase {
 		foreach ($urls as $urlName => $url) {
 			echo "\n\r", $urlName, "...";
 			
-			// Set the parameters
+            // Set the request parameters
 			$requestParameters = $url[0];
+            if (empty($requestParameters['uri'])) {
+                throw new \InvalidArgumentException("The 'uri' parameter is mandatory.");
+            } else {
+                $uri = $requestParameters['uri'];
+            }
+            $method = empty($requestParameters['method']) ? 'GET' : $requestParameters['method'];
+            $parameters = empty($requestParameters['parameters']) ? array() : $requestParameters['parameters'];
+            $sessionParameters = empty($requestParameters['sessionParameters']) ? array() : $requestParameters['sessionParameters'];
+
+            // Set the response parameters
 			$responseParameters = empty($url[1]) ? [] : $url[1];
 			$statusCode = empty($responseParameters['statusCode']) ? $defaultStatusCode : $responseParameters['statusCode'];
 			$contentFile = empty($responseParameters['contentFile']) ? null : $responseParameters['contentFile'];
@@ -86,8 +96,45 @@ class AbstractControllerTest extends WebTestCase {
 			$redirectionLocation = empty($responseParameters['redirectionLocation']) ? '/user/login' : $responseParameters['redirectionLocation'];
 			$alertMessage = empty($responseParameters['alertMessage']) ? null : $responseParameters['alertMessage'];
 			
+            // Set the session
+            if(!empty($sessionParameters)){
+                $sessionParametersOldsValues = [];
+                $session = $client->getContainer()->get('session');
+                foreach($sessionParameters as $key => $values) {
+                    if($session->has($key)) {
+                        $sessionParametersOldsValues[$key] = $session->get($key);
+                    }
+                    if (!isset($values['value'])) {
+                        throw new \InvalidArgumentException("The 'value' is mandatory for a session parameter.");
+                    } else {
+                        $session->set($key, $values['value']);
+                    }
+                }
+                $session->save();
+            }
+
 			// Launch the request
-			$crawler = $client->request(empty($requestParameters['method']) ? 'GET' : $requestParameters['method'], $requestParameters['uri'], empty($requestParameters['parameters']) ? array() : $requestParameters['parameters']);
+            $crawler = $client->request(
+                $method,
+                $uri,
+                $parameters
+            );
+
+            // Clean the session
+            if(!empty($sessionParameters)){
+                $session = $client->getContainer()->get('session');
+                foreach($sessionParameters as $key => $values) {
+                    $isPermanent = empty($values['isPermanent']) ? false : $values['isPermanent'];
+                    if(!$isPermanent){
+                        if(isset($sessionParametersOldsValues[$key])) {
+                            $session->set($key, $sessionParametersOldsValues[$key]);
+                        } else {
+                            $session->remove($key);
+                        }
+                    }
+                }
+                $session->save();
+            }
 			
 			// Display the response status and error message
 			$responseStatusCode = $client->getResponse()->getStatusCode();
@@ -151,6 +198,12 @@ class AbstractControllerTest extends WebTestCase {
 	 * 'method' => 'GET|POST|...', // Default : GET
 	 * 'parameters' => [ // Default : []
 	 * 'name'=> value
+     *     ],
+     *     'sessionParameters' => [ // Default : []
+     *         'name' => [
+     *             'value' => value, // Required
+     *             'isPermanent' => true|false // Default : false
+     *         ]
 	 * ]
 	 * ],[ // ResponseParameters
 	 * 'statusCode' => Response::HTTP_OK|Response::HTTP_FOUND|..., // Default : Response::HTTP_OK

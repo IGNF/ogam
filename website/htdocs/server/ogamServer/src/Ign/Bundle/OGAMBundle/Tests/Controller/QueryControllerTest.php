@@ -32,185 +32,80 @@ class QueryControllerTest extends AbstractControllerTest {
 
 	public function getNotLoggedUrls() {
 		return [
-			'query' => [
-				[
-					'uri' => '/query/'
-				]
-			],
-			'show-query-form' => [
-				[
-					'uri' => '/query/show-query-form'
-				]
-			],
+            'query' => [['uri' => '/query/index']],
+            'show-query-form' => [['uri' => '/query/show-query-form']],
 			// 'odp-index' => [['uri' => '/odp/index.html?locale=fr']], // TODO: Not found. Why?
-			'getgridparameters' => [
-				[
-					'uri' => '/query/getgridparameters'
-				]
-			],
-			'ajaxgetdatasets' => [
-				[
-					'uri' => '/query/ajaxgetdatasets'
-				]
-			],
-			'ajaxgetqueryform' => [
-				[
-					'uri' => '/query/ajaxgetqueryform'
-				]
-			],
-			'ajaxgetqueryformfields' => [
-				[
-					'uri' => '/query/ajaxgetqueryformfields'
-				]
-			],
-			'ajaxresetresultlocation' => [
-				[
-					'uri' => '/query/ajaxresetresultlocation'
-				]
-			],
-			'ajaxbuildrequest' => [
-				[
-					'uri' => '/query/ajaxbuildrequest'
-				]
-			],
-			'ajaxgetresultsbbox' => [
-				[
-					'uri' => '/query/ajaxgetresultsbbox'
-				]
-			],
-			'ajaxgetresultcolumns' => [
-				[
-					'uri' => '/query/ajaxgetresultcolumns'
-				]
-			],
-			'ajaxgetresultrows' => [
-				[
-					'uri' => '/query/ajaxgetresultrows'
-				]
-			],
-			'ajaxgetpredefinedrequestlist' => [
-				[
-					'uri' => '/query/ajaxgetpredefinedrequestlist'
-				]
-			],
-			'ajaxgetpredefinedrequestcriteria' => [
-				[
-					'uri' => '/query/ajaxgetpredefinedrequestcriteria'
-				]
-			],
-			'ajaxgetdetails' => [
-				[
-					'uri' => '/query/ajaxgetdetails'
-				]
-			],
-			'csv-export' => [
-				[
-					'uri' => '/query/csv-export'
-				]
-			],
-			'kml-export' => [
-				[
-					'uri' => '/query/kml-export'
-				]
-			],
-			'geojson-export' => [
-				[
-					'uri' => '/query/geojson-export'
-				]
-			],
-			'ajaxgettreenodes' => [
-				[
-					'uri' => '/query/ajaxgettreenodes'
-				]
-			],
-			'ajaxgettaxrefnodes' => [
-				[
-					'uri' => '/query/ajaxgettaxrefnodes'
-				]
-			],
-			'ajaxgetdynamiccodes' => [
-				[
-					'uri' => '/query/ajaxgetdynamiccodes'
-				]
-			],
-			'ajaxgetcodes' => [
-				[
-					'uri' => '/query/ajaxgetcodes'
-				]
-			],
-			'ajaxgettreecodes' => [
-				[
-					'uri' => '/query/ajaxgettreecodes'
-				]
-			],
-			'ajaxgettaxrefcodes' => [
-				[
-					'uri' => '/query/ajaxgettaxrefcodes'
-				]
-			],
-			'ajaxgetlocationinfo' => [
-				[
-					'uri' => '/query/ajaxgetlocationinfo'
-				]
-			]
+            'getgridparameters' => [['uri' => '/query/getgridparameters']],
+            'ajaxgetdatasets' => [['uri' => '/query/ajaxgetdatasets']],
+            'ajaxgetqueryform' => [['uri' => '/query/ajaxgetqueryform']],
+            'ajaxgetqueryformfields' => [['uri' => '/query/ajaxgetqueryformfields']],
+            'ajaxresetresultlocation' => [['uri' => '/query/ajaxresetresultlocation']],
+            'ajaxbuildrequest' => [['uri' => '/query/ajaxbuildrequest']],
+            'ajaxgetresultsbbox' => [['uri' => '/query/ajaxgetresultsbbox']],
+            'ajaxgetresultcolumns' => [['uri' => '/query/ajaxgetresultcolumns']],
+            'ajaxgetresultrows' => [['uri' => '/query/ajaxgetresultrows']],
+            'ajaxgetpredefinedrequestlist' => [['uri' => '/query/ajaxgetpredefinedrequestlist']],
+            'ajaxgetpredefinedrequestcriteria' => [['uri' => '/query/ajaxgetpredefinedrequestcriteria']],
+            'ajaxgetdetails' => [['uri' => '/query/ajaxgetdetails']],
+            'csv-export' => [['uri' => '/query/csv-export']],
+            'kml-export' => [['uri' => '/query/kml-export']],
+            'geojson-export' => [['uri' => '/query/geojson-export']],
+            'ajaxgettreenodes' => [['uri' => '/query/ajaxgettreenodes']],
+            'ajaxgettaxrefnodes' => [['uri' => '/query/ajaxgettaxrefnodes']],
+            'ajaxgetdynamiccodes' => [['uri' => '/query/ajaxgetdynamiccodes']],
+            'ajaxgetcodes' => [['uri' => '/query/ajaxgetcodes']],
+            'ajaxgettreecodes' => [['uri' => '/query/ajaxgettreecodes']],
+            'ajaxgettaxrefcodes' => [['uri' => '/query/ajaxgettaxrefcodes']],
+            'ajaxgetlocationinfo' => [['uri' => '/query/ajaxgetlocationinfo']]
 		];
 	}
 
 	public function getRawDataUrls($defaultStatusCode = Response::HTTP_FOUND) {
 		return array_merge([
-			'query_RAW_DATA' => [
-				[
-					'uri' => '/query/',
+            'query_RAW_DATA' => [[
+                'uri' => '/query/index',
 					'method' => 'GET',
 					'parameters' => [
 						'SCHEMA' => 'RAW_DATA'
+                ],
+                'sessionParameters' => [
+                    'SCHEMA' => [
+                        'value' => 'HARMONIZED_DATA'
 					]
-				],
-				[
+                ]
+            ],[
 					'statusCode' => $defaultStatusCode,
 					'redirectionLocation' => '/query/show-query-form'
-				]
-			]
+            ]]
 		], $this->getOthersUrls($defaultStatusCode));
 	}
 
 	public function getHarmonizedDataUrls() {
 		return array_merge([
-			'query_HARMONIZED_DATA' => [
-				[
-					'uri' => '/query/',
+            'query_HARMONIZED_DATA' => [[
+                'uri' => '/query/index',
 					'method' => 'GET',
 					'parameters' => [
 						'SCHEMA' => 'HARMONIZED_DATA'
 					]
-				],
-				[
+            ],[
 					'statusCode' => Response::HTTP_FOUND,
 					'redirectionLocation' => '/query/show-query-form'
-				]
-			]
+            ]]
 		], $this->getOthersUrls());
 	}
 
 	public function getOthersUrls($defaultStatusCode = Response::HTTP_FOUND) {
 		return [
-			'show-query-form' => [
-				[
+            'show-query-form' => [[
 					'uri' => '/query/show-query-form'
-				],
-				[
+            ],[
 					'statusCode' => $defaultStatusCode,
 					'redirectionLocation' => '/odp/index.html?locale=fr'
-				]
-			],
+            ]],
 			// 'odp-index' => [['uri' => '/odp/index.html?locale=fr']], // TODO: Not found. Why?
-			'getgridparameters' => [
-				[
-					'uri' => '/query/getgridparameters'
-				]
-			],
-			'ajaxgetdatasets' => [
-				[
+            'getgridparameters' => [['uri' => '/query/getgridparameters']],
+            'ajaxgetdatasets' => [[
 					'uri' => '/query/ajaxgetdatasets',
 					'method' => 'GET',
 					'parameters' => [
@@ -218,25 +113,15 @@ class QueryControllerTest extends AbstractControllerTest {
 						'start' => 0,
 						'limit' => 25
 					]
-				],
-				[
-					'isJson' => true
-				]
-			],
-			'ajaxgetqueryform' => [
-				[
+            ], ['isJson' => true]],
+            'ajaxgetqueryform' => [[
 					'uri' => '/query/ajaxgetqueryform',
 					'method' => 'GET',
 					'parameters' => [
 						'filter' => '[{"property":"processId","value":"SPECIES","exactMatch":true}]'
 					]
-				],
-				[
-					'isJson' => true
-				]
-			],
-			'ajaxgetqueryformfields' => [
-				[
+            ], ['isJson' => true]],
+            'ajaxgetqueryformfields' => [[
 					'uri' => '/query/ajaxgetqueryformfields',
 					'method' => 'GET',
 					'parameters' => [
@@ -246,21 +131,9 @@ class QueryControllerTest extends AbstractControllerTest {
 						'limit' => '3',
 						'filter' => '[{"property":"processId","value":"SPECIES"},{"property":"form","value":"PLOT_FORM"},{"property":"fieldsType","value":"criteria"}]'
 					]
-				],
-				[
-					'isJson' => true
-				]
-			],
-			'ajaxresetresultlocation' => [
-				[
-					'uri' => '/query/ajaxresetresultlocation'
-				],
-				[
-					'isJson' => true
-				]
-			],
-			'ajaxbuildrequest' => [
-				[
+            ], ['isJson' => true]],
+            'ajaxresetresultlocation' => [['uri' => '/query/ajaxresetresultlocation'], ['isJson' => true]],
+            'ajaxbuildrequest' => [[
 					'uri' => '/query/ajaxbuildrequest',
 					'method' => 'POST',
 					'parameters' => [
@@ -275,21 +148,9 @@ class QueryControllerTest extends AbstractControllerTest {
 						// 'column__PLOT_FORM__FICHE_PLACETTE'=>'1',// Data not declared into the harmonized data.
 						'column__PLOT_FORM__COMMENT' => '1'
 					]
-				],
-				[
-					'isJson' => true
-				]
-			],
-			'ajaxgetresultsbbox' => [
-				[
-					'uri' => '/query/ajaxgetresultsbbox'
-				],
-				[
-					'isJson' => true
-				]
-			],
-			'ajaxgetresultcolumns' => [
-				[
+            ], ['isJson' => true]],
+            'ajaxgetresultsbbox' => [['uri' => '/query/ajaxgetresultsbbox'], ['isJson' => true]],
+            'ajaxgetresultcolumns' => [[
 					'uri' => '/query/ajaxgetresultcolumns',
 					'method' => 'GET',
 					'parameters' => [
@@ -297,21 +158,9 @@ class QueryControllerTest extends AbstractControllerTest {
 						'start' => 0,
 						'limit' => 25
 					]
-				],
-				[
-					'isJson' => true
-				]
-			],
-			'ajaxgetresultrows' => [
-				[
-					'uri' => '/query/ajaxgetresultrows'
-				],
-				[
-					'isJson' => true
-				]
-			],
-			'ajaxgetpredefinedrequestlist' => [
-				[
+            ], ['isJson' => true]],
+            'ajaxgetresultrows' => [['uri' => '/query/ajaxgetresultrows'], ['isJson' => true]],
+            'ajaxgetpredefinedrequestlist' => [[
 					'uri' => '/query/ajaxgetpredefinedrequestlist',
 					'method' => 'GET',
 					'parameters' => [
@@ -319,52 +168,25 @@ class QueryControllerTest extends AbstractControllerTest {
 						'start' => 0,
 						'limit' => 25
 					]
-				],
-				[
-					'isJson' => true
-				]
-			],
-			'ajaxgetpredefinedrequestcriteria' => [
-				[
+            ], ['isJson' => true]],
+            'ajaxgetpredefinedrequestcriteria' => [[
 					'uri' => '/query/ajaxgetpredefinedrequestcriteria',
 					'method' => 'GET',
 					'parameters' => [
 						'request_name' => 'DEP'
 					]
-				],
-				[
-					'isJson' => true
-				]
-			],
-			'ajaxgetdetails' => [
-				[
+            ], ['isJson' => true]],
+            'ajaxgetdetails' => [[
 					'uri' => '/query/ajaxgetdetails',
 					'method' => 'POST',
 					'parameters' => [
 						'id' => 'SCHEMA/RAW_DATA/FORMAT/PLOT_DATA/PROVIDER_ID/1/PLOT_CODE/01575-14060-4-0T/CYCLE/5'
 					]
-				],
-				[
-					'isJson' => true
-				]
-			],
-			'csv-export' => [
-				[
-					'uri' => '/query/csv-export'
-				]
-			],
-			'kml-export' => [
-				[
-					'uri' => '/query/kml-export'
-				]
-			],
-			'geojson-export' => [
-				[
-					'uri' => '/query/geojson-export'
-				]
-			],
-			'ajaxgettreenodes' => [
-				[
+            ], ['isJson' => true]],
+            'csv-export' => [['uri' => '/query/csv-export']],
+            'kml-export' => [['uri' => '/query/kml-export']],
+            'geojson-export' => [['uri' => '/query/geojson-export']],
+            'ajaxgettreenodes' => [[
 					'uri' => '/query/ajaxgettreenodes',
 					'method' => 'POST',
 					'parameters' => [
@@ -372,13 +194,8 @@ class QueryControllerTest extends AbstractControllerTest {
 						'depth' => '1',
 						'node' => '*'
 					]
-				],
-				[
-					'isJson' => true
-				]
-			],
-			'ajaxgettaxrefnodes' => [
-				[
+            ], ['isJson' => true]],
+            'ajaxgettaxrefnodes' => [[
 					'uri' => '/query/ajaxgettaxrefnodes',
 					'method' => 'POST',
 					'parameters' => [
@@ -386,13 +203,8 @@ class QueryControllerTest extends AbstractControllerTest {
 						'depth' => '1',
 						'node' => '*'
 					]
-				],
-				[
-					'isJson' => true
-				]
-			],
-			'ajaxgetdynamiccodes' => [
-				[
+            ], ['isJson' => true]],
+            'ajaxgetdynamiccodes' => [[
 					'uri' => '/query/ajaxgetdynamiccodes',
 					'method' => 'GET',
 					'parameters' => [
@@ -401,13 +213,8 @@ class QueryControllerTest extends AbstractControllerTest {
 						'start' => 0,
 						'limit' => 25
 					]
-				],
-				[
-					'isJson' => true
-				]
-			],
-			'ajaxgetcodes' => [
-				[
+            ], ['isJson' => true]],
+            'ajaxgetcodes' => [[
 					'uri' => '/query/ajaxgetcodes',
 					'method' => 'GET',
 					'parameters' => [
@@ -416,13 +223,8 @@ class QueryControllerTest extends AbstractControllerTest {
 						'start' => 0,
 						'limit' => 25
 					]
-				],
-				[
-					'isJson' => true
-				]
-			],
-			'ajaxgettreecodes' => [
-				[
+            ], ['isJson' => true]],
+            'ajaxgettreecodes' => [[
 					'uri' => '/query/ajaxgettreecodes',
 					'method' => 'GET',
 					'parameters' => [
@@ -431,13 +233,8 @@ class QueryControllerTest extends AbstractControllerTest {
 						'start' => 0,
 						'limit' => 25
 					]
-				],
-				[
-					'isJson' => true
-				]
-			],
-			'ajaxgettaxrefcodes' => [
-				[
+            ], ['isJson' => true]],
+            'ajaxgettaxrefcodes' => [[
 					'uri' => '/query/ajaxgettaxrefcodes',
 					'method' => 'GET',
 					'parameters' => [
@@ -446,13 +243,8 @@ class QueryControllerTest extends AbstractControllerTest {
 						'start' => 0,
 						'limit' => 25
 					]
-				],
-				[
-					'isJson' => true
-				]
-			],
-			'ajaxgetlocationinfo' => [
-				[
+            ], ['isJson' => true]],
+            'ajaxgetlocationinfo' => [[
 					'uri' => '/query/ajaxgetlocationinfo',
 					'method' => 'GET',
 					'parameters' => [
@@ -460,167 +252,7 @@ class QueryControllerTest extends AbstractControllerTest {
 						'LAT' => 5953527.259075833,
 						'MAXFEATURES' => 20
 					]
-				],
-				[
-					'isJson' => true
-				]
-			]
+            ], ['isJson' => true]]
 		];
-	}
-
-	public function testIndex() {
-		$client = static::createClient();
-		
-		$crawler = $client->request('GET', '/');
-	}
-
-	public function testShowqueryform() {
-		$client = static::createClient();
-		
-		$crawler = $client->request('GET', '/show-query-form');
-	}
-
-	public function testAjaxgetpredefinedrequestlist() {
-		$client = static::createClient();
-		
-		$crawler = $client->request('GET', '/ajaxgetpredefinedrequestlist');
-	}
-
-	public function testAjaxgetpredefinedrequestcriteria() {
-		$client = static::createClient();
-		
-		$crawler = $client->request('GET', '/ajaxgetpredefinedrequestcriteria');
-	}
-
-	public function testAjaxsavepredefinedrequest() {
-		$client = static::createClient();
-		
-		$crawler = $client->request('GET', '/ajaxsavepredefinedrequest');
-	}
-
-	public function testAjaxgetqueryform() {
-		$client = static::createClient();
-		
-		$crawler = $client->request('GET', '/ajaxgetqueryform');
-	}
-
-	public function testAjaxgetqueryformfields() {
-		$client = static::createClient();
-		
-		$crawler = $client->request('GET', '/ajaxgetqueryformfields');
-	}
-
-	public function testAjaxgetdatasets() {
-		$client = static::createClient();
-		
-		$crawler = $client->request('GET', '/ajaxgetdatasets');
-	}
-
-	public function testAjaxbuildrequest() {
-		$client = static::createClient();
-		
-		$crawler = $client->request('GET', '/ajaxbuildrequest');
-	}
-
-	public function testAjaxgetresultsbbox() {
-		$client = static::createClient();
-		
-		$crawler = $client->request('GET', '/ajaxgetresultsbbox');
-	}
-
-	public function testAjaxgetresultcolumns() {
-		$client = static::createClient();
-		
-		$crawler = $client->request('GET', '/ajaxgetresultcolumns');
-	}
-
-	public function testAjaxgetresultrows() {
-		$client = static::createClient();
-		
-		$crawler = $client->request('GET', '/ajaxgetresultrows');
-	}
-
-	public function testGetgridparameters() {
-		$client = static::createClient();
-		
-		$crawler = $client->request('GET', '/getgridparameters');
-	}
-
-	public function testAjaxgetdetails() {
-		$client = static::createClient();
-		
-		$crawler = $client->request('GET', '/ajaxgetdetails');
-	}
-
-	public function testAjaxgetchildren() {
-		$client = static::createClient();
-		
-		$crawler = $client->request('GET', '/ajaxgetchildren');
-	}
-
-	public function testCsvexport() {
-		$client = static::createClient();
-		
-		$crawler = $client->request('GET', '/csvExport');
-	}
-
-	public function testKmlexport() {
-		$client = static::createClient();
-		
-		$crawler = $client->request('GET', '[A[B/kml-export');
-	}
-
-	public function testGeojsonexport() {
-		$client = static::createClient();
-		
-		$crawler = $client->request('GET', '/[C[C[C[Cg[C[Cjson-export');
-	}
-
-	public function testAjaxgettreenodes() {
-		$client = static::createClient();
-		
-		$crawler = $client->request('GET', '/ajaxgettreenodes');
-	}
-
-	public function testAjaxgettaxrefnodes() {
-		$client = static::createClient();
-		
-		$crawler = $client->request('GET', '/ajaxgettaxrefnodes');
-	}
-
-	public function testAjaxgetdynamiccodes() {
-		$client = static::createClient();
-		
-		$crawler = $client->request('GET', '/ajaxgetdynamiccodes');
-	}
-
-	public function testAjaxgetcodes() {
-		$client = static::createClient();
-		
-		$crawler = $client->request('GET', '/ajaxgetcodes');
-	}
-
-	public function testAjaxgettreecodes() {
-		$client = static::createClient();
-		
-		$crawler = $client->request('GET', '/ajaxgettreecodes');
-	}
-
-	public function testAjaxgettaxrefcodes() {
-		$client = static::createClient();
-		
-		$crawler = $client->request('GET', '/ajaxgettaxrefcodes');
-	}
-
-	public function testAjaxgetlocationinfo() {
-		$client = static::createClient();
-		
-		$crawler = $client->request('GET', '/ajaxgetlocationinfo');
-	}
-
-	public function testAjaxresetresultlocation() {
-		$client = static::createClient();
-		
-		$crawler = $client->request('GET', '/ajaxresetresultlocation');
 	}
 }
