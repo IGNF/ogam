@@ -14,11 +14,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 class FormFormat extends Format implements \JsonSerializable {
 
 	/**
-	 * @ORM\OneToMany(targetEntity="FormField", mappedBy="format")
-	 */
-	// protected $fields;
-	
-	/**
 	 * Constructor
 	 */
 	public function __construct() {
@@ -162,7 +157,7 @@ class FormFormat extends Format implements \JsonSerializable {
 	/**
 	 * Serialize the object as a JSON string
 	 *
-	 * @return a JSON string
+	 * @return string JSON string
 	 */
 	public function jsonSerialize() {
 		return [

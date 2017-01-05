@@ -109,11 +109,11 @@ class SubmissionFile {
 	/**
 	 * Set submission
 	 *
-	 * @param \OGAMBundle\Entity\RawData\Submission $submission        	
+	 * @param Submission $submission
 	 *
 	 * @return SubmissionFile
 	 */
-	public function setSubmission(\OGAMBundle\Entity\RawData\Submission $submission) {
+	public function setSubmission(Submission $submission) {
 		$this->submission = $submission;
 		
 		return $this;
@@ -122,7 +122,7 @@ class SubmissionFile {
 	/**
 	 * Get submission
 	 *
-	 * @return \OGAMBundle\Entity\RawData\Submission
+	 * @return Submission
 	 */
 	public function getSubmission() {
 		return $this->submission;

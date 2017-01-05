@@ -1,8 +1,6 @@
 <?php
 namespace Ign\Bundle\OGAMBundle\Entity\Generic;
 
-use Ign\Bundle\OGAMBundle\Entity\Metadata\Field;
-
 /**
  * A generic geom field is a generic field with some additional information
  */
@@ -18,7 +16,7 @@ class GenericGeomField extends GenericField {
 	/**
 	 * Return the bounding box of the value.
 	 *
-	 * @return the BoundingBox
+	 * @return BoundingBox
 	 */
 	public function getValueBoundingBox() {
 		return $this->valueBoundingBox;

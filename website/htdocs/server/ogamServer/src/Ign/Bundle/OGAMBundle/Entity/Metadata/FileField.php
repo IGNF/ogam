@@ -98,7 +98,7 @@ class FileField extends Field {
 	/**
 	 * Serialize the object as a JSON string
 	 *
-	 * @return a JSON string
+	 * @return string JSON string
 	 */
 	public function toJSON() {
 		$json = '"name":' . json_encode($this->getName());

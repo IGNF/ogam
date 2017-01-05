@@ -13,7 +13,7 @@ class Field {
 	/**
 	 *
 	 * @var Data @ORM\Id
-	 *      @ORM\ManyToOne(targetEntity="Ign\Bundle\OGAMBundle\Entity\Metadata\Data")
+	 *      @ORM\ManyToOne(targetEntity="Data")
 	 *      @ORM\JoinColumns({@ORM\JoinColumn(name="data", referencedColumnName="data")})
 	 */
 	protected $data;

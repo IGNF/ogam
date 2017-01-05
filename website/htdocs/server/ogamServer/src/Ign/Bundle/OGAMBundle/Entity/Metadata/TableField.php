@@ -190,7 +190,7 @@ class TableField extends Field {
 
 	/**
 	 *
-	 * @return the integer
+	 * @return string
 	 */
 	public function getComment() {
 		return $this->comment;

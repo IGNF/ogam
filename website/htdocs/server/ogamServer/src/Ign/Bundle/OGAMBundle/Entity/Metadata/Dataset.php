@@ -137,7 +137,7 @@ class Dataset implements \JsonSerializable {
 	/**
 	 * Serialize the object as a JSON string
 	 *
-	 * @return a JSON string
+	 * @return string JSON string
 	 */
 	public function jsonSerialize() {
 		return [
@@ -152,17 +152,17 @@ class Dataset implements \JsonSerializable {
 	 * Constructor
 	 */
 	public function __construct() {
-		$this->files = new \Doctrine\Common\Collections\ArrayCollection();
+		$this->files = new ArrayCollection();
 	}
 
 	/**
 	 * Add file
 	 *
-	 * @param \OGAMBundle\Entity\Metadata\FileFormat $file        	
+	 * @param FileFormat $file
 	 *
 	 * @return Dataset
 	 */
-	public function addFile(\OGAMBundle\Entity\Metadata\FileFormat $file) {
+	public function addFile(FileFormat $file) {
 		$this->files[] = $file;
 		
 		return $this;
@@ -171,9 +171,9 @@ class Dataset implements \JsonSerializable {
 	/**
 	 * Remove file
 	 *
-	 * @param \OGAMBundle\Entity\Metadata\FileFormat $file        	
+	 * @param FileFormat $file
 	 */
-	public function removeFile(\OGAMBundle\Entity\Metadata\FileFormat $file) {
+	public function removeFile(FileFormat $file) {
 		$this->files->removeElement($file);
 	}
 

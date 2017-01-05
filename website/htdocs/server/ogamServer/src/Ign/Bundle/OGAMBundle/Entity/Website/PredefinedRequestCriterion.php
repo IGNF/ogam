@@ -15,7 +15,7 @@ class PredefinedRequestCriterion {
 	/**
 	 *
 	 * @var PredefinedRequest @ORM\Id
-	 *      @ORM\ManyToOne(targetEntity="Ign\Bundle\OGAMBundle\Entity\Website\PredefinedRequest")
+	 *      @ORM\ManyToOne(targetEntity="PredefinedRequest")
 	 *      @ORM\JoinColumn(name="request_name", referencedColumnName="name")
 	 */
 	private $requestName;
@@ -69,7 +69,7 @@ class PredefinedRequestCriterion {
 	 *
 	 * @param string $requestName
 	 *
-	 * @return PredefinedRequestCriteria
+	 * @return PredefinedRequestCriterion
 	 */
 	public function setRequestName($requestName) {
 		$this->requestName = $requestName;
@@ -91,7 +91,7 @@ class PredefinedRequestCriterion {
 	 *
 	 * @param string $format
 	 *
-	 * @return PredefinedRequestCriteria
+	 * @return PredefinedRequestCriterion
 	 */
 	public function setFormat($format) {
 		$this->format = $format;
@@ -113,7 +113,7 @@ class PredefinedRequestCriterion {
 	 *
 	 * @param string $data
 	 *
-	 * @return PredefinedRequestCriteria
+	 * @return PredefinedRequestCriterion
 	 */
 	public function setData($data) {
 		$this->data = $data;
@@ -135,7 +135,7 @@ class PredefinedRequestCriterion {
 	 *
 	 * @param string $value
 	 *
-	 * @return PredefinedRequestCriteria
+	 * @return PredefinedRequestCriterion
 	 */
 	public function setValue($value) {
 		$this->value = $value;
@@ -157,7 +157,7 @@ class PredefinedRequestCriterion {
 	 *
 	 * @param boolean $fixed
 	 *
-	 * @return PredefinedRequestCriteria
+	 * @return PredefinedRequestCriterion
 	 */
 	public function setFixed($fixed) {
 		$this->fixed = $fixed;
@@ -176,7 +176,7 @@ class PredefinedRequestCriterion {
 
 	/**
 	 *
-	 * @return the FormField
+	 * @return FormField
 	 */
 	public function getFormField() {
 		return $this->formField;

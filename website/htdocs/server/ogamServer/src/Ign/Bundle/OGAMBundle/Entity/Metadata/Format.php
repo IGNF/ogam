@@ -53,7 +53,7 @@ class Format {
 
 	/**
 	 *
-	 * @return the unknown_type
+	 * @return mixed
 	 */
 	public function getFields() {
 		return $this->fields;
@@ -61,7 +61,7 @@ class Format {
 
 	/**
 	 *
-	 * @param unknown_type $fields        	
+	 * @param mixed $fields
 	 */
 	public function setFields($fields) {
 		if ($fields instanceof ArrayCollection) {

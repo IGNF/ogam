@@ -3,7 +3,6 @@ namespace Ign\Bundle\OGAMBundle\Entity\Website;
 
 use Doctrine\ORM\Mapping as ORM;
 use Ign\Bundle\OGAMBundle\Entity\Metadata\Translation;
-use Ign\Bundle\OGAMBundle\Entity\Website\PredefinedRequestColumn;
 
 /**
  * PredefinedRequest
@@ -58,7 +57,7 @@ class PredefinedRequest {
 	private $date;
 
 	/**
-	 * @ORM\OneToMany(targetEntity="Ign\Bundle\OGAMBundle\Entity\Website\PredefinedRequestGroupAsso", mappedBy="requestName")
+	 * @ORM\OneToMany(targetEntity="PredefinedRequestGroupAsso", mappedBy="requestName")
 	 */
 	private $groups;
 

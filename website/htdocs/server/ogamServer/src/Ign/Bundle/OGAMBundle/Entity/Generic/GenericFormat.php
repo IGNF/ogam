@@ -1,7 +1,6 @@
 <?php
 namespace Ign\Bundle\OGAMBundle\Entity\Generic;
 
-use Ign\Bundle\OGAMBundle\Entity\Metadata\TableFormat;
 use Ign\Bundle\OGAMBundle\Entity\Metadata\Format;
 
 /**
@@ -24,21 +23,21 @@ class GenericFormat {
 	/**
 	 * The format metadata
 	 *
-	 * @var OGAMBundle\Entity\Metadata\Format
+	 * @var Format
 	 */
 	private $metadata;
 
 	/**
 	 * The IDs fields
 	 *
-	 * @var Array[GenericField]
+	 * @var array[GenericField]
 	 */
 	private $idFields = array();
 
 	/**
 	 * The fields not included into the IDs fields
 	 *
-	 * @var Array[GenericField].
+	 * @var array[GenericField].
 	 */
 	private $fields = array();
 
@@ -92,7 +91,7 @@ class GenericFormat {
 	/**
 	 * Return the format metadata.
 	 *
-	 * @return the Format
+	 * @return Format
 	 */
 	public function getMetadata() {
 		return $this->metadata;
@@ -102,7 +101,7 @@ class GenericFormat {
 	 * Get a identifier field.
 	 *
 	 * @param string $id        	
-	 * @return Array[GenericField]
+	 * @return array[GenericField]
 	 */
 	public function getIdField($id) {
 		return $this->idFields[trim($id)];
@@ -111,7 +110,7 @@ class GenericFormat {
 	/**
 	 * Return the idFields array.
 	 *
-	 * @return Array[GenericField] the idFields array
+	 * @return array[GenericField] the idFields array
 	 */
 	public function getIdFields() {
 		return $this->idFields;
@@ -131,7 +130,7 @@ class GenericFormat {
 	/**
 	 * Return the fields array.
 	 *
-	 * @return Array[GenericField] the fields array
+	 * @return array[GenericField] the fields array
 	 */
 	public function getFields() {
 		return $this->fields;

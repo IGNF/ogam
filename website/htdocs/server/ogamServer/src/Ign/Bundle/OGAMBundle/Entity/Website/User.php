@@ -3,8 +3,6 @@ namespace Ign\Bundle\OGAMBundle\Entity\Website;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
-use Ign\Bundle\OGAMBundle\Entity\Website\Role as Role;
-use Ign\Bundle\OGAMBundle\Entity\Website\Provider as Provider;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 

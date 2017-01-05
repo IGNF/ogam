@@ -46,7 +46,7 @@ class GenericField {
 	/**
 	 * The field metadata
 	 *
-	 * @var OGAMBundle\Entity\Metadata\Field
+	 * @var Field
 	 */
 	private $metadata;
 
@@ -57,7 +57,7 @@ class GenericField {
 
 	/**
 	 *
-	 * @return the string
+	 * @return string
 	 */
 	public function getId() {
 		return $this->format . '__' . $this->data;
@@ -65,7 +65,7 @@ class GenericField {
 
 	/**
 	 *
-	 * @return the string
+	 * @return string
 	 */
 	public function getFormat() {
 		return $this->format;
@@ -73,7 +73,7 @@ class GenericField {
 
 	/**
 	 *
-	 * @return the string
+	 * @return string
 	 */
 	public function getData() {
 		return $this->data;
@@ -81,7 +81,7 @@ class GenericField {
 
 	/**
 	 *
-	 * @return An array|string
+	 * @return array|string
 	 */
 	public function getValue() {
 		return $this->value;
@@ -112,7 +112,7 @@ class GenericField {
 
 	/**
 	 *
-	 * @return the string
+	 * @return string
 	 */
 	public function getLocale() {
 		return $this->locale;
@@ -120,7 +120,7 @@ class GenericField {
 
 	/**
 	 *
-	 * @return the Field
+	 * @return Field
 	 */
 	public function getMetadata() {
 		return $this->metadata;

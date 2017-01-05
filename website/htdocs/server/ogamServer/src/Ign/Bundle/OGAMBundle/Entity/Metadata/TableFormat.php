@@ -21,7 +21,7 @@ class TableFormat extends Format {
 	/**
 	 * The schema identifier.
 	 * 
-	 * @var Schema @ORM\ManyToOne(targetEntity="TableSchema")
+	 * @var TableSchema @ORM\ManyToOne(targetEntity="TableSchema")
 	 *      @ORM\JoinColumn(name="schema_code", referencedColumnName="schema_code")
 	 */
 	private $schema;
@@ -76,7 +76,7 @@ class TableFormat extends Format {
 	 * set schema
 	 * 
 	 * @param TableSchema $schema        	
-	 * @return \OGAMBundle\Entity\Metadata\TableFormat
+	 * @return TableFormat
 	 */
 	public function setSchema($schema) {
 		$this->schema = $schema;
@@ -95,7 +95,7 @@ class TableFormat extends Format {
 	/**
 	 * Set primaryKeys
 	 *
-	 * @param Array $primaryKeys        	
+	 * @param array $primaryKeys
 	 *
 	 * @return TableFormat
 	 */
@@ -108,7 +108,7 @@ class TableFormat extends Format {
 	/**
 	 * Get primaryKeys
 	 *
-	 * @return Array
+	 * @return array
 	 */
 	public function getPrimaryKeys() {
 		$primaryKeys = array();
