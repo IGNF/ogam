@@ -7,8 +7,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Ign\Bundle\OGAMBundle\Entity\Website\User;
 use Ign\Bundle\OGAMBundle\Entity\Website\Role;
 use Ign\Bundle\OGAMBundle\Entity\Website\Provider;
-use Symfony\Component\Form\Extension\Core\Type\EmailType;
-use Ign\Bundle\OGAMBundle\Form\RawData\UserType;
+use Ign\Bundle\OGAMBundle\Form\UserType;
 use Ign\Bundle\OGAMBundle\Form\RawData\ChangePasswordType;
 use Ign\Bundle\OGAMBundle\Form\RawData\ProviderType;
 use Ign\Bundle\OGAMBundle\Form\RawData\RoleType;
@@ -238,10 +237,8 @@ class UsermanagementController extends Controller {
 			$user = $userRepo->find($login);
 		}
 
-		// Get the provider form
-		$form = $this->createForm(UserType::class, $user, array(
-			'user' => $user
-		));
+		// Get the user form
+		$form = $this->createForm(UserType::class, $user);
 
 		$form->handleRequest($request);
 

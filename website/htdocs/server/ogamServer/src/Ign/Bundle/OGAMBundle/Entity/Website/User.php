@@ -226,11 +226,11 @@ class User implements UserInterface, \Serializable {
 	/**
 	 * Add role
 	 *
-	 * @param \OGAMBundle\Entity\Website\Role $role        	
+	 * @param Role $role
 	 *
 	 * @return User
 	 */
-	public function addRole(\OGAMBundle\Entity\Website\Role $role) {
+	public function addRole(Role $role) {
 		$this->roles[] = $role;
 		
 		return $this;
@@ -239,20 +239,20 @@ class User implements UserInterface, \Serializable {
 	/**
 	 * Remove role
 	 *
-	 * @param \OGAMBundle\Entity\Website\Role $role        	
+	 * @param Role $role
 	 */
-	public function removeRole(\OGAMBundle\Entity\Website\Role $role) {
+	public function removeRole(Role $role) {
 		$this->roles->removeElement($role);
 	}
 
 	/**
 	 * Set provider
 	 *
-	 * @param \OGAMBundle\Entity\Website\Provider $provider        	
+	 * @param Provider $provider
 	 *
 	 * @return User
 	 */
-	public function setProvider(\OGAMBundle\Entity\Website\Provider $provider = null) {
+	public function setProvider(Provider $provider = null) {
 		$this->provider = $provider;
 		
 		return $this;
@@ -261,7 +261,7 @@ class User implements UserInterface, \Serializable {
 	/**
 	 * Get provider
 	 *
-	 * @return \OGAMBundle\Entity\Website\Provider
+	 * @return Provider
 	 */
 	public function getProvider() {
 		return $this->provider;
