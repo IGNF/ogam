@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "80d061871fb8021c7d1dad7f4ba49644",
-    "content-hash": "da555e20cfe595def34993e688d6148e",
+    "hash": "ebd0480677a7782f72a81c69baf96181",
+    "content-hash": "c174c834e8a250cd8e0354dc3c659012",
     "packages": [
         {
             "name": "container-interop/container-interop",
@@ -1147,6 +1147,45 @@
                 "random"
             ],
             "time": "2016-11-07 23:38:38"
+        },
+        {
+            "name": "phpcheckstyle/phpcheckstyle",
+            "version": "V0.14.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/PHPCheckstyle/phpcheckstyle.git",
+                "reference": "f20eb13dac3b050aa0c1a049d21169db0499f8e4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/PHPCheckstyle/phpcheckstyle/zipball/f20eb13dac3b050aa0c1a049d21169db0499f8e4",
+                "reference": "f20eb13dac3b050aa0c1a049d21169db0499f8e4",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.0.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "PHPCheckstyle\\": "src/"
+                },
+                "files": [
+                    "src/PHPCheckstyle/_Constants.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "OSL-2.1"
+            ],
+            "description": "PHPCheckstyle is an open-source tool that helps PHP programmers adhere to certain coding conventions",
+            "homepage": "https://github.com/phpcheckstyle/phpcheckstyle/",
+            "keywords": [
+                "checkstyle",
+                "convention",
+                "standard"
+            ],
+            "time": "2017-01-06 14:56:27"
         },
         {
             "name": "phpdocumentor/reflection-common",
