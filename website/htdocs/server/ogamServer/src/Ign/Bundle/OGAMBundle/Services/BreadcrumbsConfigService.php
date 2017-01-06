@@ -2,25 +2,45 @@
 namespace Ign\Bundle\OGAMBundle\Services;
 
 use Symfony\Component\Yaml\Yaml;
+use Symfony\Bundle\FrameworkBundle\Routing\Router;
 
+/**
+ * Class BreadcrumbsConfigService
+ * @package Ign\Bundle\OGAMBundle\Services
+ */
 class BreadcrumbsConfigService {
 
-	private $yamlConfig;
+    /**
+     * @var Router
+     */
+    protected$router;
 
-	/**
-	 * Constructor.
-	 */
-	public function __construct() {
-		$this->readConfiguration();
+	protected $yamlConfig;
+
+    /**
+     * BreadcrumbsConfigService constructor.
+     * @param Router $router
+     * @param $configurationFilePath
+     */
+	public function __construct(Router $router, $configurationFilePath) {
+	    // Set router
+        $this->router = $router;
+        // Read breadcrumb configuration
+		$this->readConfiguration($configurationFilePath);
 	}
 
 	/**
 	 * Read the configuration.
-	 */
-	private function readConfiguration() {
-		$this->yamlConfig = Yaml::parse(file_get_contents(__DIR__ . '/../Resources/config/navigation.yml'));
+	 *
+     * @param $configurationFilePath
+     */
+	protected function readConfiguration($configurationFilePath) {
+		$this->yamlConfig = Yaml::parse(file_get_contents($configurationFilePath));
 	}
 
+    /**
+     * @return mixed
+     */
 	public function getConfig() {
 		return $this->yamlConfig;
 	}
@@ -28,81 +48,52 @@ class BreadcrumbsConfigService {
 	/**
 	 * Return the config items in the path of an action.
 	 *
-	 * @param String $controller        	
-	 * @param String $action        	
-	 * @return Array[]
+	 * @param String $route
+	 * @return array[]
 	 */
-	public function getPath($controller, $action) {
-		$configArray = $this->yamlConfig;
-		
-		return $this->getPathRecursive($configArray, $controller, $action);
+	public function getPath($route) {
+		return $this->getPathRecursive($this->yamlConfig, $route);
 	}
 
+    /**
+     * Return the config items in the path of an action.
+     *
+     * @param String $route
+     * @return array[]
+     */
+    protected function getPathRecursive($configArray, $route) {
+        $result = false;
+        // Search for the controller and action in the config
+        foreach ($configArray as $item) {
+            // If we find the route, return the values
+            if (isset($item['route']) && strcasecmp($item['route'],$route) == 0) {
+                    return array($item);
+            }
+            // If not we search deeper
+            if (isset($item['pages'])) {
+                $foundItem = $this->getPathRecursive($item['pages'], $route);
+                if ($foundItem) {
+                    if (!$result) {
+                        $result = array($item);
+                    }
+                    $result = array_merge($result, $foundItem);
+                }
+            }
+        }
+        return $result;
+    }
+
 	/**
-	 * Return the URL for a path item..
+	 * Return the relative URL for a path item..
 	 *
-	 * @param Array $item        	
+	 * @param array $item
 	 * @return String
 	 */
 	public function getURL($item) {
-		
-		// Root
-		$url = "/";
-		
-		// Controller
-		if (isset($item['controller']) && (strtolower($item['controller']) != "default")) {
-			$url .= strtolower($item['controller']) . "/";
-		}
-		
-		// Action
-		if (isset($item['action']) && ($item['action'] != "index")) {
-			$url .= $item['action'];
-		}
-		
-		return $url;
-	}
-
-	/**
-	 * Return the config items in the path of an action.
-	 *
-	 * @param String $controller        	
-	 * @param String $action        	
-	 * @return Array[]
-	 */
-	private function getPathRecursive($configArray, $controller, $action) {
-		$result = false;
-		
-		// Search for the controller and action in the config
-		foreach ($configArray as $item) {
-			
-			// echo "Search in : " . print_r($item, true);
-			
-			// If we get the name of the controller
-			if (isset($item['controller']) && (strtolower($item['controller']) == strtolower($controller))) {
-				
-				// If we find the good action, we return directly
-				if (strtolower($item['action']) == strtolower($action)) {
-					return array(
-						$item
-					);
-				}
-			}
-			
-			// If not we search deeper
-			if (isset($item['pages'])) {
-				
-				$foundItem = $this->getPathRecursive($item['pages'], $controller, $action);
-				if ($foundItem) {
-					if (!$result) {
-						$result = array(
-							$item
-						);
-					}
-					$result = array_merge($result, $foundItem);
-				}
-			}
-		}
-		
-		return $result;
+        return (isset($item['route'])) ?
+            ( (isset($item['defaults'])) ?
+                $this->router->generate($item['route'],$item['defaults']) :
+                $this->router->generate($item['route']) ) :
+            '';
 	}
 }

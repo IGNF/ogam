@@ -11,19 +11,9 @@ use Symfony\Component\HttpFoundation\Request;
 class CheckconfController extends Controller {
 
 	/**
-	 * Default action.
+	 * Default action. Show configuration.
 	 *
-	 * @Route("/", name="checkconf_home")
-	 */
-	public function indexAction(Request $request) {
-		// Display the default
-		return $this->showCheckConfAction($request);
-	}
-
-	/**
-	 * Show the config.
-	 *
-	 * @Route("/showCheckConf", name="checkconf_showconfig")
+	 * @Route("/", name="checkconf_showconfig")
 	 */
 	public function showCheckConfAction(Request $request) {
 
