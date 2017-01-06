@@ -77,7 +77,7 @@ class DataEditionController extends Controller {
 	 *        	The data to display (optional)
 	 * @param String $message
 	 *        	a confirmation/warning message to display (optional)
-	 * @return Response @Route("/show-edit-data/{id}", requirements={"id"= ".*"})
+	 * @return Response @Route("/show-edit-data/{id}", requirements={"id"= ".*"}, name="dataedition_showEditData")
 	 */
 	public function showEditDataAction(Request $request, $data = null, $message = '') {
 		$genericModel = $this->get('ogam.manager.generic');
@@ -537,7 +537,7 @@ class DataEditionController extends Controller {
 	 * @param String $message
 	 *        	A confirmation/warning message to display
 	 * @return the HTML view
-	 *         @Route("/show-add-data/{id}", requirements={"id"= ".*"})
+	 *         @Route("/show-add-data/{id}", requirements={"id"= ".*"}, name="dataedition_showAddData")
 	 *         @Template(engine="php")
 	 */
 	public function showAddDataAction(Request $request, GenericTableFormat $data = null, $message = '') {

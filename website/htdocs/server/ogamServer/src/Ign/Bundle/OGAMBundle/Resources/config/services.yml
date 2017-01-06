@@ -36,6 +36,7 @@ services:
     # Service used to read the breadcrumbs config
     ogam.breadcrumb_config_service:
         class: Ign\Bundle\OGAMBundle\Services\BreadcrumbsConfigService
+        arguments: ["@router", "%kernel.root_dir%/config/navigation.yml"]
 
     # Listener for the user locale
     ogam.locale_listener:
