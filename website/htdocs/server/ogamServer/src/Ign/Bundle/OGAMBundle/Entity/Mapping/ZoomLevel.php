@@ -22,7 +22,7 @@ class ZoomLevel implements \JsonSerializable {
 	/**
 	 * The zoom level resolution.
 	 * 
-	 * @var decimal @ORM\Column(name="resolution", type="decimal", nullable=false)
+	 * @var float @ORM\Column(name="resolution", type="decimal", nullable=false)
 	 */
 	private $resolution;
 
@@ -58,7 +58,7 @@ class ZoomLevel implements \JsonSerializable {
 
 	/**
 	 *
-	 * @return the integer
+	 * @return integer
 	 */
 	public function getZoomLevel() {
 		return $this->zoomLevel;
@@ -75,7 +75,7 @@ class ZoomLevel implements \JsonSerializable {
 
 	/**
 	 *
-	 * @return the decimal
+	 * @return float
 	 */
 	public function getResolution() {
 		return $this->resolution;
@@ -93,7 +93,7 @@ class ZoomLevel implements \JsonSerializable {
 
 	/**
 	 *
-	 * @return the integer
+	 * @return integer
 	 */
 	public function getApproximateScaleDenominator() {
 		return $this->approximateScaleDenominator;
@@ -110,7 +110,7 @@ class ZoomLevel implements \JsonSerializable {
 
 	/**
 	 *
-	 * @return the string
+	 * @return string
 	 */
 	public function getScaleLabel() {
 		return $this->scaleLabel;
@@ -128,7 +128,7 @@ class ZoomLevel implements \JsonSerializable {
 
 	/**
 	 *
-	 * @return the integer
+	 * @return integer
 	 */
 	public function getIsMapZoomLevel() {
 		return $this->isMapZoomLevel;
@@ -146,7 +146,7 @@ class ZoomLevel implements \JsonSerializable {
 	/**
 	 * Serialize the object as a JSON string
 	 *
-	 * @return a JSON string
+	 * @return string JSON
 	 */
 	public function jsonSerialize() {
 		return [

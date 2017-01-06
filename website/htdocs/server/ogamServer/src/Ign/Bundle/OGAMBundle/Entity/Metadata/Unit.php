@@ -2,7 +2,6 @@
 namespace Ign\Bundle\OGAMBundle\Entity\Metadata;
 
 use Doctrine\ORM\Mapping as ORM;
-use Ign\Bundle\OGAMBundle\OGAMBundle;
 
 /**
  * Metadata.unit
@@ -45,14 +44,14 @@ class Unit implements \JsonSerializable {
 
 	/**
 	 *
-	 * @var OGAMBundle\Entity\Metadata\Range @ORM\OneToOne(targetEntity="Range", fetch="EAGER")
+	 * @var Range @ORM\OneToOne(targetEntity="Range", fetch="EAGER")
 	 *      @ORM\JoinColumn(name="unit", referencedColumnName="unit", nullable=true)
 	 */
 	private $range;
 
 	/**
 	 *
-	 * @var OGAMBundle\Entity\Metadata\Dynamode @ORM\OneToOne(targetEntity="Dynamode", fetch="EAGER")
+	 * @var Dynamode @ORM\OneToOne(targetEntity="Dynamode", fetch="EAGER")
 	 *      @ORM\JoinColumn(name="unit", referencedColumnName="unit", nullable=true)
 	 */
 	private $dynamode;
@@ -180,7 +179,7 @@ class Unit implements \JsonSerializable {
 	/**
 	 * Get the range
 	 *
-	 * @return the Range
+	 * @return Range
 	 */
 	public function getRange() {
 		return $this->range;
@@ -200,7 +199,7 @@ class Unit implements \JsonSerializable {
 	/**
 	 * Get the modes
 	 *
-	 * @return the Modes
+	 * @return Mode[]
 	 */
 	public function getModes() {
 		return $this->modes;
@@ -219,7 +218,7 @@ class Unit implements \JsonSerializable {
 
 	/**
 	 *
-	 * @return the Dynamode
+	 * @return Dynamode
 	 */
 	public function getDynamode() {
 		return $this->dynamode;
@@ -227,7 +226,7 @@ class Unit implements \JsonSerializable {
 
 	/**
 	 *
-	 * @param OGAMBundle\Entity\Metadata\Dynamode $dynamode        	
+	 * @param Dynamode $dynamode
 	 */
 	public function setDynamode(Dynamode $dynamode) {
 		$this->dynamode = $dynamode;
@@ -237,7 +236,7 @@ class Unit implements \JsonSerializable {
 	/**
 	 * Serialize the object as a JSON string
 	 *
-	 * @return a JSON string
+	 * @return string: JSON string
 	 */
 	public function jsonSerialize() {
 		return [

@@ -40,7 +40,7 @@ class LayerService implements \JsonSerializable {
 	 *
 	 * @param string $name        	
 	 *
-	 * @return Service
+	 * @return LayerService
 	 */
 	public function setServiceName($name) {
 		$this->name = $name;
@@ -62,7 +62,7 @@ class LayerService implements \JsonSerializable {
 	 *
 	 * @param string $config        	
 	 *
-	 * @return Service
+	 * @return LayerService
 	 */
 	public function setconfig($config) {
 		$this->config = $config;
@@ -82,7 +82,7 @@ class LayerService implements \JsonSerializable {
 	/**
 	 * Serialize the object as a JSON string
 	 *
-	 * @return a JSON string
+	 * @return string: JSON string
 	 */
 	public function jsonSerialize() {
 		return [

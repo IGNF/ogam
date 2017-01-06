@@ -9,28 +9,28 @@ class BoundingBox {
 	/**
 	 * The xmin coordinate of the bounding box.
 	 *
-	 * @var Numeric
+	 * @var float
 	 */
 	private $xmin = 0;
 
 	/**
 	 * The ymin coordinate of the bounding box.
 	 *
-	 * @var Numeric
+	 * @var float
 	 */
 	private $ymin = 0;
 
 	/**
 	 * The xmax coordinate of the bounding box.
 	 *
-	 * @var Numeric
+	 * @var float
 	 */
 	private $xmax = 0;
 
 	/**
 	 * The ymax coordinate of the bounding box.
 	 *
-	 * @var Numeric
+	 * @var float
 	 */
 	private $ymax = 0;
 
@@ -129,7 +129,7 @@ class BoundingBox {
 	/**
 	 * Returns the center of the bounding box ([$x, $y]).
 	 *
-	 * @return Array
+	 * @return array
 	 */
 	public function getCenter() {
 		return $this->center;
@@ -138,7 +138,7 @@ class BoundingBox {
 	/**
 	 * Returns the xmin coordinate of the bounding box.
 	 *
-	 * @return Numeric
+	 * @return float
 	 */
 	public function getXmin() {
 		return $this->xmin;
@@ -147,7 +147,7 @@ class BoundingBox {
 	/**
 	 * Returns the ymin coordinate of the bounding box.
 	 *
-	 * @return the Numeric
+	 * @return float
 	 */
 	public function getYmin() {
 		return $this->ymin;
@@ -156,7 +156,7 @@ class BoundingBox {
 	/**
 	 * Returns the xmax coordinate of the bounding box.
 	 *
-	 * @return the Numeric
+	 * @return float
 	 */
 	public function getXmax() {
 		return $this->xmax;
@@ -165,7 +165,7 @@ class BoundingBox {
 	/**
 	 * Returns the ymax coordinate of the bounding box.
 	 *
-	 * @return the Numeric
+	 * @return float
 	 */
 	public function getYmax() {
 		return $this->ymax;

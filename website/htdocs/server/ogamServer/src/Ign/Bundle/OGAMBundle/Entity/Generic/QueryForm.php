@@ -82,7 +82,7 @@ class QueryForm {
 	/**
 	 * Get all table fields.
 	 *
-	 * @return Array[OGAMBundle\Entity\Generic\Field] the form fields
+	 * @return array[Ign\Bundle\OGAMBundle\Entity\Generic\Field] the form fields
 	 */
 	public function getFields() {
 		return array_merge($this->criteria, $this->columns);
@@ -91,7 +91,7 @@ class QueryForm {
 	/**
 	 * Get the criteria.
 	 *
-	 * @return Array[OGAMBundle\Entity\Generic\Field] the form fields
+	 * @return array[Ign\Bundle\OGAMBundle\Entity\Generic\Field] the form fields
 	 */
 	public function getCriteria() {
 		return $this->criteria;
@@ -100,7 +100,7 @@ class QueryForm {
 	/**
 	 * Get the columns.
 	 *
-	 * @return Array[OGAMBundle\Entity\Generic\Field] the form fields
+	 * @return array[Ign\Bundle\OGAMBundle\Entity\Generic\Field] the form fields
 	 */
 	public function getColumns() {
 		return $this->columns;
@@ -109,7 +109,7 @@ class QueryForm {
 	/**
 	 * Get the field mapping set (Form -> Table)
 	 *
-	 * @return the GenericFieldMappingSet
+	 * @return GenericFieldMappingSet
 	 */
 	public function getFieldMappingSet() {
 		return $this->fieldMappingSet;
@@ -128,7 +128,7 @@ class QueryForm {
 	/**
 	 * Get the column destination fields
 	 *
-	 * @return \OGAMBundle\Entity\Generic\GenericField[]
+	 * @return GenericField[]
 	 */
 	public function getColumnsDstFields() {
 		return $this->fieldMappingSet->getDstFields($this->columns);

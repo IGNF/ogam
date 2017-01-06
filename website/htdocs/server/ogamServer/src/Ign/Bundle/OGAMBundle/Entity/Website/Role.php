@@ -44,26 +44,26 @@ class Role implements RoleInterface, \Serializable {
 	 *
 	 * A list of codes corresponding to authorised actions.
 	 *
-	 * @var Array[String] @ORM\ManyToMany(targetEntity="Permission", fetch="EAGER")
+	 * @var array[String] @ORM\ManyToMany(targetEntity="Permission", fetch="EAGER")
 	 *      @ORM\JoinTable(name="permission_per_role",
 	 *      joinColumns={@ORM\JoinColumn(name="role_code", referencedColumnName="role_code")},
 	 *      inverseJoinColumns={@ORM\JoinColumn(name="permission_code", referencedColumnName="permission_code")}
 	 *      )
 	 */
-	private $permissions = array();
+	private $permissions;
 
 	/**
 	 * The database schemas the role can access.
 	 *
 	 * A list of schemas names.
 	 *
-	 * @var Array[String] @ORM\ManyToMany(targetEntity="Ign\Bundle\OGAMBundle\Entity\Metadata\TableSchema")
+	 * @var array[String] @ORM\ManyToMany(targetEntity="Ign\Bundle\OGAMBundle\Entity\Metadata\TableSchema")
 	 *      @ORM\JoinTable(name="role_to_schema",
 	 *      joinColumns={@ORM\JoinColumn(name="role_code", referencedColumnName="role_code")},
 	 *      inverseJoinColumns={@ORM\JoinColumn(name="schema_code", referencedColumnName="schema_code")}
 	 *      )
 	 */
-	private $schemas = array();
+	private $schemas;
 
 	/**
 	 * Constructor

@@ -16,14 +16,14 @@ class GenericFieldMapping {
 	/**
 	 * The source field
 	 *
-	 * @var OGAMBundle\Entity\Generic\GenericField
+	 * @var GenericField
 	 */
 	private $srcField;
 
 	/**
 	 * The destination field
 	 *
-	 * @var OGAMBundle\Entity\Generic\GenericField
+	 * @var GenericField
 	 */
 	private $dstField;
 
@@ -35,7 +35,7 @@ class GenericFieldMapping {
 
 	/**
 	 *
-	 * @return the GenericField
+	 * @return GenericField
 	 */
 	public function getSrcField() {
 		return $this->srcField;
@@ -43,7 +43,7 @@ class GenericFieldMapping {
 
 	/**
 	 *
-	 * @return the GenericField
+	 * @return GenericField
 	 */
 	public function getDstField() {
 		return $this->dstField;
@@ -51,7 +51,7 @@ class GenericFieldMapping {
 
 	/**
 	 *
-	 * @return the GenericField
+	 * @return string
 	 */
 	public function getSchema() {
 		return $this->schema;

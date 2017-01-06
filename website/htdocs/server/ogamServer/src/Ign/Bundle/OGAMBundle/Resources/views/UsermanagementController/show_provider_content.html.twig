@@ -56,14 +56,20 @@
 				<td>
 					{{ submission.status }}
 					{% if submission.status == "OK" or submission.status == "CHECKED" %}
-						<img src="{{ asset('img/Green_tick.png') }}" />
+						{% image '@OGAMBundle/Resources/public/img/Green_tick.png' %}
+							<img src="{{ asset_url }}"/>
+						{% endimage %}
 					{% elseif  submission.status == "WARNING" %}
-						<img src="{{ asset('img/warning_orange.png') }}" />
+						{% image '@OGAMBundle/Resources/public/img/warning_orange.png' %}
+							<img src="{{ asset_url }}"/>
+						{% endimage %}
 					{% elseif  submission.status == "RUNNING" %}
 						
 					{% else %}
 						<!-- "ERROR" or "CRASH" -->
-						<img src="{{ asset('img/Red_x.png') }}" />
+						{% image '@OGAMBundle/Resources/public/img/Red_x.png' %}
+							<img src="{{ asset_url }}"/>
+						{% endimage %}
 					{% endif %}
 				</td>
 				<td colspan=2>

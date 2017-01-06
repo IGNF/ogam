@@ -16,7 +16,7 @@ class GenericFieldMappingSet {
 	/**
 	 * The field mapping array
 	 *
-	 * @var OGAMBundle\Entity\Generic\GenericFieldMapping[]
+	 * @var GenericFieldMapping[]
 	 */
 	private $fieldMappingArray;
 
@@ -53,7 +53,7 @@ class GenericFieldMappingSet {
 	 * Return the mapping corresponding to the source field.
 	 *
 	 * @param GenericField $srcField        	
-	 * @return \OGAMBundle\Entity\Generic\GenericFieldMapping|NULL
+	 * @return GenericFieldMapping|NULL
 	 */
 	private function getFieldMapping(GenericField $srcField) {
 		for ($i = 0; $i < count($this->fieldMappingArray); $i ++) {
@@ -81,7 +81,7 @@ class GenericFieldMappingSet {
 	 * Return the destination field corresponding to the source field.
 	 *
 	 * @param GenericField $srcField        	
-	 * @return \OGAMBundle\Entity\Generic\GenericField|NULL
+	 * @return GenericField|NULL
 	 */
 	public function getDstField(GenericField $srcField) {
 		return $this->getFieldMapping($srcField)->getDstField();
@@ -91,7 +91,7 @@ class GenericFieldMappingSet {
 	 * Return the sub field mapping set corresponding to the source fields.
 	 *
 	 * @param GenericField[] $srcFields        	
-	 * @return \OGAMBundle\Entity\Generic\GenericFieldMappingSet
+	 * @return GenericFieldMappingSet
 	 */
 	private function getSubFieldMappingSet(array $srcFields) {
 		$subFieldMappingSetArray = [];
@@ -120,7 +120,7 @@ class GenericFieldMappingSet {
 	 * Add a field mapping set to this mapping set.
 	 *
 	 * @param GenericFieldMappingSet $fieldMappingSet        	
-	 * @return \OGAMBundle\Entity\Generic\GenericFieldMappingSet
+	 * @return GenericFieldMappingSet
 	 */
 	public function addFieldMappingSet(GenericFieldMappingSet $fieldMappingSet) {
 		if ($fieldMappingSet->getSchema() === $this->schema) {

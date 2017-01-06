@@ -4,6 +4,7 @@ namespace Ign\Bundle\OGAMBundle\Entity\HarmonizedData;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\Collection;
 use Ign\Bundle\OGAMBundle\Entity\RawData\Submission;
+use Ign\Bundle\OGAMBundle\Entity\Metadata\Dataset;
 
 /**
  * HarmonizationProcess
@@ -30,7 +31,7 @@ class HarmonizationProcess {
 	/**
 	 * The dataset
 	 *
-	 * @ORM\ManyToOne(targetEntity="OGAMBundle\Entity\Metadata\Dataset")
+	 * @ORM\ManyToOne(targetEntity="Ign\Bundle\OGAMBundle\Entity\Metadata\Dataset")
 	 * @ORM\JoinColumn(name="dataset_id", referencedColumnName="dataset_id")
 	 */
 	private $dataset;
@@ -49,7 +50,7 @@ class HarmonizationProcess {
 
 	/**
 	 *
-	 * @var Collection @ORM\ManyToMany(targetEntity="OGAMBundle\Entity\RawData\Submission")
+	 * @var Collection @ORM\ManyToMany(targetEntity="Ign\Bundle\OGAMBundle\Entity\RawData\Submission")
 	 *      @ORM\JoinTable(name="harmonized_data.harmonization_process_submissions",
 	 *      joinColumns={@ORM\JoinColumn(name="harmonization_process_id", referencedColumnName="harmonization_process_id")},
 	 *      inverseJoinColumns={@ORM\JoinColumn(name="raw_data_submission_id", referencedColumnName="submission_id")})
@@ -154,11 +155,11 @@ class HarmonizationProcess {
 	/**
 	 * Add submission
 	 *
-	 * @param \OGAMBundle\Entity\RawData\Submission $submission        	
+	 * @param Submission $submission
 	 *
 	 * @return HarmonizationProcess
 	 */
-	public function addSubmission(\OGAMBundle\Entity\RawData\Submission $submission) {
+	public function addSubmission(Submission $submission) {
 		$this->submissions[] = $submission;
 		
 		return $this;
@@ -167,9 +168,9 @@ class HarmonizationProcess {
 	/**
 	 * Remove submission
 	 *
-	 * @param \OGAMBundle\Entity\RawData\Submission $submission        	
+	 * @param Submission $submission
 	 */
-	public function removeSubmission(\OGAMBundle\Entity\RawData\Submission $submission) {
+	public function removeSubmission(Submission $submission) {
 		$this->submissions->removeElement($submission);
 	}
 
@@ -185,11 +186,11 @@ class HarmonizationProcess {
 	/**
 	 * Set dataset
 	 *
-	 * @param \OGAMBundle\Entity\Metadata\Dataset $dataset        	
+	 * @param Dataset $dataset
 	 *
 	 * @return HarmonizationProcess
 	 */
-	public function setDataset(\OGAMBundle\Entity\Metadata\Dataset $dataset = null) {
+	public function setDataset(Dataset $dataset = null) {
 		$this->dataset = $dataset;
 		
 		return $this;
@@ -209,7 +210,7 @@ class HarmonizationProcess {
 	/**
 	 * Get dataset
 	 *
-	 * @return \OGAMBundle\Entity\Metadata\Dataset
+	 * @return Dataset
 	 */
 	public function getDataset() {
 		return $this->dataset;

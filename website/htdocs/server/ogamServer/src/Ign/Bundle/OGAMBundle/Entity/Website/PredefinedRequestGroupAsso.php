@@ -14,7 +14,7 @@ class PredefinedRequestGroupAsso {
 	/**
 	 *
 	 * @var string @ORM\Id
-	 *      @ORM\ManyToOne(targetEntity="Ign\Bundle\OGAMBundle\Entity\Website\PredefinedRequestGroup", inversedBy="requests")
+	 *      @ORM\ManyToOne(targetEntity="PredefinedRequestGroup", inversedBy="requests")
 	 *      @ORM\JoinColumn(name="group_name", referencedColumnName="name")
 	 */
 	private $groupName;
@@ -22,7 +22,7 @@ class PredefinedRequestGroupAsso {
 	/**
 	 *
 	 * @var string @ORM\Id
-	 *      @ORM\ManyToOne(targetEntity="Ign\Bundle\OGAMBundle\Entity\Website\PredefinedRequest", inversedBy="groups")
+	 *      @ORM\ManyToOne(targetEntity="PredefinedRequest", inversedBy="groups")
 	 *      @ORM\JoinColumn(name="request_name", referencedColumnName="name")
 	 */
 	private $requestName;

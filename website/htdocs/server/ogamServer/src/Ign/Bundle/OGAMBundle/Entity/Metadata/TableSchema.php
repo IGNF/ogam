@@ -45,7 +45,7 @@ class TableSchema {
 	 *
 	 * @param string $code        	
 	 *
-	 * @return Schema
+	 * @return TableSchema
 	 */
 	public function setCode($code) {
 		$this->code = $code;
@@ -67,7 +67,7 @@ class TableSchema {
 	 *
 	 * @param string $name        	
 	 *
-	 * @return Schema
+	 * @return TableSchema
 	 */
 	public function setName($name) {
 		$this->name = $name;
@@ -89,7 +89,7 @@ class TableSchema {
 	 *
 	 * @param string $label        	
 	 *
-	 * @return Schema
+	 * @return TableSchema
 	 */
 	public function setLabel($label) {
 		$this->label = $label;
@@ -111,7 +111,7 @@ class TableSchema {
 	 *
 	 * @param string $description        	
 	 *
-	 * @return Schema
+	 * @return TableSchema
 	 */
 	public function setDescription($description) {
 		$this->description = $description;

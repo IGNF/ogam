@@ -47,5 +47,8 @@
 {% endblock %}
 
 {% block javascripts %}
-	<script src="{{ asset('js/auth_cram.js') }}"></script>
+    {{ parent() }}
+    {% javascripts '@OGAMBundle/Resources/public/js/auth_cram.js' %}
+        <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
 {% endblock %}

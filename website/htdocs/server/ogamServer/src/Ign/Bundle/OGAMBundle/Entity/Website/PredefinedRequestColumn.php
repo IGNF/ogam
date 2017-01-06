@@ -15,7 +15,7 @@ class PredefinedRequestColumn {
 	/**
 	 *
 	 * @var PredefinedRequest @ORM\Id
-	 *      @ORM\ManyToOne(targetEntity="Ign\Bundle\OGAMBundle\Entity\Website\PredefinedRequest")
+	 *      @ORM\ManyToOne(targetEntity="PredefinedRequest")
 	 *      @ORM\JoinColumn(name="request_name", referencedColumnName="name")
 	 */
 	private $requestName;
@@ -122,7 +122,7 @@ class PredefinedRequestColumn {
 	/**
 	 * Return the form fields
 	 *
-	 * @return the FormField
+	 * @return FormField
 	 */
 	public function getFormField() {
 		return $this->formField;

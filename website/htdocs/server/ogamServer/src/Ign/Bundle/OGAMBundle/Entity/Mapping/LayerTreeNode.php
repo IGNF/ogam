@@ -68,7 +68,7 @@ class LayerTreeNode implements \JsonSerializable {
 
 	/**
 	 *
-	 * @var layer @ORM\ManyToOne(targetEntity="OGAMBundle\Entity\Mapping\Layer")
+	 * @var layer @ORM\ManyToOne(targetEntity="Layer")
 	 *      @ORM\JoinColumn(name="layer_name", referencedColumnName="name")
 	 */
 	private $layer;
@@ -361,7 +361,7 @@ class LayerTreeNode implements \JsonSerializable {
 	/**
 	 * Serialize the object as a JSON string
 	 *
-	 * @return a JSON string
+	 * @return string: JSON string
 	 */
 	public function jsonSerialize() {
 		return [

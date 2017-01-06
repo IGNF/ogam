@@ -161,7 +161,7 @@ class Data implements \JsonSerializable {
 	/**
 	 * Get unit
 	 *
-	 * @return Unit
+	 * @return string
 	 */
 	public function getUnit() {
 		return $this->unit;
@@ -170,7 +170,7 @@ class Data implements \JsonSerializable {
 	/**
 	 * Serialize the object as a JSON string
 	 *
-	 * @return a JSON string
+	 * @return string JSON string
 	 */
 	public function jsonSerialize() {
 		return [

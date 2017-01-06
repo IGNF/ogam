@@ -37,7 +37,7 @@ class PredefinedRequestGroup {
 	private $position;
 
 	/**
-	 * @ORM\OneToMany(targetEntity="Ign\Bundle\OGAMBundle\Entity\Website\PredefinedRequestGroupAsso", mappedBy="groupName")
+	 * @ORM\OneToMany(targetEntity="PredefinedRequestGroupAsso", mappedBy="groupName")
 	 */
 	private $requests;
 

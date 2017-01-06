@@ -72,9 +72,7 @@ class BreadcrumbListener implements EventSubscriberInterface {
 		$controller = explode('\\', $controller[0]);
 		
 		// use this line if you want to remove the trailing "Controller" string
-		return isset($controller[2]) ? preg_replace('/Controller$/', '', $controller[2]) : false;
-		
-		// return isset($controller[2]) ? $controller[2] : false;
+		return (count($controller) > 0) ? preg_replace('/Controller$/', '', end($controller)) : false;
 	}
 
 	public static function getSubscribedEvents() {

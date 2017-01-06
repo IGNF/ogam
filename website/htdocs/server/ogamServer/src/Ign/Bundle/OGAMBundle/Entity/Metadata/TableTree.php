@@ -48,7 +48,7 @@ class TableTree {
 	 *
 	 * @param string $tableFormat        	
 	 *
-	 * @return tableTreeData
+	 * @return TableTree
 	 */
 	public function setTableFormat($tableFormat) {
 		$this->tableFormat = $tableFormat;
@@ -70,7 +70,7 @@ class TableTree {
 	 *
 	 * @param string $parentTableFormat        	
 	 *
-	 * @return tableTreeData
+	 * @return TableTree
 	 */
 	public function setParentTableFormat($parentTableFormat) {
 		$this->parentTableFormat = $parentTableFormat;
@@ -92,7 +92,7 @@ class TableTree {
 	 *
 	 * @param string $joinKeys        	
 	 *
-	 * @return tableTreeData
+	 * @return TableTree
 	 */
 	public function setJoinKeys($joinKeys) {
 		$this->joinKeys = implode(",", $joinKeys);
@@ -120,7 +120,7 @@ class TableTree {
 	 *
 	 * @param string $comment        	
 	 *
-	 * @return tableTreeData
+	 * @return TableTree
 	 */
 	public function setComment($comment) {
 		$this->comment = $comment;

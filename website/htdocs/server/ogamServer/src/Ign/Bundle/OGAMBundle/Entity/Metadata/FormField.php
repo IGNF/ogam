@@ -288,7 +288,7 @@ class FormField extends Field implements \JsonSerializable {
 	/**
 	 * Serialize the object as a JSON string
 	 *
-	 * @return a JSON string
+	 * @return string JSON string
 	 */
 	public function jsonSerialize() {
 		return [

@@ -46,7 +46,7 @@ class ProviderMapParameters {
 	/**
 	 * Zoom Level (optional).
 	 * 
-	 * @var int @ORM\ManyToOne(targetEntity="OGAMBundle\Entity\Mapping\ZoomLevel")
+	 * @var int @ORM\ManyToOne(targetEntity="Ign\Bundle\OGAMBundle\Entity\Mapping\ZoomLevel")
 	 *      @ORM\JoinColumn(name="zoom_level", referencedColumnName="zoom_level")
 	 */
 	private $zoomLevel = 1;
@@ -78,7 +78,7 @@ class ProviderMapParameters {
 	 *
 	 * @param string $xmin        	
 	 *
-	 * @return BoundingBox
+	 * @return ProviderMapParameters
 	 */
 	public function setXmin($xmin) {
 		$this->xmin = $xmin;
@@ -100,7 +100,7 @@ class ProviderMapParameters {
 	 *
 	 * @param string $ymin        	
 	 *
-	 * @return BoundingBox
+	 * @return ProviderMapParameters
 	 */
 	public function setYmin($ymin) {
 		$this->ymin = $ymin;
@@ -122,7 +122,7 @@ class ProviderMapParameters {
 	 *
 	 * @param string $xmax        	
 	 *
-	 * @return BoundingBox
+	 * @return ProviderMapParameters
 	 */
 	public function setXmax($xmax) {
 		$this->xmax = $xmax;
@@ -144,7 +144,7 @@ class ProviderMapParameters {
 	 *
 	 * @param string $ymax        	
 	 *
-	 * @return BoundingBox
+	 * @return ProviderMapParameters
 	 */
 	public function setYmax($ymax) {
 		$this->ymax = $ymax;
@@ -166,7 +166,7 @@ class ProviderMapParameters {
 	 *
 	 * @param integer $zoomLevel        	
 	 *
-	 * @return BoundingBox
+	 * @return ProviderMapParameters
 	 */
 	public function setZoomLevel($zoomLevel) {
 		$this->zoomLevel = $zoomLevel;
@@ -195,7 +195,7 @@ class ProviderMapParameters {
 	/**
 	 * Returns the bounding box.
 	 *
-	 * @return \OGAMBundle\Entity\Mapping\BoundingBox
+	 * @return array
 	 */
 	public function getCenter() {
 		return $this->getBoundingBox()->getCenter();

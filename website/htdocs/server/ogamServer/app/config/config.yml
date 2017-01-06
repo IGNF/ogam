@@ -41,6 +41,13 @@ twig:
     globals: 
       configurationManager : '@ogam.configuration_manager'
 
+# Assetic configuration
+assetic:
+    debug:          '%kernel.debug%'
+    use_controller: '%kernel.debug%'
+    filters:
+        cssrewrite: ~
+
 # Doctrine Configuration
 doctrine:
     dbal:

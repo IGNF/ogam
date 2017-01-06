@@ -64,7 +64,7 @@ class Layer implements \JsonSerializable {
 	/**
 	 * The max scale of apparition of the layer.
 	 * 
-	 * @var int @ORM\ManyToOne(targetEntity="OGAMBundle\Entity\Mapping\ZoomLevel")
+	 * @var int @ORM\ManyToOne(targetEntity="ZoomLevel")
 	 *      @ORM\JoinColumn(name="max_zoom_level", referencedColumnName="zoom_level")
 	 */
 	private $maxZoomLevel;
@@ -72,7 +72,7 @@ class Layer implements \JsonSerializable {
 	/**
 	 * The min scale of apparition of the layer.
 	 * 
-	 * @var int @ORM\ManyToOne(targetEntity="OGAMBundle\Entity\Mapping\ZoomLevel")
+	 * @var int @ORM\ManyToOne(targetEntity="ZoomLevel")
 	 *      @ORM\JoinColumn(name="min_zoom_level", referencedColumnName="zoom_level")
 	 */
 	private $minZoomLevel;
@@ -102,7 +102,7 @@ class Layer implements \JsonSerializable {
 	/**
 	 * Indicates the service for displaying the layers in the map panel.
 	 *
-	 * @var viewService @ORM\ManyToOne(targetEntity="OGAMBundle\Entity\Mapping\LayerService")
+	 * @var viewService @ORM\ManyToOne(targetEntity="LayerService")
 	 *      @ORM\JoinColumn(name="view_service_name", referencedColumnName="name")
 	 */
 	private $viewService;
@@ -110,7 +110,7 @@ class Layer implements \JsonSerializable {
 	/**
 	 * Indicates the service to call for displaying legend.
 	 *
-	 * @var legendService @ORM\ManyToOne(targetEntity="OGAMBundle\Entity\Mapping\LayerService")
+	 * @var legendService @ORM\ManyToOne(targetEntity="LayerService")
 	 *      @ORM\JoinColumn(name="legend_service_name", referencedColumnName="name")
 	 */
 	private $legendService;
@@ -118,7 +118,7 @@ class Layer implements \JsonSerializable {
 	/**
 	 * Indicates the service to call for detail panel.
 	 *
-	 * @var detailService @ORM\ManyToOne(targetEntity="OGAMBundle\Entity\Mapping\LayerService")
+	 * @var detailService @ORM\ManyToOne(targetEntity="LayerService")
 	 *      @ORM\JoinColumn(name="detail_service_name", referencedColumnName="name")
 	 */
 	private $detailService;
@@ -126,7 +126,7 @@ class Layer implements \JsonSerializable {
 	/**
 	 * Indicates the service to call for wfs menu.
 	 *
-	 * @var featureService @ORM\ManyToOne(targetEntity="OGAMBundle\Entity\Mapping\LayerService")
+	 * @var featureService @ORM\ManyToOne(targetEntity="LayerService")
 	 *      @ORM\JoinColumn(name="feature_service_name", referencedColumnName="name")
 	 */
 	private $featureService;
@@ -495,7 +495,7 @@ class Layer implements \JsonSerializable {
 	/**
 	 * Serialize the object as a JSON string
 	 *
-	 * @return a JSON string
+	 * @return string: JSON string
 	 */
 	public function jsonSerialize() {
 		return [
