@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "9c50f8604ad00661aec65ffd74390145",
-    "content-hash": "9cc734042bd25899f59f58718ea0477d",
+    "hash": "ebd0480677a7782f72a81c69baf96181",
+    "content-hash": "c174c834e8a250cd8e0354dc3c659012",
     "packages": [
         {
             "name": "container-interop/container-interop",
@@ -1150,16 +1150,16 @@
         },
         {
             "name": "phpcheckstyle/phpcheckstyle",
-            "version": "V0.14.3",
+            "version": "V0.14.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPCheckstyle/phpcheckstyle.git",
-                "reference": "06954861eb5eb14eac352cc5c7e86572c505cdca"
+                "reference": "f20eb13dac3b050aa0c1a049d21169db0499f8e4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPCheckstyle/phpcheckstyle/zipball/06954861eb5eb14eac352cc5c7e86572c505cdca",
-                "reference": "06954861eb5eb14eac352cc5c7e86572c505cdca",
+                "url": "https://api.github.com/repos/PHPCheckstyle/phpcheckstyle/zipball/f20eb13dac3b050aa0c1a049d21169db0499f8e4",
+                "reference": "f20eb13dac3b050aa0c1a049d21169db0499f8e4",
                 "shasum": ""
             },
             "require": {
@@ -1185,7 +1185,7 @@
                 "convention",
                 "standard"
             ],
-            "time": "2017-01-06 13:31:04"
+            "time": "2017-01-06 14:56:27"
         },
         {
             "name": "phpdocumentor/reflection-common",

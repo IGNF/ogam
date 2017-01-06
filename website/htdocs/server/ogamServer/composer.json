@@ -32,7 +32,7 @@
 		"phpunit/phpunit" : "^4.8",
 	    "whiteoctober/breadcrumbs-bundle": "^1.2",
         "symfony/assetic-bundle": "^2.8",
-        "phpcheckstyle/phpcheckstyle" : "^0.14.3"
+        "phpcheckstyle/phpcheckstyle" : "^0.14.4"
     },
     "require-dev": {
 		"sensio/generator-bundle" : "^3.0",
