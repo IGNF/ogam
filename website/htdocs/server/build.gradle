@@ -124,10 +124,15 @@ task installAssets(type:Exec, description: 'Install assets.') {
   args "app/console", "assets:install", "--env=prod", "--no-debug"
 } 
 
-
+// update assets links
+task asseticDump(type:Exec, description: 'Assetic dump.') {
+  workingDir './ogamServer'
+  commandLine "php" 
+  args "app/console", "assetic:dump", "--env=prod", "--no-debug"
+} 
 
 
 // Deploy the application
-task deployAll(description: 'Copy the PHP files to the deploy directory.', dependsOn: [deploy, setBuildNumber, installAssets]) {
+task deployAll(description: 'Copy the PHP files to the deploy directory.', dependsOn: [deploy, setBuildNumber, installAssets, asseticDump]) {
 
 }
