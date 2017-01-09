@@ -2,7 +2,9 @@
 
 use Symfony\Component\HttpFoundation\Request;
 
-/** @var \Composer\Autoload\ClassLoader $loader */
+/**
+ * @var Composer\Autoload\ClassLoader
+ */
 $loader = require __DIR__.'/../app/autoload.php';
 include_once __DIR__.'/../app/bootstrap.php.cache';
 
