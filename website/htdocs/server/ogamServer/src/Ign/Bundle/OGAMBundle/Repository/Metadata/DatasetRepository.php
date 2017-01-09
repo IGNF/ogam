@@ -44,18 +44,18 @@ class DatasetRepository extends \Doctrine\ORM\EntityRepository {
 	public function getDatasetsForDisplay($locale, User $user) {
 		$rsm = new ResultSetMappingBuilder($this->_em);
 		$rsm->addRootEntityFromClassMetadata('OGAMBundle\Entity\Metadata\Dataset', 'd');
-		
+
 		$sql = "SELECT DISTINCT dataset_id, COALESCE(t.label, d.label) as label, COALESCE(t.definition, d.definition) as definition, is_default";
 		$sql .= " FROM dataset d";
 		$sql .= " LEFT JOIN translation t ON (lang = ? AND table_format = 'DATASET' AND row_pk = dataset_id)";
 		$sql .= " INNER JOIN dataset_fields using (dataset_id)";
 		$sql .= " WHERE (dataset_id NOT IN (SELECT dataset_id FROM dataset_role_restriction JOIN role_to_user USING (role_code) WHERE user_login = ?))";
 		$sql .= " ORDER BY dataset_id";
-		
+
 		$query = $this->_em->createNativeQuery($sql, $rsm);
 		$query->setParameter(1, $locale);
 		$query->setParameter(2, $user->getLogin());
-		
+
 		return $query->getResult();
 	}
 }

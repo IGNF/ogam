@@ -30,19 +30,19 @@ class FileFormatRepository extends \Doctrine\ORM\EntityRepository {
 		$sql .= " JOIN format using (format) ";
 		$sql .= " LEFT JOIN translation t ON (lang = :lang AND table_format = 'FILE_FORMAT' AND row_pk = format) ";
 		$sql .= " WHERE format = :fileFormat ";
-		
+
 		$query = $this->_em->createNativeQuery($sql, $rsm);
 		$query->setParameters([
 			'lang' => $locale,
 			'fileFormat' => $fileFormat
 		]);
-		
+
 		$fileFormat = $query->getSingleResult();
-		
+
 		// Fill each form with its fields
 		$fileFormat->setFields($this->_em->getRepository(FileField::class)
 			->getFileFields($fileFormat->getFormat()));
-		
+
 		return $fileFormat;
 	}
 
@@ -66,21 +66,21 @@ class FileFormatRepository extends \Doctrine\ORM\EntityRepository {
 		$sql .= " LEFT JOIN format using (format) ";
 		$sql .= " WHERE dataset_id = :datasetId ";
 		$sql .= " ORDER BY position";
-		
+
 		$query = $this->_em->createNativeQuery($sql, $rsm);
 		$query->setParameters([
 			'lang' => $locale,
 			'datasetId' => $datasetId
 		]);
-		
+
 		$fileFormats = $query->getResult();
-		
+
 		// Fill each form with its fields
 		foreach ($fileFormats as $form) {
 			$form->setFields($this->_em->getRepository(FileField::class)
 				->getFileFields($form->getFormat()));
 		}
-		
+
 		return $fileFormats;
 	}
 }
