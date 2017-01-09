@@ -110,10 +110,23 @@ task setBuildNumber(type: Copy, description: 'Update the build number.', depends
 
 
 // Clear cache
-task clearCache(type:Exec, description: 'Clear symfony cache.') {
-  workingDir './ogamServer'
-  commandLine "php" 
-  args "app/console", "cache:clear", "--env=prod"
+//
+// Console command does not work correctly
+// cf : https://github.com/symfony/symfony/issues/2600
+//
+// task clearCache(type:Exec, description: 'Clear symfony cache.') {
+//    workingDir './ogamServer'
+//    commandLine "php" 
+//    args "app/console", "cache:clear", "--env=prod"
+//} 
+
+task clearCache(type: Delete, description: 'Clear symfony cache.') {
+    def dirName = "ogamServer/var/cache"
+    delete dirName
+
+    doLast {
+        file(dirName).mkdirs()
+    }
 } 
 
 
@@ -132,7 +145,7 @@ task asseticDump(type:Exec, description: 'Assetic dump.') {
 } 
 
 
-// Deploy the application
-task deployAll(description: 'Copy the PHP files to the deploy directory.', dependsOn: [deploy, setBuildNumber, installAssets, asseticDump]) {
+// Build the application
+task buildAll(description: 'Build the application.', dependsOn: [clearCache, asseticDump, installAssets]) {
 
 }
