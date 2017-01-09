@@ -1,9 +1,13 @@
 <?php
-namespace Ign\Bundle\OGAMBundle\Form\RawData;
+namespace Ign\Bundle\OGAMBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
+use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Ign\Bundle\OGAMBundle\Entity\Website\User;
 
 class ChangeUserPasswordType extends AbstractType {
 
@@ -16,13 +20,13 @@ class ChangeUserPasswordType extends AbstractType {
 	public function buildForm(FormBuilderInterface $builder, array $options) {
 
 		// non-mapped field for the old password
-		$formBuilder->add('oldpassword', PasswordType::class, array(
+		$builder->add('oldpassword', PasswordType::class, array(
 			'label' => 'Old Password',
 			'mapped' => false
 		));
 
 		// the password fields
-		$formBuilder->add('plainPassword', RepeatedType::class, array(
+		$builder->add('plainPassword', RepeatedType::class, array(
 			'type' => PasswordType::class,
 			'first_options' => array(
 				'label' => 'New Password'
@@ -33,7 +37,7 @@ class ChangeUserPasswordType extends AbstractType {
 		));
 
 		// submit button
-		$formBuilder->add('submit', SubmitType::class, array(
+		$builder->add('submit', SubmitType::class, array(
 			'label' => 'Submit'
 		));
 	}
@@ -44,7 +48,7 @@ class ChangeUserPasswordType extends AbstractType {
 	 */
 	public function configureOptions(OptionsResolver $resolver) {
 		$resolver->setDefaults(array(
-			'data_class' => 'OGAMBundle\Entity\Website\User'
+			'data_class' => User::class
 		));
 	}
 }
