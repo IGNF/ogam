@@ -19,19 +19,14 @@ class IntegrationControllerTest extends AbstractControllerTest {
 					'uri' => '/integration/show-data-submission-page'
 				]
 			],
-			'show-create-data-submission' => [
+			'create-data-submission' => [
 				[
-					'uri' => '/integration/show-create-data-submission'
+					'uri' => '/integration/create-data-submission'
 				]
 			],
 			'show-upload-data' => [
 				[
 					'uri' => '/integration/show-upload-data/1'
-				]
-			],
-			'validate-create-data-submission' => [
-				[
-					'uri' => '/integration/validate-create-data-submission'
 				]
 			],
 			'validate-upload-data' => [
@@ -88,19 +83,14 @@ class IntegrationControllerTest extends AbstractControllerTest {
 					'uri' => '/integration/show-data-submission-page'
 				]
 			],
-			'show-create-data-submission' => [
+			'create-data-submission' => [
 				[
-					'uri' => '/integration/show-create-data-submission'
+					'uri' => '/integration/create-data-submission'
 				]
 			],
 			'show-upload-data' => [
 				[
 					'uri' => '/integration/show-upload-data/1'
-				]
-			],
-			'validate-create-data-submission' => [
-				[
-					'uri' => '/integration/validate-create-data-submission'
 				]
 			],
 			'validate-upload-data' => [

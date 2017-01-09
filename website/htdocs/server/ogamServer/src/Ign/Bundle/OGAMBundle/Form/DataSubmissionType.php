@@ -1,8 +1,11 @@
 <?php
-namespace Ign\Bundle\OGAMBundle\Form\RawData;
+namespace Ign\Bundle\OGAMBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class DataSubmissionType extends AbstractType {
 
@@ -13,17 +16,24 @@ class DataSubmissionType extends AbstractType {
 	 * @param array $options
 	 */
 	public function buildForm(FormBuilderInterface $builder, array $options) {
-		$builder->setAction($this->generateUrl('integration_validate_creation'))
-			->add('DATASET_ID', ChoiceType::class, array(
+		$builder->add('DATASET_ID', ChoiceType::class, array(
 			'label' => 'Dataset',
 			'required' => true,
 			'choice_value' => 'id',
 			'choice_label' => 'label',
-			'choices' => $this->getDoctrine()
-				->getRepository('OGAMBundle:Metadata\Dataset', 'metadata')
-				->getDatasetsForUpload(),
+			'choices' => $options['choices'],
 			'choices_as_values' => true
 		))
 			->add('submit', SubmitType::class);
+	}
+
+	/**
+	 *
+	 * @param OptionsResolver $resolver
+	 */
+	public function configureOptions(OptionsResolver $resolver) {
+		$resolver->setDefaults(array(
+			'choices' => null
+		));
 	}
 }

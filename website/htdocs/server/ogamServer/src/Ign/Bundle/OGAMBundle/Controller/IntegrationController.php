@@ -6,7 +6,6 @@ use Ign\Bundle\OGAMBundle\Entity\Metadata\Dataset;
 use Ign\Bundle\OGAMBundle\Entity\RawData\Submission;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -17,7 +16,8 @@ use Ign\Bundle\OGAMBundle\Entity\Metadata\FileFormat;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpFoundation\StreamedResponse;
-use Ign\Bundle\OGAMBundle\Form\RawData\DataSubmissionType;
+use Ign\Bundle\OGAMBundle\Form\DataSubmissionType;
+
 
 /**
  * @Route("/integration")
@@ -65,18 +65,43 @@ class IntegrationController extends Controller {
 	/**
 	 * Show the create data submission page.
 	 *
-	 * @Route("/show-create-data-submission", name="integration_creation")
+	 * @Route("/create-data-submission", name="integration_creation")
 	 */
-	public function showCreateDataSubmissionAction(Request $request) {
+	public function createDataSubmissionAction(Request $request) {
 		$availaibledData = $this->getDoctrine()
 			->getRepository('OGAMBundle:Metadata\Dataset', 'metadata')
 			->getDatasetsForUpload();
 
-		$form = $this->createForm(DataSubmissionType::class);
+		$formOptions = array(
+			'choices' => $this->getDoctrine()
+				->getRepository('OGAMBundle:Metadata\Dataset', 'metadata')
+				->getDatasetsForUpload()
+		);
+
+		$form = $this->createForm(DataSubmissionType::class, null, $formOptions);
+
+		$form->handleRequest($request);
+
+		if ($form->isSubmitted() && $form->isValid()) {
+			$values = $form->getNormData();
+			$dataset = $values['DATASET_ID'];
+
+			$userLogin = $this->getUser()->getLogin();
+			$providerId = $this->getUser()
+			->getProvider()
+			->getId();
+
+			$this->get('logger')->debug('userLogin : ' . $userLogin);
+			$this->get('logger')->debug('providerId : ' . $providerId);
+
+			$submissionId = $this->get('ogam.integration_service')->newDataSubmission($providerId, $dataset->getId(), $userLogin);
+			$submission = $this->getEntityManger()->getReference('OGAMBundle:RawData\Submission', $submissionId);
+			return $this->showUploadDataAction($request, $submission);
+		}
 
 		return $this->render('OGAMBundle:Integration:show_create_data_submission.html.twig', array(
 			'datasets' => $availaibledData,
-			'form' => $form
+			'form' => $form->createView()
 		));
 	}
 
@@ -114,41 +139,6 @@ class IntegrationController extends Controller {
 			'showModel' => $showModel,
 			'showDetail' => $showDetail
 		));
-	}
-
-	/**
-	 * @Route("/validate-create-data-submission", name="integration_validate_creation")
-	 */
-	public function validateCreateDataSubmissionAction(Request $request) {
-		$form = $this->createForm(DataSubmissionType::class);
-		$form->handleRequest($request);
-
-		// Check the validity of the POST
-		if (!$form->isSubmitted() || !$request->isMethod(Request::METHOD_POST)) {
-			$this->get('logger')->debug('form is not a post');
-			$this->redirectToRoute('integration_home');
-		}
-
-		// Check the validity of the Form
-		if (!$form->isValid()) {
-			$this->get('logger')->debug('form is not valid');
-			return $this->showCreateDataSubmissionAction($request);
-		}
-
-		$values = $form->getNormData();
-		$dataset = $values['DATASET_ID'];
-
-		$userLogin = $this->getUser()->getLogin();
-		$providerId = $this->getUser()
-			->getProvider()
-			->getId();
-
-		$this->get('logger')->debug('userLogin : ' . $userLogin);
-		$this->get('logger')->debug('providerId : ' . $providerId);
-
-		$submissionId = $this->get('ogam.integration_service')->newDataSubmission($providerId, $dataset->getId(), $userLogin);
-		$submission = $this->getEntityManger()->getReference('OGAMBundle:RawData\Submission', $submissionId);
-		return $this->showUploadDataAction($request, $submission);
 	}
 
 	/**
