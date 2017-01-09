@@ -27,8 +27,8 @@ export DEBIAN_FRONTEND=noninteractive
 
 apt-get install -y --force-yes apache2 php5-common libapache2-mod-php5 php5-cli php5-pgsql php5-gd php5-xdebug
 
-# Pour le cache de symfony
-sudo apt-get install -y --force-yes php-apc
+# Pour le cache de symfony: TODO: find what cache is used by default by Symfony
+# sudo apt-get install -y --force-yes php-apc
 
 # Pour phpdoc
 sudo apt-get install -y --force-yes php5-intl graphviz php5-xsl  
