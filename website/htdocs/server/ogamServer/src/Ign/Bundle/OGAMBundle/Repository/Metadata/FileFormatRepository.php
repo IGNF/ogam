@@ -23,8 +23,8 @@ class FileFormatRepository extends \Doctrine\ORM\EntityRepository {
 	 */
 	public function getFileFormat($fileFormat, $locale) {
 		$rsm = new ResultSetMappingBuilder($this->_em);
-		$rsm->addRootEntityFromClassMetadata('OGAMBundle\Entity\Metadata\FileFormat', 'ffo');
-		
+		$rsm->addRootEntityFromClassMetadata($this->_entityName, 'ffo');
+
 		$sql = " SELECT format, type, file_extension, file_type, position, COALESCE(t.label, file_format.label) as label ";
 		$sql .= " FROM file_format ";
 		$sql .= " JOIN format using (format) ";
@@ -57,8 +57,8 @@ class FileFormatRepository extends \Doctrine\ORM\EntityRepository {
 	 */
 	public function getFileFormats($datasetId, $locale) {
 		$rsm = new ResultSetMappingBuilder($this->_em);
-		$rsm->addRootEntityFromClassMetadata('OGAMBundle\Entity\Metadata\FileFormat', 'ffo');
-		
+		$rsm->addRootEntityFromClassMetadata($this->_entityName, 'ffo');
+
 		$sql = " SELECT format, type, file_extension, file_type, position, COALESCE(t.label, file_format.label) as label ";
 		$sql .= " FROM dataset_files";
 		$sql .= " LEFT JOIN translation t ON (lang = :lang AND table_format = 'FILE_FORMAT' AND row_pk = format)";

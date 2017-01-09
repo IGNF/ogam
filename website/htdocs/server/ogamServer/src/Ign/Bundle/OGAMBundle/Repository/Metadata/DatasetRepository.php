@@ -29,10 +29,10 @@ class DatasetRepository extends \Doctrine\ORM\EntityRepository {
 		 *
 		 * $req .= " ORDER BY dataset_id";
 		 */
-		$dql = "SELECT d " . "FROM OGAMBundle\Entity\Metadata\Dataset d " . "WHERE SIZE(d.files) > 0 ORDER BY d.id";
-		
+		$dql = "SELECT d " . "FROM OGAMBundle:Metadata\Dataset d " . "WHERE SIZE(d.files) > 0 ORDER BY d.id";
+
 		$query = $this->getEntityManager()->createQuery($dql);
-		
+
 		return $query->getResult();
 	}
 
