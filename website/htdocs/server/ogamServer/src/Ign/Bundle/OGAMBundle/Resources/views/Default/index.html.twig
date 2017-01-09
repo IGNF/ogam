@@ -57,7 +57,7 @@
         
         {% if (app.user and app.user.isAllowed('CHECK_CONF')) %}
         <li>
-        <a href="{{ path('checkconf_home') }}" class="pagelink" >{% trans %}Check Configuration{% endtrans %}</a>
+        <a href="{{ path('checkconf_showconfig') }}" class="pagelink" >{% trans %}Check Configuration{% endtrans %}</a>
         </li>
         {% endif %}
     

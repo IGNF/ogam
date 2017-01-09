@@ -19,4 +19,4 @@ echo "--------------------------------------------------"
 # Launch Gradle build
 #----------------------------------------------------------------
 cd /vagrant/ogam/website/htdocs/server
-gradle deployAll
+gradle buildAll

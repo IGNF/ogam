@@ -11,7 +11,7 @@ class TableSchemaRepository extends \Doctrine\ORM\EntityRepository {
 
 	public function findAll() {
 		return $this->getEntityManager()
-			->createQuery('SELECT s FROM OGAMBundle\Entity\Metadata\TableSchema s INDEX BY s.code ORDER BY s.code ASC')
+			->createQuery('SELECT s FROM OGAMBundle:Metadata\TableSchema s INDEX BY s.code ORDER BY s.code ASC')
 			->getResult();
 	}
 }

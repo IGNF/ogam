@@ -5,10 +5,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
-use Symfony\Component\Form\Extension\Core\Type\PasswordType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Ign\Bundle\OGAMBundle\Form\RawData\ChangeUserPasswordType;
+use Ign\Bundle\OGAMBundle\Form\ChangeUserPasswordType;
 
 /**
  * @Route("/user")
