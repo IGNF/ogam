@@ -1,3 +1,4 @@
 deb http://miroir.ign.fr/debian/ jessie main non-free contrib
 deb http://miroir.ign.fr/debian-security/ jessie/updates main non-free contrib
-deb http://miroir.ign.fr/apt.postgresql.org/pub/repos/apt/ jessie-pgdg main
+#if you enable the under one deb, please add the apt-key of postgres
+#deb http://miroir.ign.fr/apt.postgresql.org/pub/repos/apt/ jessie-pgdg main

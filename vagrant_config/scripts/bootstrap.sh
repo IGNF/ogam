@@ -26,7 +26,7 @@ echo "
 http-proxy-host = proxy.ign.fr
 http-proxy-port = 3128
 http-proxy-compression = no
-" >> /home/vagrant/.subversion/servers
+" > /home/vagrant/.subversion/servers
 
 echo "
 http_proxy=http://proxy.ign.fr:3128
