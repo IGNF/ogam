@@ -3,6 +3,7 @@ namespace Ign\Bundle\OGAMBundle\Repository\Metadata;
 
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
 use Ign\Bundle\OGAMBundle\Entity\Website\User;
+use Ign\Bundle\OGAMBundle\Entity\Metadata\Dataset;
 
 /**
  * DatasetRepository
@@ -39,11 +40,11 @@ class DatasetRepository extends \Doctrine\ORM\EntityRepository {
 	/**
 	 * Get the available datasets for display.
 	 *
-	 * @return Array[Application_Object_Metadata_Dataset]
+	 * @return array[Application_Object_Metadata_Dataset]
 	 */
 	public function getDatasetsForDisplay($locale, User $user) {
 		$rsm = new ResultSetMappingBuilder($this->_em);
-		$rsm->addRootEntityFromClassMetadata('Ign\Bundle\OGAMBundle\Entity\Metadata\Dataset', 'd');
+		$rsm->addRootEntityFromClassMetadata(Dataset::class, 'd');
 
 		$sql = "SELECT DISTINCT dataset_id, COALESCE(t.label, d.label) as label, COALESCE(t.definition, d.definition) as definition, is_default";
 		$sql .= " FROM dataset d";

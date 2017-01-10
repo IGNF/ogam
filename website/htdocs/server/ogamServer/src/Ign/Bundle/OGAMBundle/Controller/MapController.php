@@ -5,12 +5,9 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Ign\Bundle\OGAMBundle\Entity\Mapping\Layer;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Ign\Bundle\OGAMBundle\Entity\Mapping\LayerService;
 use Ign\Bundle\OGAMBundle\Entity\Mapping\LayerTreeNode;
 use Ign\Bundle\OGAMBundle\Entity\Mapping\ZoomLevel;
-use Ign\Bundle\OGAMBundle\Repository\Mapping\ZoomLevelRepository;
+use Ign\Bundle\OGAMBundle\Entity\Mapping\ProviderMapParameters;
 
 /**
  * @Route("/map")
@@ -50,13 +47,12 @@ class MapController extends Controller {
 
 		if ($userPerProviderCenter) {
 			// Center the map on the provider location
-			$center = $this->getDoctrine()
-				->getManagerForClass('OGAMBundle\Entity\Mapping\ProviderMapParameters')
-				->find('OGAMBundle\Entity\Mapping\ProviderMapParameters', $providerId)
-				->getCenter();
-			$view->zoomLevel = $center->zoomLevel;
-			$view->centerX = $center->x;
-			$view->centerY = $center->y;
+			$providerParams = $this->getDoctrine()
+				->getManagerForClass(ProviderMapParameters::class)
+				->find(ProviderMapParameters::class, $providerId);
+			$center = $providerParams->getCenter();
+			$view->zoomLevel = $providerParams->getZoomLevel()->getZoomLevel();
+			list($view->centerX, $view->centerY) = $center;
 		} else {
 			// Use default settings
 			$view->zoomLevel = $configuration->getConfig('zoom_level', '1');

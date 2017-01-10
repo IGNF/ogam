@@ -92,7 +92,7 @@ class GenericManager {
 		
 		$this->logger->info('getDatum : ' . $tableFormat->getFormat());
 		
-		$schema = $tableFormat->getSchema(); // $this->metadataModel->find('OGAMBundle:Metadata\TableSchema', $tableFormat->getSchemaCode());
+		$schema = $tableFormat->getSchema();
 		                                     
 		// Get the values from the data table
 		$sql = "SELECT " . $this->genericService->buildSelect(array_map(function ($field) {

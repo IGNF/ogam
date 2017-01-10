@@ -4,6 +4,7 @@ namespace Ign\Bundle\OGAMBundle\Repository\Metadata;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
 use Ign\Bundle\OGAMBundle\Entity\Metadata\Unit;
 use Doctrine\Common\Collections\Criteria;
+use Ign\Bundle\OGAMBundle\Entity\Metadata\FormField;
 
 /**
  * FormFieldRepository
@@ -86,7 +87,7 @@ class FormFieldRepository extends \Doctrine\ORM\EntityRepository {
 	 */
 	public function getFormFields($dataset, $formFormat, $schema, $locale, $query = null, $start = null, $limit = null, $fieldsType = null) {
 		$rsm = new ResultSetMappingBuilder($this->_em);
-		$rsm->addRootEntityFromClassMetadata('OGAMBundle\Entity\Metadata\FormField', 'ff');
+		$rsm->addRootEntityFromClassMetadata(FormField::class, 'ff');
 		
 		$param = array();
 		

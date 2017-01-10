@@ -3,6 +3,7 @@ namespace Ign\Bundle\OGAMBundle\Repository\Metadata;
 
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
 use Ign\Bundle\OGAMBundle\Entity\Metadata\FormField;
+use Ign\Bundle\OGAMBundle\Entity\Metadata\FormFormat;
 
 /**
  * FormFormatRepository
@@ -25,7 +26,7 @@ class FormFormatRepository extends \Doctrine\ORM\EntityRepository {
 	 */
 	public function getFormFormats($datasetId, $schemaCode, $locale) {
 		$rsm = new ResultSetMappingBuilder($this->_em);
-		$rsm->addRootEntityFromClassMetadata('OGAMBundle\Entity\Metadata\FormFormat', 'ffo');
+		$rsm->addRootEntityFromClassMetadata(FormFormat::class, 'ffo');
 		$param = array();
 		
 		$sql = " SELECT distinct form_format.format, COALESCE(t.label, form_format.label) as label, COALESCE(t.definition, form_format.definition) as definition, position, is_opened ";

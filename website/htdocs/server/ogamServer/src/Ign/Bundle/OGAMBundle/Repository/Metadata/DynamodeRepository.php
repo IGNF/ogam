@@ -2,7 +2,6 @@
 namespace Ign\Bundle\OGAMBundle\Repository\Metadata;
 
 use Ign\Bundle\OGAMBundle\Entity\Metadata\Unit;
-use Ign\Bundle\OGAMBundle\OGAMBundle;
 use Ign\Bundle\OGAMBundle\Entity\Metadata\Mode;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
 
@@ -29,7 +28,7 @@ class DynamodeRepository extends \Doctrine\ORM\EntityRepository {
 	 */
 	public function getModes(Unit $unit, $locale) {
 		$rsm = new ResultSetMappingBuilder($this->_em);
-		$rsm->addRootEntityFromClassMetadata('OGAMBundle\Entity\Metadata\Mode', 'm');
+		$rsm->addRootEntityFromClassMetadata(Mode::class, 'm');
 		$params = [
 			'unit' => $unit->getUnit(),
 			'lang' => $locale
@@ -60,7 +59,7 @@ class DynamodeRepository extends \Doctrine\ORM\EntityRepository {
 	 */
 	public function getModesFilteredByCode(Unit $unit, $code, $locale) {
 		$rsm = new ResultSetMappingBuilder($this->_em);
-		$rsm->addRootEntityFromClassMetadata('OGAMBundle\Entity\Metadata\Mode', 'm');
+		$rsm->addRootEntityFromClassMetadata(Mode::class, 'm');
 		$params = [
 			'lang' => $locale,
 			'unit' => $unit->getUnit(),
@@ -95,7 +94,7 @@ class DynamodeRepository extends \Doctrine\ORM\EntityRepository {
 	 */
 	public function getModesFilteredByLabel(Unit $unit, $query, $locale) {
 		$rsm = new ResultSetMappingBuilder($this->_em);
-		$rsm->addRootEntityFromClassMetadata('OGAMBundle\Entity\Metadata\Mode', 'm');
+		$rsm->addRootEntityFromClassMetadata(Mode::class, 'm');
 		$params = [
 			'unit' => $unit->getUnit(),
 			'lang' => $locale,

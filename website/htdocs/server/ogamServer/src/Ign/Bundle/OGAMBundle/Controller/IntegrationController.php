@@ -314,7 +314,6 @@ class IntegrationController extends Controller {
 		}
 
 		// Forward the user to the next step
-		// $submission = $this->getEntityManger()->find('OGAMBundle:RawData\Submission', $submissionId);
 		return $this->redirectToRoute('integration_home');
 	}
 

@@ -6,6 +6,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Ign\Bundle\OGAMBundle\Entity\RawData\Submission;
 
 class SubmissionType extends AbstractType {
 
@@ -45,7 +46,7 @@ class SubmissionType extends AbstractType {
 	 */
 	public function configureOptions(OptionsResolver $resolver) {
 		$resolver->setDefaults(array(
-			'data_class' => 'OGAMBundle\Entity\RawData\Submission'
+			'data_class' => Submission::class;
 		));
 	}
 }

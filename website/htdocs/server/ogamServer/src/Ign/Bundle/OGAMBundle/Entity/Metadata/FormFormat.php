@@ -9,7 +9,7 @@ use Doctrine\Common\Collections\ArrayCollection;
  * FormFormat
  *
  * @ORM\Table(name="metadata.form_format")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="Ign\Bundle\OGAMBundle\Repository\Metadata\FormFormatRepository")
  */
 class FormFormat extends Format implements \JsonSerializable {
 
