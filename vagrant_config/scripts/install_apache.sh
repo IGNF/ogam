@@ -71,7 +71,7 @@ chmod -R 0777 $website_dir/logs
 # Logs Symfony
 chown -R www-data  $website_dir && chgrp -R www-data $website_dir && chmod g+s $website_dir
 chown www-data $website_dir && chgrp www-data $website_dir
-chmod -R 0777 $website_dir/server/ogamServer/var/logs $website_dir/server/ogamServer/var/sessions $website_dir/server/ogamServer/var/upload
+chmod -R 0777 $website_dir/server/ogamServer/app/logs $website_dir/server/ogamServer/app/sessions $website_dir/server/ogamServer/var/upload
 
 # Répertoires d'upload
 mkdir -p $website_dir/server/ogamServer/var/upload/images 

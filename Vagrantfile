@@ -59,7 +59,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   
   config.vm.provision "install_dev_tools", type: "shell", inline: "/vagrant/ogam/vagrant_config/scripts/install_dev_tools.sh"
   
-  config.vm.provision "fix_var_perf", run:"always", type: "shell", inline: "localpath=$1 ; sharedpath=$2 ; /vagrant/ogam/vagrant_config/scripts/build_locale_dir.sh $localpath && mount -o bind $localpath $sharedpath", args:['/home/vagrant/ogam/var','/vagrant/ogam/website/htdocs/server/ogamServer/var']
+  config.vm.provision "fix_var_perf", run:"always", type: "shell", inline: "localpath=$1 ; sharedpath=$2 ; /vagrant/ogam/vagrant_config/scripts/build_locale_dir.sh $localpath && mount -o bind $localpath $sharedpath", args:['/home/vagrant/ogam/var/cache','/vagrant/ogam/website/htdocs/server/ogamServer/app/cache']
   
   #
   # Application deployment
