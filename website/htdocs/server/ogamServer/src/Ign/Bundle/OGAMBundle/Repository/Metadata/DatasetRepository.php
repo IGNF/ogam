@@ -43,7 +43,7 @@ class DatasetRepository extends \Doctrine\ORM\EntityRepository {
 	 */
 	public function getDatasetsForDisplay($locale, User $user) {
 		$rsm = new ResultSetMappingBuilder($this->_em);
-		$rsm->addRootEntityFromClassMetadata('OGAMBundle\Entity\Metadata\Dataset', 'd');
+		$rsm->addRootEntityFromClassMetadata('Ign\Bundle\OGAMBundle\Entity\Metadata\Dataset', 'd');
 
 		$sql = "SELECT DISTINCT dataset_id, COALESCE(t.label, d.label) as label, COALESCE(t.definition, d.definition) as definition, is_default";
 		$sql .= " FROM dataset d";
