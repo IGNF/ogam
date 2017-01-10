@@ -2,9 +2,9 @@ imports:
     - { resource: config.yml }
 
 # TODO: find what cache is used by default
-doctrine:
-    orm:
-      auto_generate_proxy_classes: "FILE_NOT_EXISTS" # TODO: Find a way to pass that parameter to false (see https://github.com/doctrine/doctrine2/issues/3337)
+#doctrine:
+#    orm:
+#      auto_generate_proxy_classes: "FILE_NOT_EXISTS" # TODO: Find a way to pass that parameter to false (see https://github.com/doctrine/doctrine2/issues/3337)
 #      entity_managers:
 #        website:
 #             metadata_cache_driver: apc
