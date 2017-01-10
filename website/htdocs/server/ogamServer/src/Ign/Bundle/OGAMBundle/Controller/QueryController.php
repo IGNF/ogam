@@ -66,7 +66,8 @@ class QueryController extends Controller {
 		}
 
 		// Forward the user to the next step
-		return $this->redirect('/odp/index.html?locale=' . $request->getLocale() . (isset($defaultTab) ? '#' . $defaultTab : ''));
+		$visuUrl = ( $this->container->getParameter('kernel.environment') == 'dev') ? '/odd' : '/odp';
+		return $this->redirect( $visuUrl . '/index.html?locale=' . $request->getLocale() . (isset($defaultTab) ? '#' . $defaultTab : ''));
 	}
 
 	/**
