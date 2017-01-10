@@ -121,7 +121,7 @@ task setBuildNumber(type: Copy, description: 'Update the build number.', depends
 //} 
 
 task clearCache(type: Delete, description: 'Clear symfony cache.') {
-    def dirName = "ogamServer/var/cache"
+    def dirName = "ogamServer/app/cache"
     delete dirName
 
     doLast {
