@@ -19,7 +19,6 @@
         OgamDesktopIntegration.request.onreadystatechange = function() {
             if (OgamDesktopIntegration.request.readyState == 4) { // 4: request finished and response is ready
                 if (OgamDesktopIntegration.request.status == 200) { // Success
-                    debugger;
                     var rp = JSON.parse(OgamDesktopIntegration.request.responseText);
                     var src = '{{ absolute_url('/bundles/ogam/img/') }}';
                     switch(rp.status){
