@@ -6,7 +6,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * Field
- * @ORM\Entity
+ * @ORM\MappedSuperclass
  */
 class Field {
 

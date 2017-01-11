@@ -911,9 +911,13 @@ class GenericService {
 		$tableField = $tableRowField->getMetadata();
 		// Get the description of the form field
 		$req = "SELECT ff
-FROM OGAMBundle\Entity\Metadata\FormField ff
-JOIN OGAMBundle\Entity\Metadata\FieldMapping fm
-WHERE fm.mappingType = 'FORM' AND fm.srcData = ff.data and fm.srcFormat = ff.format and fm.dstFormat = :format and fm.dstData = :data";
+				FROM OGAMBundle:Metadata\FormField ff
+				JOIN OGAMBundle:Metadata\FieldMapping fm
+				WHERE fm.mappingType = 'FORM' 
+				AND fm.srcData = ff.data 
+				and fm.srcFormat = ff.format 
+				and fm.dstFormat = :format 
+				and fm.dstData = :data";
 		$formField = $this->metadataModel->createQuery($req)
 			->setParameters(array(
 			'format' => $tableField->getFormat()
