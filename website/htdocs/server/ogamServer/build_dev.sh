@@ -14,3 +14,6 @@ sudo setfacl -dR -m u:"$HTTPDUSER":rwX -m u:`whoami`:rwX app/cache app/logs app/
 curl -sS https://getcomposer.org/installer | php
 # get dependencies and build
 ./composer.phar install $@
+
+# install assets
+php app/console assets:install --symlink
