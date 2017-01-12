@@ -17,13 +17,13 @@ class Submission {
 
 	const STEP_INIT = 'INIT';
 
-	const STEP_INSERTED = 'INSERTED';
+	const STEP_INSERTED = 'INSERT';
 
-	const STEP_CHECKED = 'CHECKED';
+	const STEP_CHECKED = 'CHECK';
 
-	const STEP_VALIDATED = 'VALIDATED';
+	const STEP_VALIDATED = 'VALIDATE';
 
-	const STEP_CANCELLED = 'CANCELLED';
+	const STEP_CANCELLED = 'CANCEL';
 
 	const STATUS_OK = 'OK';
 
@@ -45,15 +45,15 @@ class Submission {
 	private $id;
 
 	/**
-	 * The submission step (INIT, INSERTED, CHECKED, VALIDATED, CANCELLED).
-	 * 
+	 * The submission step (INIT, INSERT, CHECK, VALIDATE, CANCEL).
+	 *
 	 * @var string @ORM\Column(name="step", type="string", length=36, nullable=true)
 	 */
 	private $step;
 
 	/**
 	 * The submission status (OK, WARNING, ERROR, CRASH).
-	 * 
+	 *
 	 * @var string @ORM\Column(name="status", type="string", length=36, nullable=true)
 	 */
 	private $status;

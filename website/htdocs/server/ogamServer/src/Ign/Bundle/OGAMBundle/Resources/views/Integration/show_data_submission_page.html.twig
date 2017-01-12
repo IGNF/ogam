@@ -32,7 +32,7 @@
                 <td>{{ submission.dataset.label|e }}</td>
                 <td>{{ submission.step|e }}</td>
                 <td>
-                    {% if submission.status in ['OK','CHECKED'] %}
+                    {% if submission.status in ['OK','CHECK'] %}
                         {{ submission.status }}
                         {% image '@OGAMBundle/Resources/public/img/Green_tick.png' %}
                             <img src="{{ asset_url }}" />
@@ -80,12 +80,12 @@
                             <a href="{{ absolute_url("../proxy/show-report?submissionId=#{submission.id}") }}" >{{ 'Show report'|trans }}</a>
                          </p>
                     {% endif %}
-                    {% if (submission.step is same as('CHECKED') and (submission.status is same as("OK") or submission.status is same as('WARNING'))) %}
+                    {% if (submission.step is same as('CHECK') and (submission.status is same as("OK") or submission.status is same as('WARNING'))) %}
                         <p>
                             <a href="{{ path('integration_validate',{'submissionId': submission.id}) }}" onClick="return confirm('{{ 'Confirm_submission_warning'|trans }}');">{{ 'Confirm submission'|trans }}</a>
                         </p>
                     {% endif %}
-                    {% if (submission.step != "VALIDATED" or user.isAllowed('CANCEL_VALIDATED_SUBMISSION'))
+                    {% if (submission.step != "VALIDATE" or user.isAllowed('CANCEL_VALIDATED_SUBMISSION'))
                        and (submission.provider.id is same as(user.provider.id) or user.isAllowed('CANCEL_OTHER_PROVIDER_SUBMISSION')) %}
                         <p>
                             <a href="{{ path('integration_cancel', {'submissionId': submission.id}) }}" onClick="return confirm('{{ 'Are you sure?'|trans }}');">{{ 'Cancel Submission'|trans }}</a>

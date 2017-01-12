@@ -73,7 +73,7 @@ public class SubmissionDAO {
 	/**
 	 * Get the active submissions for a given provider and dataset.
 	 */
-	private static final String GET_ACTIVE_SUBMISSIONS_STMT = "SELECT submission_id, step, status, provider_id, dataset_id, user_login FROM submission WHERE provider_id = ? AND dataset_id = ? AND step <> 'CANCELLED'";
+	private static final String GET_ACTIVE_SUBMISSIONS_STMT = "SELECT submission_id, step, status, provider_id, dataset_id, user_login FROM submission WHERE provider_id = ? AND dataset_id = ? AND step <> 'CANCEL'";
 
 	/**
 	 * Get a connexion to the database.

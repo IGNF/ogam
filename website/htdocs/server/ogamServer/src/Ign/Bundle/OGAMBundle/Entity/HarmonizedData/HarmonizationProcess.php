@@ -202,7 +202,7 @@ class HarmonizationProcess {
 		};
 		
 		if ($this->getSubmissions()->forAll($submissionValid)) {
-			return 'VALIDATED';
+			return 'VALIDATE';
 		}
 		return 'NOT_VALID';
 	}

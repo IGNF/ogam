@@ -55,7 +55,7 @@
 				<td>{{ submission.step }}</td>
 				<td>
 					{{ submission.status }}
-					{% if submission.status == "OK" or submission.status == "CHECKED" %}
+					{% if submission.status == "OK" or submission.status == "CHECK" %}
 						{% image '@OGAMBundle/Resources/public/img/Green_tick.png' %}
 							<img src="{{ asset_url }}"/>
 						{% endimage %}

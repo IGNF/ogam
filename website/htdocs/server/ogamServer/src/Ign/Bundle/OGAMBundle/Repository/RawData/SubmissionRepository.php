@@ -19,7 +19,7 @@ class SubmissionRepository extends \Doctrine\ORM\EntityRepository {
 	 * @return Array[Submission]
 	 */
 	public function getActiveSubmissions($providerId = null) {
-		$dql = "SELECT s " . "FROM OGAMBundle:RawData\Submission s " . "WHERE s.step NOT IN ('CANCELLED', 'INIT') ";
+		$dql = "SELECT s " . "FROM OGAMBundle:RawData\Submission s " . "WHERE s.step NOT IN ('CANCEL', 'INIT') ";
 
 		if ($providerId !== null) {
 			$dql .= " AND s.provider = :provider ";
@@ -48,7 +48,7 @@ FROM $this->_entityName s
 WHERE s.id in
 (
 SELECT  max(s2.id) FROM $this->_entityName s2
-WHERE s2.step NOT IN ('CANCELLED', 'INIT')
+WHERE s2.step NOT IN ('CANCEL', 'INIT')
 GROUP BY s2.dataset, s2.provider
 )
 ORDER BY s.id";

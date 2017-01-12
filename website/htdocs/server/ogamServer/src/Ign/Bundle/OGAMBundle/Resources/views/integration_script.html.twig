@@ -10,7 +10,7 @@
 
     // Refresh The status of the submission
     OgamDesktopIntegration.getStatus_{{- submission.id -}} = function () {
-        {% if submission.step is same as('CHECKED') %}
+        {% if submission.step is same as('CHECK') %}
             var url = '{{ url('integration_checkstatus') }}';
         {% else %}
             var  url = '{{ url('integration_status') }}';
