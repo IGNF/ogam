@@ -7,7 +7,7 @@
     var OgamDesktopIntegration = {};
 
     // Display the progress bar
-    display('{{"progressBar#{harmonizationProcess.harmonizationId}"}}', '', 0, '{{ absolute_url('/img/') }}');
+    display('{{"progressBar#{harmonizationProcess.harmonizationId}"}}', '', 0, '{{ asset('bundles/ogam/img/') }}');
 
     // Refresh The status of the submission
     OgamDesktopIntegration.getStatus_{{- harmonizationProcess.harmonizationId -}} =  function () {
@@ -21,7 +21,6 @@
                 if (OgamDesktopIntegration.request.status == 200) { // Success
 
                     var rp = JSON.parse(OgamDesktopIntegration.request.responseText);
-                    var src = '{{ absolute_url('/img/') }}';
                     switch(rp.status){
                         case 'OK':
                         case 'WARNING':
