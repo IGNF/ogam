@@ -81,6 +81,7 @@ DELETE FROM providers;
 -- Create a provider
 INSERT INTO providers(id, label, definition) VALUES ('1', 'Defaut', 'Organisme par défaut');
 INSERT INTO providers(id, label, definition) VALUES ('2', 'Dunkerque SA', 'Organisme de Dunkerque');
+INSERT INTO providers(id, label, definition) VALUES ('test_provider', 'test_provider SA', 'Provider pour les tests unitaires');
 ALTER sequence website.provider_id_seq restart with 3;
 
 -- Create some roles

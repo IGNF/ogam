@@ -55,11 +55,11 @@ public class DataServiceTest extends AbstractEFDACTest {
 
 		// Parameters
 		String providerId = "test_provider";
-		String locationFile = "./test/data/location.csv";
-		String plotFile = "./test/data/plot_data.csv";
-		String speciesFile = "./test/data/species_data.csv";
+		String locationFile = "../database/Sample Data/small/location.csv";
+		String plotFile = "../database/Sample Data/small/plot_data.csv";
+		String speciesFile = "../database/Sample Data/small/species_data.csv";
 
-		String requestId = "REQUEST";
+		String requestId = "SPECIES";
 		String userLogin = "Test user";
 
 		Integer dataSubmissionId = null;
