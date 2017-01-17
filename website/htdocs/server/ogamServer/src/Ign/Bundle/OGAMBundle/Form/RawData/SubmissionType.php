@@ -46,7 +46,7 @@ class SubmissionType extends AbstractType {
 	 */
 	public function configureOptions(OptionsResolver $resolver) {
 		$resolver->setDefaults(array(
-			'data_class' => Submission::class;
+			'data_class' => Submission::class,
 		));
 	}
 }
