@@ -13,7 +13,8 @@ class CheckconfController extends Controller {
 	/**
 	 * Default action. Show configuration.
 	 *
-	 * @Route("/", name="checkconf_showconfig")
+	 * @Route("/", name="checkconf_home")
+	 * @Route("/showCheckConf", name="checkconf_showconfig")
 	 */
 	public function showCheckConfAction(Request $request) {
 
