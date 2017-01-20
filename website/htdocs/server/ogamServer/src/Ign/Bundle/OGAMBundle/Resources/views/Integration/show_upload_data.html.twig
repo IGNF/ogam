@@ -16,16 +16,12 @@
 </a>
 </div>
 <div class="{{ form.vars.name }}">
-    <div class="form-super-ct">
-        <div class="form-ct">
-        {{ form_start(form) }}
-            {{ form_errors(form) }}
-            {% for child in form.children %}
-                {{ form_row(child, {'showModel': showModel, 'showDetail': showDetail, 'files': files}) }}
-            {% endfor %}
-        {{ form_end(form) }}
-        </div>
-    </div>
+    {{ form_start(form) }}
+        {{ form_errors(form) }}
+        {% for child in form.children %}
+            {{ form_row(child, {'showModel': showModel, 'showDetail': showDetail, 'files': files}) }}
+        {% endfor %}
+    {{ form_end(form) }}
 </div>
 
 {% endblock %}
