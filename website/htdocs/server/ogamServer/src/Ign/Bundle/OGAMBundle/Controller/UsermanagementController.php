@@ -27,7 +27,7 @@ class UsermanagementController extends Controller {
 	/**
 	 * Delete a provider.
 	 *
-	 * @Route("/deleteProvider/{id}", name="usermanagement_deleteProvider", requirements={"id": "[1-9][0-9]*"})
+	 * @Route("/deleteProvider/{id}", name="usermanagement_deleteProvider")
 	 */
 	public function deleteProviderAction($id) {
 		$providerRepo = $this->getDoctrine()->getRepository('Ign\Bundle\OGAMBundle\Entity\Website\Provider', 'website');
@@ -138,7 +138,7 @@ class UsermanagementController extends Controller {
 	/**
 	 * Edit a provider.
 	 *
-	 * @Route("/editProvider/{id}", name="usermanagement_editProvider", requirements={"id": "[1-9][0-9]*"})
+	 * @Route("/editProvider/{id}", name="usermanagement_editProvider")
 	 */
 	public function editProviderAction(Request $request, $id = null) {
 		$provider = new Provider();
