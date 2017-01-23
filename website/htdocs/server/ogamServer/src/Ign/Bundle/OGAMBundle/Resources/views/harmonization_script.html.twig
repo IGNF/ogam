@@ -13,7 +13,9 @@
     OgamDesktopIntegration.getStatus_{{- harmonizationProcess.harmonizationId -}} =  function () {
 
         var url = '{{ url('harmonization_getstatus') }}';
-
+        if (OgamDesktopIntegration.request !== undefined ){//request in progress
+            return;
+        }
         OgamDesktopIntegration.request = new XMLHttpRequest();
         OgamDesktopIntegration.request.onreadystatechange = function() {
 
@@ -46,6 +48,7 @@
                 } else { // Failure
 
                 }
+                OgamDesktopIntegration.request = undefined;
             }
         };
 
@@ -54,5 +57,5 @@
         OgamDesktopIntegration.request.send("DATASET_ID={{- harmonizationProcess.dataset.id -}}&PROVIDER_ID={{- harmonizationProcess.providerId -}}&action=status");
 
     }
-    OgamDesktopIntegration.getStatusTask_{{- harmonizationProcess.harmonizationId -}} = later.setInterval(OgamDesktopIntegration.getStatus_{{- harmonizationProcess.harmonizationId -}}, later.parse.text('every 4 sec'));
+    OgamDesktopIntegration.getStatusTask_{{- harmonizationProcess.harmonizationId -}} = later.setInterval(OgamDesktopIntegration.getStatus_{{- harmonizationProcess.harmonizationId -}}, later.parse.text('every 2 sec'));
 })(); </script>

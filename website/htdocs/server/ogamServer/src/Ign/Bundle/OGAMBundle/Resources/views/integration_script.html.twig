@@ -15,6 +15,9 @@
         {% else %}
             var  url = '{{ url('integration_status') }}';
         {% endif %}
+        if (OgamDesktopIntegration.request !== undefined ){//request in progress
+            return;
+        }
         OgamDesktopIntegration.request = new XMLHttpRequest();
         OgamDesktopIntegration.request.onreadystatechange = function() {
             if (OgamDesktopIntegration.request.readyState == 4) { // 4: request finished and response is ready
@@ -46,10 +49,11 @@
                 } else { // Failure
 
                 }
+                OgamDesktopIntegration.request = undefined;
             }
         };
         OgamDesktopIntegration.request.open("GET", url+'?action=status&submissionId='+{{ submission.id }}, true);
         OgamDesktopIntegration.request.send();
     }
-    OgamDesktopIntegration.getStatusTask_{{ submission.id }} = later.setInterval(OgamDesktopIntegration.getStatus_{{- submission.id -}}, later.parse.text('every 4 sec'));
+    OgamDesktopIntegration.getStatusTask_{{ submission.id }} = later.setInterval(OgamDesktopIntegration.getStatus_{{- submission.id -}}, later.parse.text('every 2 sec'));
 })(); </script>
