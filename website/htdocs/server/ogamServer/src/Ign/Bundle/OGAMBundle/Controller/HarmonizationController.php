@@ -169,7 +169,7 @@ class HarmonizationController extends Controller {
 				'dataset' => $datasetId
 			));
 
-			return new $this->json(array(
+			return $this->json(array(
 				'success' => FALSE,
 				'errorMsg' => $e->getMessage()
 			)
