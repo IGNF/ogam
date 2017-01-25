@@ -171,7 +171,7 @@ class HarmonizationController extends Controller {
 
 			return $this->json(array(
 				'success' => FALSE,
-				'errorMsg' => $e->getMessage()
+				'errorMessage' => $e->getMessage()
 			)
 			);
 		}
