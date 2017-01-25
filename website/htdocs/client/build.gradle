@@ -48,7 +48,7 @@ task deploy(type: Copy, description: 'Copy the JS files to the deploy directory.
 	// On CI server, $deployDir = /var/www/html
 	def deployDir = project.hasProperty('deployDir') ? project.getProperty('deployDir') : 'build/deploy'
 
-    from '../public/' 
+    from 'build/production/'
     
     into "${deployDir}/public"
     
