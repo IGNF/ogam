@@ -47,7 +47,7 @@ task phpunit(type:Exec, description: 'Launch PHPUnit for unit testing.') {
   } else {
   	commandLine './ogamServer/vendor/phpunit/phpunit/phpunit'
   }
-  args "--no-coverage", "--configuration", "./ogamServer/phpunit.xml"
+  args "-v", "--debug", "--configuration", "./ogamServer/phpunit.xml"
 }
 
 // Clean the deploy directory
