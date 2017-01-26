@@ -175,7 +175,7 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 			// Add the child to its parent
         	node.getChildren().each(
     			function(child){
-    				this.addChild(newNode.getLayers(), child);
+    				this.addChild(newNode.getLayers().getArray(), child);
     			},
     			this
         	);

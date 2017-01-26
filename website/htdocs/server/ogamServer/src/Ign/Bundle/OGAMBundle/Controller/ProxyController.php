@@ -48,14 +48,22 @@ class ProxyController extends Controller {
 		$response->headers->set('Content-transfer-encoding', 'binary');
 		$response->headers->set('Content-disposition', 'attachment; filename=Error_Report_' . $submissionId . '.pdf');
 
-		$method = $request->getRealMethod(); // GET or POST
-
-		if ($method == 'GET') {
-			$result = $this->sendGET($reportURL);
-		} else {
-			$result = $this->sendPOST($reportURL, $request->getContent());
+		try {
+			$method = $request->getRealMethod(); // GET or POST
+			if ($method == 'GET') {
+				$result = $this->sendGET($reportURL);
+			} else {
+				$result = $this->sendPOST($reportURL, $request->getContent());
+			}
+			$response->setContent($result);
+		} catch (\Exception $e) {
+			$logger->error('Error while creating the PDF report for the data submission : ' . $e);
+				
+			return $this->render('OGAMBundle:Integration:data_error.html.twig', array(
+				'error' => $e->getMessage()
+			));
 		}
-		$response->setContent($result);
+		
 		return $response;
 	}
 

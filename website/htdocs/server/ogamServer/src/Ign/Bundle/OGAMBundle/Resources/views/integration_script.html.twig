@@ -6,7 +6,7 @@
 (function() {
     var OgamDesktopIntegration = {};
     // Display the progress bar
-    display('progressBar{{- submission.id -}}', '', 0, '{{ absolute_url('/img/') }}');
+    display('progressBar{{- submission.id -}}', '', 0, '{{ asset('bundles/ogam/img/') }}');
 
     // Refresh The status of the submission
     OgamDesktopIntegration.getStatus_{{- submission.id -}} = function () {
@@ -15,12 +15,14 @@
         {% else %}
             var  url = '{{ url('integration_status') }}';
         {% endif %}
+        if (OgamDesktopIntegration.request !== undefined ){//request in progress
+            return;
+        }
         OgamDesktopIntegration.request = new XMLHttpRequest();
         OgamDesktopIntegration.request.onreadystatechange = function() {
             if (OgamDesktopIntegration.request.readyState == 4) { // 4: request finished and response is ready
                 if (OgamDesktopIntegration.request.status == 200) { // Success
                     var rp = JSON.parse(OgamDesktopIntegration.request.responseText);
-                    var src = '{{ absolute_url('/bundles/ogam/img/') }}';
                     switch(rp.status){
                         case 'OK':
                         case 'WARNING':
@@ -47,10 +49,11 @@
                 } else { // Failure
 
                 }
+                OgamDesktopIntegration.request = undefined;
             }
         };
         OgamDesktopIntegration.request.open("GET", url+'?action=status&submissionId='+{{ submission.id }}, true);
         OgamDesktopIntegration.request.send();
     }
-    OgamDesktopIntegration.getStatusTask_{{ submission.id }} = later.setInterval(OgamDesktopIntegration.getStatus_{{- submission.id -}}, later.parse.text('every 4 sec'));
+    OgamDesktopIntegration.getStatusTask_{{ submission.id }} = later.setInterval(OgamDesktopIntegration.getStatus_{{- submission.id -}}, later.parse.text('every 2 sec'));
 })(); </script>

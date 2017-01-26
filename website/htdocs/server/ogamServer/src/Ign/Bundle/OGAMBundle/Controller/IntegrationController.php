@@ -94,7 +94,17 @@ class IntegrationController extends Controller {
 			$this->get('logger')->debug('userLogin : ' . $userLogin);
 			$this->get('logger')->debug('providerId : ' . $providerId);
 
-			$submissionId = $this->get('ogam.integration_service')->newDataSubmission($providerId, $dataset->getId(), $userLogin);
+			// Send the create new data submission request to the integration server
+			try {
+				$submissionId = $this->get('ogam.integration_service')->newDataSubmission($providerId, $dataset->getId(), $userLogin);
+			} catch (\Exception $e) {
+				$this->get('logger')->error('Error while creating new data submission : ' . $e);
+			
+				return $this->render('OGAMBundle:Integration:data_error.html.twig', array(
+					'error' => $e->getMessage()
+				));
+			}
+			
 			$submission = $this->getEntityManger()->getReference('OGAMBundle:RawData\Submission', $submissionId);
 			return $this->showUploadDataAction($request, $submission);
 		}

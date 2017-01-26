@@ -49,7 +49,7 @@ class AbstractService {
 	protected function parseErrorMessage($body) {
 		try {
 			// Parse la chaîne en un arbre DOM
-			$dom = new \SimpleXMLElement($body, LIBXML_NOERROR); // Suppress warnings
+			$dom = new \SimpleXMLElement(utf8_encode($body), LIBXML_NOERROR); // Suppress warnings, 'utf8_encode' avoid the malformed UTF-8 characters, possibly incorrectly encoded into the error message
 		} catch (\Exception $e) {
 			$this->logger->debug("Error during parsing: " . $e->getMessage());
 			throw new \Exception("Error during parsing: " . $e->getMessage());
