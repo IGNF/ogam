@@ -18,11 +18,16 @@ class AbstractControllerTest extends WebTestCase {
 	protected $client = null;
 
 	public function setUp() {
+	    echo "\n\rStarting the access tests...\n\r";
+	    $fullClassName = explode('\\', get_class($this));
+	    $shortClassName = substr(end($fullClassName),0,-4);
+	    echo "Controller: ", $shortClassName, "\n\r";
 		$this->client = static::createClient();
 	}
 
 	protected function logIn($login = 'admin', $roles = array('ROLE_ADMIN')) {
-		$session = $this->client->getContainer()->get('session');
+	    echo "User Role: ", implode(" ,", $roles), "\n\r";
+	    $session = $this->client->getContainer()->get('session');
 		
 		// the firewall context (defaults to the firewall name)
 		$firewall = 'main';
@@ -43,6 +48,7 @@ class AbstractControllerTest extends WebTestCase {
 	 * Test access without login
 	 */
 	public function testControllerActionNotLoggedAccess() {
+	    echo "User Role: NOT LOGGED\n\r";
 		$this->checkControllerActionAccess($this->getNotLoggedUrls(), Response::HTTP_FOUND);
 	}
 
@@ -187,6 +193,7 @@ class AbstractControllerTest extends WebTestCase {
 				throw $e;
 			}
 		}
+		echo "\n\n\r";
 	}
 
 	/**
