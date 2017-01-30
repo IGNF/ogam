@@ -329,7 +329,7 @@ Ext.define('OgamDesktop.controller.map.Layer',{
         var layer = node.getLayer();
         olLayerOpts['source'] = this.buildOlSource(layer, layer.getViewService());
         olLayerOpts['name'] = layer.get('name');
-        olLayerOpts['text'] = layer.get('label');
+        olLayerOpts['text'] = Ext.isEmpty(node.get('label')) ? layer.get('label') : node.get('label');
         olLayerOpts['opacity'] = layer.get('defaultOpacity');
         olLayerOpts['printable'] = true;
         olLayerOpts['visible'] = !node.get('isHidden');
