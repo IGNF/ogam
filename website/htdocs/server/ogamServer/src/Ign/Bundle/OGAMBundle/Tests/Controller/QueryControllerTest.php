@@ -9,25 +9,47 @@ class QueryControllerTest extends AbstractControllerTest {
 	// *************************************************** //
 	
 	/**
-	 * Test access with a visitor login
+	 * Test access with a visitor login (RAW_DATA)
 	 */
 	public function testControllerActionVisitorAccess() {
 		$this->logIn('visitor', array(
 			'ROLE_VISITOR'
 		)); // The session must be keeped for the chained requests
+		echo "Schema: RAW_DATA\n\r";
 		$this->checkControllerActionAccess($this->getRawDataUrls(Response::HTTP_FORBIDDEN), Response::HTTP_FORBIDDEN);
-		$this->checkControllerActionAccess($this->getHarmonizedDataUrls(), Response::HTTP_OK);
+	}
+	
+	/**
+	 * Test access with a visitor login (HARMONIZED_DATA)
+	 */
+	public function testControllerActionVisitorAccess2() {
+	    $this->logIn('visitor', array(
+	        'ROLE_VISITOR'
+	    )); // The session must be keeped for the chained requests
+	    echo "Schema: HARMONIZED_DATA\n\r";
+	    $this->checkControllerActionAccess($this->getHarmonizedDataUrls(), Response::HTTP_OK);
 	}
 
 	/**
-	 * Test access with a admin login
+	 * Test access with a admin login (RAW_DATA)
 	 */
 	public function testControllerActionAdminAccess() {
 		$this->logIn('admin', array(
 			'ROLE_ADMIN'
 		)); // The session must be keeped for the chained requests
+		echo "Schema: RAW_DATA\n\r";
 		$this->checkControllerActionAccess($this->getRawDataUrls(), Response::HTTP_OK);
-		$this->checkControllerActionAccess($this->getHarmonizedDataUrls(), Response::HTTP_OK);
+	}
+	
+	/**
+	 * Test access with a admin login (HARMONIZED_DATA)
+	 */
+	public function testControllerActionAdminAccess2() {
+	    $this->logIn('admin', array(
+	        'ROLE_ADMIN'
+	    )); // The session must be keeped for the chained requests
+	    echo "Schema: HARMONIZED_DATA\n\r";
+	    $this->checkControllerActionAccess($this->getHarmonizedDataUrls(), Response::HTTP_OK);
 	}
 
 	public function getNotLoggedUrls() {

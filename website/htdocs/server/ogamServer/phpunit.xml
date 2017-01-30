@@ -19,20 +19,24 @@
     </testsuites>
     
     <filter>
-		<whitelist processUncoveredFilesFromWhitelist="true">
-			<directory suffix=".php">src/Ign/Bundle/OGAMBundle</directory>
-			<exclude>
-		      <directory suffix=".php">src/Ign/Bundle/OGAMBundle/Resources</directory>
-		    </exclude>
-		</whitelist>
-	</filter>
+        <!-- addUncoveredFilesFromWhitelist: Adds all the files of the white list to the report -->
+        <!-- processUncoveredFilesFromWhitelist: Detects the dead code in all the files included into the report -->
+        <whitelist addUncoveredFilesFromWhitelist="true" processUncoveredFilesFromWhitelist="true">
+            <directory suffix=".php">src/Ign/Bundle/OGAMBundle</directory>
+            <exclude>
+              <directory>src/Ign/Bundle/OGAMBundle/Resources</directory>
+              <directory>src/Ign/Bundle/OGAMBundle/Tests</directory>
+            </exclude>
+        </whitelist>
+        
+    </filter>
     
     
     <logging>
-		<log type="junit" target="../build/test-results/phpunit/phpunit.xml" />
-		<log type="coverage-html" target="../build/test-results/phpunit/coverage" title="OGAM" />
-		<log type="coverage-clover" target="../build/test-results/phpunit/coverage.xml" />
-	</logging>
+        <log type="junit" target="../build/test-results/phpunit/phpunit.xml" />
+        <log type="coverage-html" target="../build/test-results/phpunit/coverage" title="OGAM" />
+        <log type="coverage-clover" target="../build/test-results/phpunit/coverage.xml" />
+    </logging>
     
 
 </phpunit>
