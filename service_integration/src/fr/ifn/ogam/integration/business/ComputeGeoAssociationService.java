@@ -17,7 +17,7 @@ import fr.ifn.ogam.common.util.DSRConstants;
 
 /**
  * 
- * Service used to calculate the attachments of observations geometries and references to administratives limit
+ * Service used to calculate the attachments of observations geometries and references to administratives limit.
  * 
  * @author gautam
  *
@@ -25,40 +25,53 @@ import fr.ifn.ogam.common.util.DSRConstants;
 public class ComputeGeoAssociationService {
 
 	/***
-	 * The logger used to log the errors or several information.**
+	 * The logger used to log the errors or several information.
 	 * 
 	 * @see org.apache.log4j.Logger
 	 */
 	private final transient Logger logger = Logger.getLogger(this.getClass());
 
 	/**
-	 * DAO for accessing geometry table
+	 * DAO for accessing geometry table.
 	 * 
 	 * @see MailleDAO
 	 */
 	private GeometryDAO geometryDAO = new GeometryDAO();
 
 	/**
-	 * DAO for accessing commune table
+	 * DAO for accessing commune table.
 	 * 
 	 * @see CommuneDAO
 	 */
 	private CommuneDAO communeDAO = new CommuneDAO();
 
 	/**
-	 * DAO for accessing maille table
+	 * DAO for accessing maille table.
 	 * 
 	 * @see MailleDAO
 	 */
 	private MailleDAO mailleDAO = new MailleDAO();
 
 	/**
-	 * DAO for accessing departement table
+	 * DAO for accessing departement table.
 	 * 
 	 * @see DepartementDAO
 	 */
 	private DepartementDAO departementDAO = new DepartementDAO();
 
+	/**
+	 * Ajoute le résultat du croisement avec les entités administratives.
+	 * 
+	 * @param format
+	 *            The format
+	 * @param tableName
+	 *            The tabme name
+	 * @param values
+	 *            Entry values
+	 * @return false
+	 * @throws Exception
+	 *             In case of error with the database
+	 */
 	public boolean insertAdministrativeAssociations(String format, String tableName, Map<String, GenericData> values) throws Exception {
 
 		logger.debug("insertAdministrativeAssociations");
