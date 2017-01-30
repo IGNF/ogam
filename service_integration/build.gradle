@@ -44,10 +44,12 @@ task deployConfig(description: 'Copy the config files') << {
     def applicationName = project.hasProperty('applicationName') ? project.getProperty('applicationName') : 'OGAM'
     
 	// Copy the config file
-	copy {
-  		from "./config/"
-  		into "${tomcatHome}/conf/Catalina/localhost"
-  		include "${applicationName}IntegrationService.xml"
+	if (!file('${tomcatHome}/conf/Catalina/localhost/${applicationName}IntegrationService.xml').exists()) {
+		copy {
+	  		from "./config/"
+	  		into "${tomcatHome}/conf/Catalina/localhost"
+	  		include "${applicationName}IntegrationService.xml"
+		}
 	}
 }
 
