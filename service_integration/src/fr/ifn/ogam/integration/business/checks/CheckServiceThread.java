@@ -40,13 +40,12 @@ public class CheckServiceThread extends Thread {
 	private CheckService checkService = new CheckService();
 
 	/**
-	 * Constructs a CheckService object.
+	 * Constructs a CheckService thread.
 	 * 
 	 * @param submissionId
 	 *            the identifier of the submission
-	 * @throws Exception
 	 */
-	public CheckServiceThread(Integer submissionId) throws Exception {
+	public CheckServiceThread(Integer submissionId) {
 
 		this.submissionId = submissionId;
 
