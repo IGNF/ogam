@@ -47,7 +47,7 @@ public class CheckService {
 	 * @param submissionId
 	 *            the identifier of the submission
 	 * @return the status of the submission
-	 * @throws Exception
+	 * @throws Exception If the submission doesn't exist
 	 */
 	public String checkSubmissionStatus(int submissionId) throws Exception {
 

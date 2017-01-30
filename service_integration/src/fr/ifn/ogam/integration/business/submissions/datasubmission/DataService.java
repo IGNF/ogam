@@ -89,6 +89,8 @@ public class DataService extends AbstractService {
 	 * @param submissionId
 	 *            the identifier of the submission
 	 * @return the data submission object
+	 * @throws Exception
+	 *             in case of error with the database
 	 */
 	public SubmissionData getSubmission(Integer submissionId) throws Exception {
 
@@ -106,6 +108,8 @@ public class DataService extends AbstractService {
 	 * @param userLogin
 	 *            the login of the user who creates the submission
 	 * @return the identifier of the created submission
+	 * @throws Exception
+	 *             in case of error with the database
 	 */
 	public Integer newSubmission(String providerId, String datasetId, String userLogin) throws Exception {
 
@@ -123,6 +127,8 @@ public class DataService extends AbstractService {
 	 * 
 	 * @param submissionId
 	 *            the identifier of the submission
+	 * @throws Exception
+	 *             in case of error with the database
 	 */
 	public void validateSubmission(Integer submissionId) throws Exception {
 
@@ -138,6 +144,8 @@ public class DataService extends AbstractService {
 	 * 
 	 * @param submissionId
 	 *            the identifier of the submission
+	 * @throws Exception
+	 *             in case of error with the database
 	 */
 	public void cancelSubmission(Integer submissionId) throws Exception {
 
@@ -178,9 +186,10 @@ public class DataService extends AbstractService {
 	/**
 	 * Specific to GINCO. Deletes all data related to the submission inside tables used for visualization.
 	 * 
-	 * @param tableFormatData
+	 * @param format
 	 *            the tableFormatData
 	 * @throws Exception
+	 *             in case of error with the database
 	 */
 	public void deleteFromGincoBacsData(String format) throws Exception {
 

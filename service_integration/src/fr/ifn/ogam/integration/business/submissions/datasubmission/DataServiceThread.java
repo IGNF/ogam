@@ -52,6 +52,7 @@ public class DataServiceThread extends AbstractThread {
 	 * @param requestParameters
 	 *            the map of static parameter values (the upload path, ...)
 	 * @throws Exception
+	 *             in case of error with the database
 	 */
 	public DataServiceThread(Integer submissionId, Map<String, String> requestParameters) throws Exception {
 

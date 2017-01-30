@@ -122,8 +122,9 @@ public class CheckErrorDAO {
 	 * @param importance
 	 *            The importance of the check(s) ('WARNING' or 'ERROR')
 	 * @return The total of errors for a specified submission id, step(s) and importance
+	 * @throws Exception In case of error with the database
 	 */
-	public int countPerCheck(int submissionId, String steps, String importance) throws NamingException, SQLException {
+	public int countPerCheck(int submissionId, String steps, String importance) throws Exception {
 
 		Connection con = null;
 		PreparedStatement ps = null;

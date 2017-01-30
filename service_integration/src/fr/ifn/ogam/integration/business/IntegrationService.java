@@ -73,11 +73,15 @@ public class IntegrationService extends GenericMapper {
 	 *            the source data file path
 	 * @param sourceFormat
 	 *            the source format identifier
+	 * @param fileType
+	 *            the type of the file
 	 * @param requestParameters
 	 *            the static values (PROVIDER_ID, DATASET_ID, SUBMISSION_ID, ...)
 	 * @param thread
 	 *            the thread that is running the process (optionnal, this is too keep it informed of the progress)
 	 * @return the status of the update
+	 * @throws Exception
+	 *             in case of error with the database
 	 */
 	public boolean insertData(Integer submissionId, String filePath, String sourceFormat, String fileType, Map<String, String> requestParameters,
 			AbstractThread thread) throws Exception {
@@ -224,7 +228,8 @@ public class IntegrationService extends GenericMapper {
 						FileFieldData sourceFieldDescriptor = sourceFieldDescriptors.get(col);
 
 						// Check the mask if available and the variable is not a date (date format is tested with a date format)
-						if (sourceFieldDescriptor.getMask() != null && !sourceFieldDescriptor.getType().equalsIgnoreCase(DATE) && !sourceFieldDescriptor.getType().equalsIgnoreCase(TIME)) {							
+						if (sourceFieldDescriptor.getMask() != null && !sourceFieldDescriptor.getType().equalsIgnoreCase(DATE)
+								&& !sourceFieldDescriptor.getType().equalsIgnoreCase(TIME)) {
 							try {
 								checkMask(sourceFieldDescriptor.getMask(), value);
 							} catch (CheckException e) {
