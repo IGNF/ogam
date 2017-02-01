@@ -9,47 +9,131 @@ class QueryControllerTest extends AbstractControllerTest {
 	// *************************************************** //
 	
 	/**
-	 * Test access with a visitor login (RAW_DATA)
+	 * Test access with a visitor login (RAW_DATA, CHAINED)
 	 */
 	public function testControllerActionVisitorAccess() {
 		$this->logIn('visitor', array(
 			'ROLE_VISITOR'
 		)); // The session must be keeped for the chained requests
 		echo "Schema: RAW_DATA\n\r";
-		$this->checkControllerActionAccess($this->getRawDataUrls(Response::HTTP_FORBIDDEN), Response::HTTP_FORBIDDEN);
+		echo "Chained: TRUE\n\r";
+		$urls = array_merge(
+		    $this->getRawDataUrls(Response::HTTP_FORBIDDEN),
+		    $this->getOthersChainedUrls(Response::HTTP_FORBIDDEN)
+		);
+		$this->checkControllerActionAccess($urls, Response::HTTP_FORBIDDEN);
 	}
 	
 	/**
-	 * Test access with a visitor login (HARMONIZED_DATA)
+	 * Test access with a visitor login (RAW_DATA, NOT CHAINED)
 	 */
 	public function testControllerActionVisitorAccess2() {
+		$this->logIn('visitor', array(
+			'ROLE_VISITOR'
+		)); // The session must be keeped for the chained requests
+		echo "Schema: RAW_DATA\n\r";
+		echo "Chained: FALSE\n\r";
+		$urls = array_merge(
+		    $this->getRawDataUrls(Response::HTTP_FORBIDDEN),
+		    $this->getOthersNotChainedUrls(Response::HTTP_FORBIDDEN)
+		);
+		$this->checkControllerActionAccess($urls, Response::HTTP_FORBIDDEN);
+	}
+	
+	/**
+	 * Test access with a visitor login (HARMONIZED_DATA, CHAINED)
+	 */
+	public function testControllerActionVisitorAccess3() {
 	    $this->logIn('visitor', array(
 	        'ROLE_VISITOR'
 	    )); // The session must be keeped for the chained requests
 	    echo "Schema: HARMONIZED_DATA\n\r";
-	    $this->checkControllerActionAccess($this->getHarmonizedDataUrls(), Response::HTTP_OK);
+	    echo "Chained: TRUE\n\r";
+	    $urls = array_merge(
+	        $this->getHarmonizedDataUrls(),
+	        $this->getOthersChainedUrls()
+	    );
+	    $this->checkControllerActionAccess($urls, Response::HTTP_OK);
+	}
+	
+	/**
+	 * Test access with a visitor login (HARMONIZED_DATA, NOT CHAINED)
+	 */
+	public function testControllerActionVisitorAccess4() {
+	    $this->logIn('visitor', array(
+	        'ROLE_VISITOR'
+	    )); // The session must be keeped for the chained requests
+	    echo "Schema: HARMONIZED_DATA\n\r";
+	    echo "Chained: FALSE\n\r";
+	    $urls = array_merge(
+	        $this->getHarmonizedDataUrls(),
+	        $this->getOthersNotChainedUrls()
+	    );
+	    $this->checkControllerActionAccess($urls, Response::HTTP_OK);
 	}
 
 	/**
-	 * Test access with a admin login (RAW_DATA)
+	 * Test access with a admin login (RAW_DATA, CHAINED)
 	 */
 	public function testControllerActionAdminAccess() {
+	    $this->logIn('admin', array(
+	        'ROLE_ADMIN'
+	    )); // The session must be keeped for the chained requests
+	    echo "Schema: RAW_DATA\n\r";
+	    echo "Chained: TRUE\n\r";
+	    $urls = array_merge(
+	        $this->getRawDataUrls(),
+	        $this->getOthersChainedUrls()
+	        );
+	    $this->checkControllerActionAccess($urls, Response::HTTP_OK);
+	}
+
+	/**
+	 * Test access with a admin login (RAW_DATA, NOT CHAINED)
+	 */
+	public function testControllerActionAdminAccess2() {
 		$this->logIn('admin', array(
 			'ROLE_ADMIN'
 		)); // The session must be keeped for the chained requests
 		echo "Schema: RAW_DATA\n\r";
-		$this->checkControllerActionAccess($this->getRawDataUrls(), Response::HTTP_OK);
+		echo "Chained: FALSE\n\r";
+		$urls = array_merge(
+		    $this->getRawDataUrls(),
+		    $this->getOthersNotChainedUrls()
+		);
+		$this->checkControllerActionAccess($urls, Response::HTTP_OK);
 	}
 	
 	/**
-	 * Test access with a admin login (HARMONIZED_DATA)
+	 * Test access with a admin login (HARMONIZED_DATA, CHAINED)
 	 */
-	public function testControllerActionAdminAccess2() {
+	public function testControllerActionAdminAccess3() {
 	    $this->logIn('admin', array(
 	        'ROLE_ADMIN'
 	    )); // The session must be keeped for the chained requests
 	    echo "Schema: HARMONIZED_DATA\n\r";
-	    $this->checkControllerActionAccess($this->getHarmonizedDataUrls(), Response::HTTP_OK);
+	    echo "Chained: TRUE\n\r";
+	    $urls = array_merge(
+	        $this->getHarmonizedDataUrls(),
+	        $this->getOthersChainedUrls()
+	        );
+	    $this->checkControllerActionAccess($urls, Response::HTTP_OK);
+	}
+
+	/**
+	 * Test access with a admin login (HARMONIZED_DATA, NOT CHAINED)
+	 */
+	public function testControllerActionAdminAccess4() {
+	    $this->logIn('admin', array(
+	        'ROLE_ADMIN'
+	    )); // The session must be keeped for the chained requests
+	    echo "Schema: HARMONIZED_DATA\n\r";
+	    echo "Chained: FALSE\n\r";
+	    $urls = array_merge(
+	        $this->getHarmonizedDataUrls(),
+	        $this->getOthersNotChainedUrls()
+	        );
+	    $this->checkControllerActionAccess($urls, Response::HTTP_OK);
 	}
 
 	public function getNotLoggedUrls() {
@@ -83,7 +167,7 @@ class QueryControllerTest extends AbstractControllerTest {
 	}
 
 	public function getRawDataUrls($defaultStatusCode = Response::HTTP_FOUND) {
-		return array_merge([
+		return [
             'query_RAW_DATA' => [[
                 'uri' => '/query/index',
 					'method' => 'GET',
@@ -99,11 +183,11 @@ class QueryControllerTest extends AbstractControllerTest {
 					'statusCode' => $defaultStatusCode,
 					'redirectionLocation' => '/query/show-query-form'
             ]]
-		], $this->getOthersUrls($defaultStatusCode));
+		];
 	}
 
 	public function getHarmonizedDataUrls() {
-		return array_merge([
+		return [
             'query_HARMONIZED_DATA' => [[
                 'uri' => '/query/index',
 					'method' => 'GET',
@@ -114,10 +198,62 @@ class QueryControllerTest extends AbstractControllerTest {
 					'statusCode' => Response::HTTP_FOUND,
 					'redirectionLocation' => '/query/show-query-form'
             ]]
-		], $this->getOthersUrls());
+		];
 	}
 
-	public function getOthersUrls($defaultStatusCode = Response::HTTP_FOUND) {
+	public function getOthersChainedUrls($defaultStatusCode = Response::HTTP_FOUND) {
+	    return [
+	        'ajaxresetresultlocation' => [['uri' => '/query/ajaxresetresultlocation'], ['isJson' => true]],
+	        'ajaxbuildrequest' => [[
+	            'uri' => '/query/ajaxbuildrequest',
+	            'method' => 'POST',
+	            'parameters' => [
+	                'datasetId' => 'SPECIES',
+	                'criteria__PLOT_FORM__IS_FOREST_PLOT' => '1',
+	                // 'criteria__PLOT_FORM__IS_FOREST_PLOT[]'=>'1',// TODO: Doesn't work. why?
+	                'column__PLOT_FORM__PLOT_CODE' => '1',
+	                'column__PLOT_FORM__CYCLE' => '1',
+	                'column__PLOT_FORM__INV_DATE' => '1',
+	                'column__PLOT_FORM__IS_FOREST_PLOT' => '1',
+	                // 'column__PLOT_FORM__CORINE_BIOTOPE'=>'1',// Data not declared into the harmonized data.
+	                // 'column__PLOT_FORM__FICHE_PLACETTE'=>'1',// Data not declared into the harmonized data.
+	                'column__PLOT_FORM__COMMENT' => '1'
+	            ]
+	        ], ['isJson' => true]],
+	        'ajaxgetresultsbbox' => [['uri' => '/query/ajaxgetresultsbbox'], ['isJson' => true]],
+	        'ajaxgetresultcolumns' => [[
+	            'uri' => '/query/ajaxgetresultcolumns',
+	            'method' => 'GET',
+	            'parameters' => [
+	                'page' => 1,
+	                'start' => 0,
+	                'limit' => 25
+	            ]
+	        ], ['isJson' => true]],
+	        'ajaxgetresultrows' => [['uri' => '/query/ajaxgetresultrows'], ['isJson' => true]],
+		    'ajaxgetdetails' => [[
+		        'uri' => '/query/ajaxgetdetails',
+		        'method' => 'POST',
+		        'parameters' => [
+		            'id' => 'SCHEMA/RAW_DATA/FORMAT/PLOT_DATA/PROVIDER_ID/1/PLOT_CODE/01575-14060-4-0T/CYCLE/5'
+		        ]
+		    ], ['isJson' => true]],
+	        'csv-export' => [['uri' => '/query/csv-export']],
+	        'kml-export' => [['uri' => '/query/kml-export']],
+	        'geojson-export' => [['uri' => '/query/geojson-export']],
+	        'ajaxgetlocationinfo' => [[
+	            'uri' => '/query/ajaxgetlocationinfo',
+	            'method' => 'GET',
+	            'parameters' => [
+	                'LON' => 310640.0829509576,
+	                'LAT' => 5953527.259075833,
+	                'MAXFEATURES' => 20
+	            ]
+	        ], ['isJson' => true]]
+	    ];
+	}
+
+	public function getOthersNotChainedUrls($defaultStatusCode = Response::HTTP_FOUND) {
 		return [
             'show-query-form' => [[
 					'uri' => '/query/show-query-form'
@@ -154,34 +290,6 @@ class QueryControllerTest extends AbstractControllerTest {
 						'filter' => '[{"property":"processId","value":"SPECIES"},{"property":"form","value":"PLOT_FORM"},{"property":"fieldsType","value":"criteria"}]'
 					]
             ], ['isJson' => true]],
-            'ajaxresetresultlocation' => [['uri' => '/query/ajaxresetresultlocation'], ['isJson' => true]],
-            'ajaxbuildrequest' => [[
-					'uri' => '/query/ajaxbuildrequest',
-					'method' => 'POST',
-					'parameters' => [
-						'datasetId' => 'SPECIES',
-						'criteria__PLOT_FORM__IS_FOREST_PLOT' => '1',
-						// 'criteria__PLOT_FORM__IS_FOREST_PLOT[]'=>'1',// TODO: Doesn't work. why?
-						'column__PLOT_FORM__PLOT_CODE' => '1',
-						'column__PLOT_FORM__CYCLE' => '1',
-						'column__PLOT_FORM__INV_DATE' => '1',
-						'column__PLOT_FORM__IS_FOREST_PLOT' => '1',
-						// 'column__PLOT_FORM__CORINE_BIOTOPE'=>'1',// Data not declared into the harmonized data.
-						// 'column__PLOT_FORM__FICHE_PLACETTE'=>'1',// Data not declared into the harmonized data.
-						'column__PLOT_FORM__COMMENT' => '1'
-					]
-            ], ['isJson' => true]],
-            'ajaxgetresultsbbox' => [['uri' => '/query/ajaxgetresultsbbox'], ['isJson' => true]],
-            'ajaxgetresultcolumns' => [[
-					'uri' => '/query/ajaxgetresultcolumns',
-					'method' => 'GET',
-					'parameters' => [
-						'page' => 1,
-						'start' => 0,
-						'limit' => 25
-					]
-            ], ['isJson' => true]],
-            'ajaxgetresultrows' => [['uri' => '/query/ajaxgetresultrows'], ['isJson' => true]],
             'ajaxgetpredefinedrequestlist' => [[
 					'uri' => '/query/ajaxgetpredefinedrequestlist',
 					'method' => 'GET',
@@ -198,16 +306,6 @@ class QueryControllerTest extends AbstractControllerTest {
 						'request_name' => 'DEP'
 					]
             ], ['isJson' => true]],
-            'ajaxgetdetails' => [[
-					'uri' => '/query/ajaxgetdetails',
-					'method' => 'POST',
-					'parameters' => [
-						'id' => 'SCHEMA/RAW_DATA/FORMAT/PLOT_DATA/PROVIDER_ID/1/PLOT_CODE/01575-14060-4-0T/CYCLE/5'
-					]
-            ], ['isJson' => true]],
-            'csv-export' => [['uri' => '/query/csv-export']],
-            'kml-export' => [['uri' => '/query/kml-export']],
-            'geojson-export' => [['uri' => '/query/geojson-export']],
             'ajaxgettreenodes' => [[
 					'uri' => '/query/ajaxgettreenodes',
 					'method' => 'POST',
@@ -264,15 +362,6 @@ class QueryControllerTest extends AbstractControllerTest {
 						'page' => 1,
 						'start' => 0,
 						'limit' => 25
-					]
-            ], ['isJson' => true]],
-            'ajaxgetlocationinfo' => [[
-					'uri' => '/query/ajaxgetlocationinfo',
-					'method' => 'GET',
-					'parameters' => [
-						'LON' => 310640.0829509576,
-						'LAT' => 5953527.259075833,
-						'MAXFEATURES' => 20
 					]
             ], ['isJson' => true]]
 		];

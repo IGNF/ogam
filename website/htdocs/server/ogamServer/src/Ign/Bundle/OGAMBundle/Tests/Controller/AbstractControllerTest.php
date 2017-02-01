@@ -18,6 +18,7 @@ class AbstractControllerTest extends WebTestCase {
 	protected $client = null;
 
 	public function setUp() {
+	    ini_set("max_execution_time", 960);
 	    echo "\n\rStarting the access tests...\n\r";
 	    $fullClassName = explode('\\', get_class($this));
 	    $shortClassName = substr(end($fullClassName),0,-4);
