@@ -80,12 +80,13 @@ class GenericManager {
 	}
 
 	/**
-	 * Fill a line of data with the values a table, given its primary key.
+	 * Fill a line of data with the stored values, given its primary key.
 	 * Only one object is expected in return.
 	 *
 	 * @param GenericTableFormat $data
 	 *        	the shell of the data object with the values for the primary key.
 	 * @return GenericTableFormat The complete data object.
+	 * @throws an exception if no data found
 	 */
 	public function getDatum(GenericTableFormat $data) {
 		$tableFormat = $data->getTableFormat();
@@ -93,7 +94,7 @@ class GenericManager {
 		$this->logger->info('getDatum : ' . $tableFormat->getFormat());
 		
 		$schema = $tableFormat->getSchema();
-		                                     
+		
 		// Get the values from the data table
 		$sql = "SELECT " . $this->genericService->buildSelect(array_map(function ($field) {
 			return $field->getMetadata();
@@ -106,6 +107,14 @@ class GenericManager {
 		$select = $this->rawdb->prepare($sql);
 		$select->execute();
 		$row = $select->fetch();
+
+		// Checks if the data exists
+		if(empty($row)){
+			$msg = "No data found for id: " . implode(', ', $data->getIdFields());
+			$this->logger->error($msg);
+			throw new \Exception($msg);
+		}
+
 		
 		// Fill the values with data from the table
 		foreach ($data->getFields() as $field) {
@@ -411,7 +420,7 @@ class GenericManager {
 		try {
 			$request->execute();
 		} catch (\Exception $e) {
-			$this->logger->err('Error while inserting data  : ' . $e->getMessage());
+			$this->logger->error('Error while inserting data  : ' . $e->getMessage());
 			throw new \Exception("Error while inserting data  : " . $e->getMessage());
 		}
 		
@@ -477,7 +486,7 @@ class GenericManager {
 		try {
 			$request->execute();
 		} catch (\Exception $e) {
-			$this->logger->err('Error while updating data  : ' . $e->getMessage());
+			$this->logger->error('Error while updating data  : ' . $e->getMessage());
 			throw new \Exception("Error while updating data  : " . $e->getMessage());
 		}
 	}
@@ -534,7 +543,7 @@ class GenericManager {
 		try {
 			$request->execute();
 		} catch (\Exception $e) {
-			$this->logger->err('Error while deleting data  : ' . $e->getMessage());
+			$this->logger->error('Error while deleting data  : ' . $e->getMessage());
 			throw new \Exception("Error while deleting data  : " . $e->getMessage());
 		}
 	}

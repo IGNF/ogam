@@ -148,4 +148,13 @@ class GenericField {
 	function isEmpty() {
 		return empty($this->value);
 	}
+
+	/**
+	 * Convert the object to string
+	 *
+	 * @return string
+	 */
+	function __toString() {
+	    return $this->getId() . ': ' . $this->getValue() . ($this->valueLabel != null ? ' ('.$this->valueLabel.')':'');
+	}
 }
