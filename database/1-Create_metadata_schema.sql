@@ -565,6 +565,29 @@ COMMENT ON COLUMN metadata.process."statement" IS 'The SQL statement correspondi
 COMMENT ON COLUMN metadata.process._creationdt IS 'The creation date';
 
 
+
+/*==============================================================*/
+/* Table : EventListeners                                       */
+/*==============================================================*/
+CREATE TABLE metadata.eventlistener
+(
+  listener_id character varying(50) NOT NULL, -- The name/identifier of the post-processing treatment
+  classname character varying(50), -- The fully qualified name of the listener (Ex : fr.ifn.ogam.integration.business.SimpleEventLogger)
+  _creationdt timestamp without time zone DEFAULT now(), -- The creation date
+  CONSTRAINT pk_eventlistener PRIMARY KEY (listener_id)
+)
+WITH (
+  OIDS=FALSE
+);
+
+
+COMMENT ON COLUMN metadata.eventlistener.listener_id IS 'The name/identifier of the post-processing treatment';
+COMMENT ON COLUMN metadata.eventlistener.classname IS 'The step of the process (INTEGRATION or HARMONIZATION)';
+COMMENT ON COLUMN metadata.eventlistener._creationdt IS 'The creation date';
+
+
+
+
 SET SEARCH_PATH = metadata, public;
 
 /*==============================================================*/

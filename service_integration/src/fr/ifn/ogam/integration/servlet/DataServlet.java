@@ -18,6 +18,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -27,8 +28,12 @@ import org.apache.commons.fileupload.FileItem;
 import fr.ifn.ogam.common.servlet.AbstractUploadServlet;
 import fr.ifn.ogam.common.business.ThreadLock;
 import fr.ifn.ogam.common.business.submissions.SubmissionStatus;
+import fr.ifn.ogam.integration.business.IntegrationEventListener;
+import fr.ifn.ogam.integration.business.IntegrationEventNotifier;
 import fr.ifn.ogam.integration.business.submissions.datasubmission.DataService;
 import fr.ifn.ogam.integration.business.submissions.datasubmission.DataServiceThread;
+import fr.ifn.ogam.integration.database.metadata.EventListenerDAO;
+import fr.ifn.ogam.integration.database.metadata.EventListenerData;
 
 /**
  * Data Servlet.
@@ -59,6 +64,43 @@ public class DataServlet extends AbstractUploadServlet {
 	private static final String PROVIDER_ID = "PROVIDER_ID";
 	private static final String DATASET_ID = "DATASET_ID";
 	private static final String USER_LOGIN = "USER_LOGIN";
+
+	/**
+	 * Initialize the integration server.
+	 * 
+	 * Register the event listeners.
+	 */
+	@Override
+	public void init() throws ServletException {
+
+		super.init();
+
+		// Register the event listeners for the integration process
+		try {
+			// Get the list of listeners to register
+			EventListenerDAO eventDAO = new EventListenerDAO();
+			List<EventListenerData> eventListenerList = eventDAO.getEventListeners();
+
+			for (EventListenerData eventListenerName : eventListenerList) {
+
+				// Instanciante the class
+				Class<?> clazz = Class.forName(eventListenerName.getClassName());
+				IntegrationEventListener eventListener = (IntegrationEventListener) clazz.newInstance();
+
+				logger.debug("Registered event listener : " + eventListenerName.getId());
+
+				// Add it to the list
+				IntegrationEventNotifier.addListener(eventListener);
+			}
+
+		} catch (Exception e) {
+			logger.error(e);
+		}
+
+		logger.debug("#######################################");
+		logger.debug(" Integration Server initialized        ");
+		logger.debug("#######################################");
+	}
 
 	/**
 	 * Main function of the servlet.
