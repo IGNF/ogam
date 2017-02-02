@@ -294,15 +294,20 @@ tr td.line-number {
 	margin: 0 0 0 10px;
 }
 
-.status-img {
-	height: 16px;
-	border: 0 none;
-	margin: 0 10px 0 0;
+.error-msg {
+	display: block;
+	width: 500px;
+	margin: 0px auto 100px;
+	text-align: center;
 }
 
-.error-msg {
-	text-align: center;
-	margin: 100px 0 0;
+.status-img {
+	display: block;
+	margin: 100px auto 30px;
+	height: 94px;
+	width: 94px;
+	border: 0 none;
+	background-image: url(../img/system_failure.png) !important;
 }
 
 .bottom-menu {
