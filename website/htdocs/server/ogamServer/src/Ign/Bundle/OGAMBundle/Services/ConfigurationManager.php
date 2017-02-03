@@ -69,7 +69,7 @@ class ConfigurationManager {
 		}
 
 		// Get the parameter value from the config
-		if (!empty($parameter)) {
+		if (isset($parameter) && $parameter && !empty($parameter->getValue())) {
 			return $parameter->getValue();
 		} else if ($defaultValue !== null) {
 
