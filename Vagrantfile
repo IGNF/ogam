@@ -53,8 +53,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.provision "install_postgres", type: "shell", inline: "/vagrant/ogam/vagrant_config/scripts/install_postgres.sh"
 
   config.vm.provision "install_db", type: "shell", inline: "/vagrant/ogam/vagrant_config/scripts/install_db.sh"
-    
-  config.vm.provision "install_gradle", type: "shell", inline: "/vagrant/ogam/vagrant_config/scripts/install_gradle.sh"
  
   config.vm.provision "install_sencha_cmd_6", type: "shell", inline: "/vagrant/ogam/vagrant_config/scripts/install_sencha_cmd_6.sh"
   
@@ -66,6 +64,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Application deployment
   # The following provisions are executed as "vagrant" 
   #
+  config.vm.provision "install_gradle", privileged: false, type: "shell", inline: "/vagrant/ogam/vagrant_config/scripts/install_gradle.sh"
+  
   config.vm.provision "install_composer_libraries", privileged: false, type: "shell", inline: "/vagrant/ogam/vagrant_config/scripts/install_composer_libraries.sh"
   
   #for windows and vboxfs (no nfs) sharing, improve perf, TODO: download (rsync-back ?) on host the vendor dir for ide ie
