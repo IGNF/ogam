@@ -22,9 +22,9 @@ import fr.ifn.ogam.common.util.DSRConstants;
  * @author gautam
  *
  */
-public class ComputeGeoAssociationService {
+public class ComputeGeoAssociationService implements IntegrationEventListener {
 
-	/***
+	/**
 	 * The logger used to log the errors or several information.
 	 * 
 	 * @see org.apache.log4j.Logger
@@ -60,19 +60,49 @@ public class ComputeGeoAssociationService {
 	private DepartementDAO departementDAO = new DepartementDAO();
 
 	/**
+	 * Event called before the integration of a submission of data.
+	 * 
+	 * @param submissionId
+	 *            the submission identifier
+	 * @throws Exception
+	 *             in case of database error
+	 */
+	@Override
+	public void beforeIntegration(Integer submissionId) throws Exception {
+
+		// DO NOTHING
+	}
+
+	/**
+	 * Event called after the integration of a submission of data.
+	 * 
+	 * @param submissionId
+	 *            the submission identifier
+	 * @throws Exception
+	 *             in case of database error
+	 */
+	@Override
+	public void afterIntegration(Integer submissionId) throws Exception {
+
+		// DO NOTHING
+
+	}
+
+	/**
 	 * Ajoute le résultat du croisement avec les entités administratives.
 	 * 
+	 * @param submissionId
+	 *            the submission identifier
 	 * @param format
 	 *            The format
 	 * @param tableName
 	 *            The tabme name
 	 * @param values
 	 *            Entry values
-	 * @return false
 	 * @throws Exception
-	 *             In case of error with the database
+	 *             in case of database error
 	 */
-	public boolean insertAdministrativeAssociations(String format, String tableName, Map<String, GenericData> values) throws Exception {
+	public void afterLineInsertion(Integer submissionId, String format, String tableName, Map<String, GenericData> values) throws Exception {
 
 		logger.debug("insertAdministrativeAssociations");
 		// Champs à récupérer
@@ -97,51 +127,41 @@ public class ComputeGeoAssociationService {
 		boolean hasCodesMailles = !codesMailles[0].isEmpty();
 		boolean hasCodesDepartements = !codesDepartements[0].isEmpty();
 
-		try {
+		if (geometry != null && !geometry.isEmpty()) {
 
-			if (geometry != null && !geometry.isEmpty()) {
-
-				logger.debug(geometry);
-				String geometryType = geometryDAO.getGeometryType(geometry);
-				geometryDAO.createGeometryLinksFromGeometry(format, tableName, parameters);
-				if ("POINT".equals(geometryType) || "MULTIPOINT".equals(geometryType)) {
-					communeDAO.createCommunesLinksFromPoint(format, tableName, parameters);
-					departementDAO.createDepartmentsLinksFromPoint(format, tableName, parameters);
-					mailleDAO.createMaillesLinksFromPoint(format, tableName, parameters);
-				} else if ("LINESTRING".equals(geometryType) || "MULTILINESTRING".equals(geometryType)) {
-					communeDAO.createCommunesLinksFromLine(format, tableName, parameters);
-					departementDAO.createDepartmentsLinksFromLine(format, tableName, parameters);
-					mailleDAO.createMaillesLinksFromLine(format, tableName, parameters);
-				} else if ("POLYGON".equals(geometryType) || "MULTIPOLYGON".equals(geometryType)) {
-					communeDAO.createCommunesLinksFromPolygon(format, tableName, parameters);
-					departementDAO.createDepartmentsLinksFromPolygon(format, tableName, parameters);
-					mailleDAO.createMaillesLinksFromPolygon(format, tableName, parameters);
-				}
-			} else if (hasCodesCommunes) {
-				communeDAO.createCommunesLinksFromCommunes(format, parameters);
-				mailleDAO.createMaillesLinksFromCommunes(format, parameters);
-				departementDAO.createDepartmentsLinksFromCommunes(format, parameters);
-			} else if (hasCodesMailles) {
-				mailleDAO.createMaillesLinksFromMailles(format, parameters);
-				departementDAO.createDepartmentsLinksFromMailles(format, parameters);
-			} else if (hasCodesDepartements) {
-				mailleDAO.createMaillesLinksFromDepartements(format, parameters);
-				departementDAO.createDepartmentsLinksFromDepartements(format, parameters);
+			logger.debug(geometry);
+			String geometryType = geometryDAO.getGeometryType(geometry);
+			geometryDAO.createGeometryLinksFromGeometry(format, tableName, parameters);
+			if ("POINT".equals(geometryType) || "MULTIPOINT".equals(geometryType)) {
+				communeDAO.createCommunesLinksFromPoint(format, tableName, parameters);
+				departementDAO.createDepartmentsLinksFromPoint(format, tableName, parameters);
+				mailleDAO.createMaillesLinksFromPoint(format, tableName, parameters);
+			} else if ("LINESTRING".equals(geometryType) || "MULTILINESTRING".equals(geometryType)) {
+				communeDAO.createCommunesLinksFromLine(format, tableName, parameters);
+				departementDAO.createDepartmentsLinksFromLine(format, tableName, parameters);
+				mailleDAO.createMaillesLinksFromLine(format, tableName, parameters);
+			} else if ("POLYGON".equals(geometryType) || "MULTIPOLYGON".equals(geometryType)) {
+				communeDAO.createCommunesLinksFromPolygon(format, tableName, parameters);
+				departementDAO.createDepartmentsLinksFromPolygon(format, tableName, parameters);
+				mailleDAO.createMaillesLinksFromPolygon(format, tableName, parameters);
 			}
-
-			communeDAO.setCodeCommuneCalcule(format, tableName, parameters);
-			communeDAO.setNomCommuneCalcule(format, tableName, parameters);
-			mailleDAO.setCodeMailleCalcule(format, tableName, parameters);
-			departementDAO.setCodeDepartementCalcule(format, tableName, parameters);
-
-		} catch (
-
-		Exception e) {
-			// TODO: handle exception
-			throw e;
+		} else if (hasCodesCommunes) {
+			communeDAO.createCommunesLinksFromCommunes(format, parameters);
+			mailleDAO.createMaillesLinksFromCommunes(format, parameters);
+			departementDAO.createDepartmentsLinksFromCommunes(format, parameters);
+		} else if (hasCodesMailles) {
+			mailleDAO.createMaillesLinksFromMailles(format, parameters);
+			departementDAO.createDepartmentsLinksFromMailles(format, parameters);
+		} else if (hasCodesDepartements) {
+			mailleDAO.createMaillesLinksFromDepartements(format, parameters);
+			departementDAO.createDepartmentsLinksFromDepartements(format, parameters);
 		}
 
-		return false;
+		communeDAO.setCodeCommuneCalcule(format, tableName, parameters);
+		communeDAO.setNomCommuneCalcule(format, tableName, parameters);
+		mailleDAO.setCodeMailleCalcule(format, tableName, parameters);
+		departementDAO.setCodeDepartementCalcule(format, tableName, parameters);
+
 	}
 
 }

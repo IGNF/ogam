@@ -35,6 +35,7 @@ import fr.ifn.ogam.common.database.rawdata.SubmissionData;
 import fr.ifn.ogam.common.database.referentiels.CommuneDAO;
 import fr.ifn.ogam.common.database.referentiels.DepartementDAO;
 import fr.ifn.ogam.common.database.referentiels.MailleDAO;
+import fr.ifn.ogam.integration.business.IntegrationEventNotifier;
 import fr.ifn.ogam.integration.business.IntegrationService;
 
 /**
@@ -65,6 +66,11 @@ public class DataService extends AbstractService {
 	 * The post-processing service.
 	 */
 	private ProcessingService processingService = new ProcessingService();
+
+	/**
+	 * Event notifier
+	 */
+	private IntegrationEventNotifier eventNotifier = new IntegrationEventNotifier();
 
 	/**
 	 * Constructor.
@@ -227,6 +233,9 @@ public class DataService extends AbstractService {
 				throw new Exception("The submission number " + submissionId + " doest not exist");
 			}
 
+			// Notify the event listeners that we are going to insert data
+			eventNotifier.beforeIntegration(submissionId);
+
 			// Get the expected CSV formats for the request
 			List<FileFormatData> fileFormats = metadataDAO.getDatasetFiles(submission.getDatasetId());
 			Iterator<FileFormatData> fileIter = fileFormats.iterator();
@@ -246,6 +255,10 @@ public class DataService extends AbstractService {
 			// Launch post-processing (if not cancelled)
 			if (this.thread == null || !this.thread.isCancelled()) {
 				processingService.processData(ProcessingStep.INTEGRATION, submission, this.thread);
+
+				// Notify the event listeners that insertion is done
+				eventNotifier.afterIntegration(submissionId);
+
 			}
 
 			// Update the submission status

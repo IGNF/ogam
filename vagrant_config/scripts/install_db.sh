@@ -91,6 +91,9 @@ sudo -n -u $USERNAME psql -f 3-Checks.sql -d $DATABASE 2>> $logfileError >> $log
 echo "****** Processing ******"
 sudo -n -u $USERNAME psql -f 4-Processing.sql -d $DATABASE 2>> $logfileError >> $logfile
 
+echo "****** Processing ******"
+sudo -n -u $USERNAME psql -f 4-EventListener.sql -d $DATABASE 2>> $logfileError >> $logfile
+
 
 echo "****** Create user ******"
 sudo -n -u $USERNAME psql -f 5-Create_user.sql -d $DATABASE 2>> $logfileError >> $logfile

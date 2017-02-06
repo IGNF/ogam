@@ -65,6 +65,11 @@ public class IntegrationService extends GenericMapper {
 	private SubmissionDAO submissionDAO = new SubmissionDAO();
 
 	/**
+	 * Event notifier
+	 */
+	private IntegrationEventNotifier eventNotifier = new IntegrationEventNotifier();
+
+	/**
 	 * Insert a dataset coming from a CSV in database.
 	 * 
 	 * @param submissionId
@@ -89,11 +94,6 @@ public class IntegrationService extends GenericMapper {
 		logger.debug("insertData");
 		boolean isInsertValid = true;
 		CSVFile csvFile = null;
-
-		ComputeGeoAssociationService cgas = null;
-		if ("true".equals(requestParameters.get("COMPUTE_GEO_ATTACHMENT"))) {
-			cgas = new ComputeGeoAssociationService();
-		}
 
 		try {
 
@@ -310,9 +310,10 @@ public class IntegrationService extends GenericMapper {
 
 							// Insert a list of values in the destination table
 							genericDAO.insertData(Schemas.RAW_DATA, tableName, tableFieldsMap.get(format), commonFieldsMap);
-							if (cgas != null) {
-								cgas.insertAdministrativeAssociations(format, tableName, commonFieldsMap);
-							}
+
+							// Notify the event listeners that a line has been inserted
+							eventNotifier.afterLineInsertion(submissionId, format, tableName, commonFieldsMap);
+
 						} catch (CheckException e) {
 							// Complete the description of the problem
 							e.setSourceFormat(sourceFormat);

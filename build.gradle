@@ -43,7 +43,8 @@ subprojects {
 	sourceSets {
 		main {
 			java {
-				srcDir 'src'
+				srcDirs 'src'
+				srcDirs 'custom'
 			}
 		}
 		test {
