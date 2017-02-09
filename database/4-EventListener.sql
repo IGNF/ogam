@@ -5,11 +5,11 @@ set search_path = metadata;
 --
 --  Clean previous eventlisteners
 -- 
-delete from metadata.eventlistener;
+delete from metadata.event_listener;
 
 ----------------------------------
 -- Add a demo event listener
 ----------------------------------
-INSERT INTO metadata.eventlistener(listener_id, classname)
+INSERT INTO metadata.event_listener(listener_id, classname)
 VALUES ('DemoListener', 'fr.ifn.ogam.integration.business.SimpleEventLogger');
 

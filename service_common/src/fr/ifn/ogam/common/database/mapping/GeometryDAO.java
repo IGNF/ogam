@@ -15,6 +15,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
 
 import javax.naming.Context;
@@ -24,6 +25,7 @@ import javax.sql.DataSource;
 
 import org.apache.log4j.Logger;
 
+import fr.ifn.ogam.common.database.metadata.TableFormatData;
 import fr.ifn.ogam.common.util.DSRConstants;
 import fr.ifn.ogam.common.util.LocalCache;
 
@@ -127,6 +129,56 @@ public class GeometryDAO {
 	}
 
 	/**
+	 * Get the geometry in WKT in the raw_data srid.
+	 * 
+	 * @param geomColValue
+	 *            the geometry
+	 * @return a geom in WKT
+	 */
+	public String getGeomWktInTableSrid(String geomColValue) throws Exception {
+		Connection con = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		String result = null;
+		try {
+			con = getConnection();
+
+			StringBuffer stmt = new StringBuffer();
+			stmt.append("SELECT ST_AsText(" + geomColValue + ")");
+
+			ps = con.prepareStatement(stmt.toString());
+			rs = ps.executeQuery();
+			rs.next();
+			result = rs.getString("st_astext");
+
+			return result;
+
+		} finally {
+			try {
+				if (rs != null) {
+					rs.close();
+				}
+			} catch (SQLException e) {
+				logger.error("Error while closing statement : " + e.getMessage());
+			}
+			try {
+				if (ps != null) {
+					ps.close();
+				}
+			} catch (SQLException e) {
+				logger.error("Error while closing statement : " + e.getMessage());
+			}
+			try {
+				if (con != null) {
+					con.close();
+				}
+			} catch (SQLException e) {
+				logger.error("Error while closing statement : " + e.getMessage());
+			}
+		}
+	}
+
+	/**
 	 * Get the geometry type of a geometry.
 	 * 
 	 * @param geometry
@@ -184,15 +236,20 @@ public class GeometryDAO {
 	 * 
 	 * @param format
 	 *            the table format
+	 * @param submissionId
+	 *            the identifier of the submission
 	 * @throws Exception
 	 */
-	public void deleteGeometriesFromFormat(String format) throws Exception {
+	public void deleteGeometriesFromFormat(TableFormatData tableFormat, Integer submissionId) throws Exception {
 		logger.debug("deleteGeometriesFromFormat");
 		Connection con = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 
 		try {
+
+			String tableName = tableFormat.getTableName();
+			String format = tableFormat.getFormat();
 
 			con = getConnection();
 
@@ -211,10 +268,12 @@ public class GeometryDAO {
 				if (ogReg != null && bgReg != null) {
 					stmt = new StringBuffer();
 					stmt.append("DELETE FROM mapping.bac_geometrie ");
-					stmt.append("USING mapping.observation_geometrie as og ");
+					stmt.append("USING mapping.observation_geometrie as og, raw_data." + tableName + " as rd ");
 					stmt.append("WHERE og.table_format = '" + format + "' ");
-					stmt.append("AND id_geometrie = og.id_geom ;");
-
+					stmt.append("AND og.id_observation = rd.ogam_id_" + format + " ");
+					stmt.append("AND og.id_provider = rd.provider_id ");
+					stmt.append("AND id_geometrie = og.id_geom ");
+					stmt.append("AND submission_id = " + submissionId + ";");
 					ps = con.prepareStatement(stmt.toString());
 					logger.debug(stmt.toString());
 					ps.executeUpdate();

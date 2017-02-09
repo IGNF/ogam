@@ -18,6 +18,8 @@ import javax.sql.DataSource;
 
 import org.apache.log4j.Logger;
 
+import fr.ifn.ogam.common.database.GenericDAO;
+import fr.ifn.ogam.common.database.metadata.TableFormatData;
 import fr.ifn.ogam.common.util.DSRConstants;
 
 /**
@@ -36,20 +38,11 @@ public class DepartementDAO {
 	private final transient Logger logger = Logger.getLogger(this.getClass());
 
 	/**
-	 * Get a connexion to the database.
+	 * DAO for generic requests
 	 * 
-	 * @return The <code>Connection</code>
-	 * @throws NamingException
-	 * @throws SQLException
+	 * @see GenericDao
 	 */
-	public Connection getConnection() throws NamingException, SQLException {
-
-		Context initContext = new InitialContext();
-		DataSource ds = (DataSource) initContext.lookup("java:/comp/env/jdbc/metadata");
-		Connection cx = ds.getConnection();
-
-		return cx;
-	}
+	private GenericDAO genericDao = new GenericDAO();
 
 	/**
 	 * Populates the table "observation_departement" by getting the departements from a point geometry. If the distance between the point and a departement is
@@ -66,62 +59,30 @@ public class DepartementDAO {
 	public void createDepartmentsLinksFromPoint(String format, String tableName, Map<String, Object> parameters) throws Exception {
 		logger.debug("createDepartmentsLinksFromPoint");
 
-		Connection con = null;
-		PreparedStatement ps = null;
-		ResultSet rs = null;
+		StringBuffer stmt = new StringBuffer();
+		stmt.append("SELECT DISTINCT ref.code_dept ");
+		stmt.append("FROM referentiels.geofla_departement as ref, raw_data." + tableName + " AS m ");
+		stmt.append("WHERE St_Intersects(ref.geom, m.geometrie) = true ");
+		stmt.append("AND m.ogam_id_" + format + " = '" + parameters.get(DSRConstants.OGAM_ID) + "'");
+		stmt.append("AND m.provider_id = '" + parameters.get(DSRConstants.PROVIDER_ID) + "'");
 
-		try {
+		ResultSet rs = genericDao.executeQueryRequest(stmt.toString());
 
-			con = getConnection();
-
-			StringBuffer stmt = new StringBuffer();
-			stmt.append("SELECT DISTINCT ref.code_dept ");
-			stmt.append("FROM referentiels.geofla_departement as ref, raw_data." + tableName + " AS m ");
-			stmt.append("WHERE st_distance(ref.geom, m.geometrie) < 0.00001 ");
-			stmt.append("AND m.ogam_id_" + format + " = '" + parameters.get(DSRConstants.OGAM_ID) + "'");
-			stmt.append("AND m.provider_id = '" + parameters.get(DSRConstants.PROVIDER_ID) + "'");
-
-			ps = con.prepareStatement(stmt.toString());
-			logger.trace(stmt.toString());
-			rs = ps.executeQuery();
-
-			// Count the number of departements found
-			int numberOfDepartements = 0;
-			List<String> codesDepartements = new ArrayList<String>();
-			while (rs.next()) {
-				++numberOfDepartements;
-				codesDepartements.add(rs.getString("code_dept"));
-			}
-			for (String codeDepartement : codesDepartements) {
-				stmt = new StringBuffer();
-				stmt.append("INSERT INTO mapping.observation_departement VALUES ('");
-				stmt.append(parameters.get(DSRConstants.OGAM_ID) + "', '" + parameters.get(DSRConstants.PROVIDER_ID) + "', '");
-				stmt.append(format + "', '" + codeDepartement + "', ");
-				stmt.append(1 / numberOfDepartements + ");");
-				ps = con.prepareStatement(stmt.toString());
-				logger.trace(stmt.toString());
-				ps.executeUpdate();
-			}
-
-		} finally
-
-		{
-			try {
-				if (ps != null) {
-					ps.close();
-				}
-			} catch (SQLException e) {
-				logger.error("Error while closing statement : " + e.getMessage());
-			}
-			try {
-				if (con != null) {
-					con.close();
-				}
-			} catch (SQLException e) {
-				logger.error("Error while closing statement : " + e.getMessage());
-			}
+		// Count the number of departements found
+		int numberOfDepartements = 0;
+		List<String> codesDepartements = new ArrayList<String>();
+		while (rs.next()) {
+			++numberOfDepartements;
+			codesDepartements.add(rs.getString("code_dept"));
 		}
-
+		for (String codeDepartement : codesDepartements) {
+			stmt = new StringBuffer();
+			stmt.append("INSERT INTO mapping.observation_departement VALUES ('");
+			stmt.append(parameters.get(DSRConstants.OGAM_ID) + "', '" + parameters.get(DSRConstants.PROVIDER_ID) + "', '");
+			stmt.append(format + "', '" + codeDepartement + "', ");
+			stmt.append(1 / numberOfDepartements + ");");
+			genericDao.executeUpdateRequest(stmt.toString());
+		}
 	}
 
 	/**
@@ -140,46 +101,30 @@ public class DepartementDAO {
 	public void createDepartmentsLinksFromLine(String format, String tableName, Map<String, Object> parameters) throws Exception {
 		logger.debug("createDepartmentsLinksFromLine");
 
-		Connection con = null;
-		PreparedStatement ps = null;
+		String ogamId = parameters.get(DSRConstants.OGAM_ID).toString();
+		String providerId = parameters.get(DSRConstants.PROVIDER_ID).toString();
 
-		try {
-
-			con = getConnection();
-
+		Float length = genericDao.getGeometryLength(format, tableName, ogamId, providerId);
+		if (length >= 0) {
 			StringBuffer stmt = new StringBuffer();
 			stmt.append("INSERT INTO mapping.observation_departement ");
 			stmt.append("SELECT m.ogam_id_" + format + ",  m.provider_id, '" + format + "', ref.code_dept, ");
-			stmt.append("round(cast(St_Length(St_Intersection(m.geometrie, ref.geom))/St_Length(m.geometrie) AS numeric(4,3)), 3)");
+			if (length > 0) {
+				stmt.append("round(cast(St_Length(St_Intersection(m.geometrie, ref.geom))/St_Length(m.geometrie) AS numeric(4,3)), 3)");
+			} else {
+				stmt.append("1 ");
+			}
 			stmt.append("FROM referentiels.geofla_departement AS ref, raw_data." + tableName + " AS m ");
-			stmt.append("WHERE st_intersects(m.geometrie, ref.geom) = true ");
-			stmt.append("AND St_Length(m.geometrie) > 0 ");
-			stmt.append("AND m.ogam_id_" + format + " = '" + parameters.get(DSRConstants.OGAM_ID) + "' ");
-			stmt.append("AND m.provider_id = '" + parameters.get(DSRConstants.PROVIDER_ID) + "'");
-
-			ps = con.prepareStatement(stmt.toString());
-			logger.trace(stmt.toString());
-			ps.executeUpdate();
-
-		} finally
-
-		{
-			try {
-				if (ps != null) {
-					ps.close();
-				}
-			} catch (SQLException e) {
-				logger.error("Error while closing statement : " + e.getMessage());
+			if (length > 0) {
+				stmt.append("WHERE St_Intersects(m.geometrie, ref.geom) = true ");
+			} else {
+				stmt.append("WHERE St_Distance(m.geometrie, ref.geom) = 0 ");
 			}
-			try {
-				if (con != null) {
-					con.close();
-				}
-			} catch (SQLException e) {
-				logger.error("Error while closing statement : " + e.getMessage());
-			}
+			stmt.append("AND m.ogam_id_" + format + " = '" + ogamId + "' ");
+			stmt.append("AND m.provider_id = '" + providerId + "'");
+
+			genericDao.executeUpdateRequest(stmt.toString());
 		}
-
 	}
 
 	/**
@@ -198,179 +143,107 @@ public class DepartementDAO {
 	public void createDepartmentsLinksFromPolygon(String format, String tableName, Map<String, Object> parameters) throws Exception {
 		logger.debug("createDepartmentsLinksFromPolygon");
 
-		Connection con = null;
-		PreparedStatement ps = null;
+		String ogamId = parameters.get(DSRConstants.OGAM_ID).toString();
+		String providerId = parameters.get(DSRConstants.PROVIDER_ID).toString();
 
-		try {
-
-			con = getConnection();
-
+		Float area = genericDao.getGeometryArea(format, tableName, ogamId, providerId);
+		if (area >= 0) {
 			StringBuffer stmt = new StringBuffer();
-
 			stmt.append("INSERT INTO mapping.observation_departement ");
 			stmt.append("SELECT m.ogam_id_" + format + ",  m.provider_id, '" + format + "', ref.code_dept, ");
-			stmt.append("round(cast(st_area(st_intersection(m.geometrie, ref.geom))/st_area(m.geometrie) AS numeric(4,3)), 3) AS pct ");
+			if (area > 0) {
+				stmt.append("round(cast(St_Area(St_Intersection(m.geometrie, ref.geom))/St_Area(m.geometrie) AS numeric(4,3)), 3) AS pct ");
+			} else {
+				stmt.append("1 ");
+			}
 			stmt.append("FROM referentiels.geofla_departement AS ref, raw_data." + tableName + " AS m ");
-			stmt.append("WHERE st_intersects(m.geometrie, ref.geom) = true ");
-			stmt.append("AND st_area(m.geometrie) > 0 ");
-			stmt.append("AND m.ogam_id_" + format + " = '" + parameters.get(DSRConstants.OGAM_ID) + "' ");
-			stmt.append("AND m.provider_id = '" + parameters.get(DSRConstants.PROVIDER_ID) + "'");
-			ps = con.prepareStatement(stmt.toString());
-			logger.trace(stmt.toString());
-			ps.executeUpdate();
+			if (area > 0) {
+				stmt.append("WHERE St_Intersects(m.geometrie, ref.geom) = true ");
+			} else {
+				stmt.append("WHERE St_Distance(m.geometrie, ref.geom) = 0 ");
+			}
+			stmt.append("AND m.ogam_id_" + format + " = '" + ogamId + "' ");
+			stmt.append("AND m.provider_id = '" + providerId + "'");
 
-		} finally {
-			try {
-				if (ps != null) {
-					ps.close();
-				}
-			} catch (SQLException e) {
-				logger.error("Error while closing statement : " + e.getMessage());
-			}
-			try {
-				if (con != null) {
-					con.close();
-				}
-			} catch (SQLException e) {
-				logger.error("Error while closing statement : " + e.getMessage());
-			}
+			genericDao.executeUpdateRequest(stmt.toString());
 		}
-
 	}
 
 	/**
-	 * Populates the table "observation_departement" by getting the departements from a list of departements codes. The calculation is based on the union of the
-	 * geometries of the list of departements given (value X). If the proportion of the area of the intersection between the maille and X and the area of X is
-	 * strictly positive, it is considered as the maille covers partly or totally X.
+	 * Populates the table "observation_departement" by getting the departements from a list of communes codes. The calculation is based on the union of the
+	 * geometries of the list of communes given (value X). If the geometries of the union of the communes and the departement has an intersection AND it does
+	 * not touches (to avoid getting results where only boundary is in common between the two geometries), then the proportion of the area of the intersection
+	 * between the departement and X and the area of X is calculated and an entry added to table observation_departement.
 	 * 
 	 * @param format
 	 *            the table_format of the table
-	 * @param tableName
-	 *            the tablename in raw_data schema
 	 * @param parameters
-	 *            values including : ogam_id, provider_id, codedepartement
+	 *            values including : ogam_id, provider_id, codesCommunes
 	 * @throws Exception
 	 */
 	public void createDepartmentsLinksFromCommunes(String format, Map<String, Object> parameters) throws Exception {
 		logger.debug("createDepartmentsLinksFromCommunes");
 
-		Connection con = null;
-		PreparedStatement ps = null;
+		String[] codesCommunes = ((String[]) parameters.get(DSRConstants.CODE_COMMUNE));
+		String providerId = (String) parameters.get(DSRConstants.PROVIDER_ID);
+		String ogamId = (String) parameters.get(DSRConstants.OGAM_ID);
 
-		try {
-
-			con = getConnection();
-
-			String[] codesCommunes = ((String[]) parameters.get(DSRConstants.CODE_COMMUNE));
-			String providerId = (String) parameters.get(DSRConstants.PROVIDER_ID);
-			String ogamId = (String) parameters.get(DSRConstants.OGAM_ID);
-
-			StringBuffer stmt = null;
-			for (String codeCommune : codesCommunes) {
-				stmt = new StringBuffer();
-				stmt.append("INSERT INTO mapping.observation_departement ");
-				stmt.append("SELECT '" + ogamId + "', '" + providerId + "', '" + format + "', ref.code_dept, '1' ");
-				stmt.append("FROM referentiels.geofla_commune AS ref ");
-				stmt.append("WHERE ref.insee_com = '" + codeCommune + "' ");
-			}
-
-			ps = con.prepareStatement(stmt.toString());
-			logger.debug(stmt.toString());
-			ps.executeUpdate();
-
-		} finally {
-			try {
-				if (ps != null) {
-					ps.close();
-				}
-			} catch (SQLException e) {
-				logger.error("Error while closing statement : " + e.getMessage());
-			}
-			try {
-				if (con != null) {
-					con.close();
-				}
-			} catch (SQLException e) {
-				logger.error("Error while closing statement : " + e.getMessage());
-			}
+		StringBuffer stmt = new StringBuffer();
+		stmt.append("INSERT INTO mapping.observation_departement ");
+		stmt.append("SELECT '" + ogamId + "', '" + providerId + "', '" + format + "', departement.code_dept, ");
+		stmt.append("round(cast(St_Area(St_Intersection(communes_union, departement.geom))/St_Area(communes_union) ");
+		stmt.append("AS numeric(4,3)), 3) AS pct ");
+		stmt.append("FROM referentiels.geofla_departement AS departement, ");
+		stmt.append("(SELECT St_Union(commune.geom) AS communes_union ");
+		stmt.append("FROM referentiels.geofla_commune AS commune ");
+		stmt.append("WHERE commune.insee_com = '" + codesCommunes[0] + "' ");
+		for (int i = 1; i < codesCommunes.length; ++i) {
+			stmt.append("OR commune.insee_com = '" + codesCommunes[i] + "' ");
 		}
+		stmt.append(") as foo ");
+		stmt.append("WHERE St_Intersects(communes_union, departement.geom) = true ");
+		stmt.append("AND St_Touches(communes_union, departement.geom) = false ");
+
+		genericDao.executeUpdateRequest(stmt.toString());
 
 	}
 
 	/**
 	 * Populates the table "observation_departement" by getting the departements from a list of mailles codes. The calculation is based on the union of the
-	 * geometries of the list of mailles given (value X). If the proportion of the area of the intersection between the departement and X and the area of X is
-	 * strictly positive, it is considered as the departement covers partly or totally X.
+	 * geometries of the list of mailles given (value X). If the geometries of the union of the mailles and the departement has an intersection AND it does not
+	 * touches (to avoid getting results where only boundary is in common between the two geometries), then the proportion of the area of the intersection
+	 * between the departement and X and the area of X is calculated and an entry added to table observation_departement.
 	 * 
 	 * @param format
 	 *            the table_format of the table
-	 * @param tableName
-	 *            the tablename in raw_data schema
 	 * @param parameters
-	 *            values including : ogam_id, provider_id, codemaille
+	 *            values including : ogam_id, provider_id, codesMailles
 	 * @throws Exception
 	 */
-	@SuppressWarnings("resource")
 	public void createDepartmentsLinksFromMailles(String format, Map<String, Object> parameters) throws Exception {
 		logger.debug("createDepartmentsLinksFromMailles");
 
-		Connection con = null;
-		PreparedStatement ps = null;
-		ResultSet rs = null;
+		String[] codesMailles = ((String[]) parameters.get(DSRConstants.CODE_MAILLE));
+		String providerId = (String) parameters.get(DSRConstants.PROVIDER_ID);
+		String ogamId = (String) parameters.get(DSRConstants.OGAM_ID);
 
-		try {
-
-			con = getConnection();
-
-			String[] codesMailles = ((String[]) parameters.get(DSRConstants.CODE_MAILLE));
-			String providerId = (String) parameters.get(DSRConstants.PROVIDER_ID);
-			String ogamId = (String) parameters.get(DSRConstants.OGAM_ID);
-
-			StringBuffer stmt = null;
-
-			// Récupérer l'union des géométries
-			stmt = new StringBuffer();
-			stmt.append("SELECT St_AsText(St_union(grille.geom)) as union ");
-			stmt.append("FROM referentiels.codemaillevalue as grille ");
-			stmt.append("WHERE grille.code_10km = '" + codesMailles[0] + "' ");
-			for (int i = 1; i < codesMailles.length; ++i) {
-				stmt.append("OR grille.code_10km  = '" + codesMailles[i] + "' ");
-			}
-
-			ps = con.prepareStatement(stmt.toString());
-			logger.trace(stmt.toString());
-			rs = ps.executeQuery();
-			rs.next();
-			String maillesUnion = "ST_GeomFromText('" + rs.getString("union") + "', 4326)";
-
-			stmt = new StringBuffer();
-			stmt.append("INSERT INTO mapping.observation_departement ");
-			stmt.append("SELECT '" + ogamId + "', '" + providerId + "', '" + format + "', departement.code_dept, ");
-			stmt.append("round(cast(st_area(st_intersection(" + maillesUnion + ", departement.geom))/st_area(" + maillesUnion + ") ");
-			stmt.append("AS numeric(4,3)), 3) AS pct ");
-			stmt.append("FROM referentiels.geofla_departement AS departement ");
-			stmt.append("WHERE st_intersects(" + maillesUnion + ", departement.geom) = true ");
-
-			ps = con.prepareStatement(stmt.toString());
-			ps.executeUpdate();
-
-		} finally {
-			try {
-				if (ps != null) {
-					ps.close();
-				}
-			} catch (SQLException e) {
-				logger.error("Error while closing statement : " + e.getMessage());
-			}
-			try {
-				if (con != null) {
-					con.close();
-				}
-			} catch (SQLException e) {
-				logger.error("Error while closing statement : " + e.getMessage());
-			}
+		StringBuffer stmt = new StringBuffer();
+		stmt.append("INSERT INTO mapping.observation_departement ");
+		stmt.append("SELECT '" + ogamId + "', '" + providerId + "', '" + format + "', departement.code_dept, ");
+		stmt.append("round(cast(St_Area(St_Intersection(mailles_union, departement.geom))/St_Area(mailles_union) ");
+		stmt.append("AS numeric(4,3)), 3) AS pct ");
+		stmt.append("FROM referentiels.geofla_departement AS departement, ");
+		stmt.append("(SELECT St_Union(grille.geom) AS mailles_union ");
+		stmt.append("FROM referentiels.codemaillevalue AS grille ");
+		stmt.append("WHERE grille.code_10km = '" + codesMailles[0] + "' ");
+		for (int i = 1; i < codesMailles.length; ++i) {
+			stmt.append("OR grille.code_10km = '" + codesMailles[i] + "' ");
 		}
+		stmt.append(") as foo ");
+		stmt.append("WHERE St_Intersects(mailles_union, departement.geom) = true ");
+		stmt.append("AND St_Touches(mailles_union, departement.geom) = false ");
 
+		genericDao.executeUpdateRequest(stmt.toString());
 	}
 
 	/**
@@ -379,8 +252,6 @@ public class DepartementDAO {
 	 * 
 	 * @param format
 	 *            the table_format of the table
-	 * @param tableName
-	 *            the tablename in raw_data schema
 	 * @param parameters
 	 *            values including : ogam_id, provider_id, codedepartement
 	 * @throws Exception
@@ -388,45 +259,19 @@ public class DepartementDAO {
 	public void createDepartmentsLinksFromDepartements(String format, Map<String, Object> parameters) throws Exception {
 		logger.debug("createDepartmentsLinksFromDepartements");
 
-		Connection con = null;
-		PreparedStatement ps = null;
+		String[] codesDepartements = ((String[]) parameters.get(DSRConstants.CODE_DEPARTEMENT));
+		String providerId = (String) parameters.get(DSRConstants.PROVIDER_ID);
+		String ogamId = (String) parameters.get(DSRConstants.OGAM_ID);
 
-		try {
+		StringBuffer stmt = null;
+		for (String codeDepartement : codesDepartements) {
+			stmt = new StringBuffer();
+			stmt.append("INSERT INTO mapping.observation_departement ");
+			stmt.append("SELECT '" + ogamId + "', '" + providerId + "', '" + format + "', ref.code_dept, '1' ");
+			stmt.append("FROM referentiels.geofla_departement AS ref ");
+			stmt.append("WHERE ref.code_dept = '" + codeDepartement + "' ");
 
-			con = getConnection();
-
-			String[] codesDepartements = ((String[]) parameters.get(DSRConstants.CODE_DEPARTEMENT));
-			String providerId = (String) parameters.get(DSRConstants.PROVIDER_ID);
-			String ogamId = (String) parameters.get(DSRConstants.OGAM_ID);
-
-			StringBuffer stmt = null;
-			for (String codeDepartement : codesDepartements) {
-				stmt = new StringBuffer();
-				stmt.append("INSERT INTO mapping.observation_departement ");
-				stmt.append("SELECT '" + ogamId + "', '" + providerId + "', '" + format + "', ref.code_dept, '1' ");
-				stmt.append("FROM referentiels.geofla_departement AS ref ");
-				stmt.append("WHERE ref.code_dept = '" + codeDepartement + "' ");
-
-				ps = con.prepareStatement(stmt.toString());
-				logger.trace(stmt.toString());
-				ps.executeUpdate();
-			}
-
-		} finally {
-			try {
-				if (ps != null) {
-					ps.close();
-				}
-			} catch (SQLException e) {
-				logger.error("Error while closing statement : " + e.getMessage());
-			}
-			try {
-				if (con != null) {
-					con.close();
-				}
-			} catch (SQLException e) {
-				logger.error("Error while closing statement : " + e.getMessage());
-			}
+			genericDao.executeUpdateRequest(stmt.toString());
 		}
 
 	}
@@ -436,153 +281,92 @@ public class DepartementDAO {
 	 * 
 	 * @param format
 	 *            the table format
+	 * @param submissionId
+	 *            the identifier of the submission
 	 * @throws Exception
 	 */
-	public void deleteDepartmentsFromFormat(String format) throws Exception {
+	public void deleteDepartmentsFromFormat(TableFormatData tableFormat, Integer submissionId) throws Exception {
 		logger.debug("deleteDepartmentsFromFormat");
 
-		Connection con = null;
-		PreparedStatement ps = null;
-		ResultSet rs = null;
+		String tableName = tableFormat.getTableName();
+		String format = tableFormat.getFormat();
 
-		try {
+		StringBuffer stmt = new StringBuffer();
 
-			con = getConnection();
+		stmt.append("SELECT to_regclass('mapping.observation_departement') as od_reg");
+		ResultSet rs = genericDao.executeQueryRequest(stmt.toString());
 
-			StringBuffer stmt = new StringBuffer();
+		String odReg;
 
-			stmt.append("SELECT to_regclass('mapping.observation_departement') as od_reg");
-			ps = con.prepareStatement(stmt.toString());
-			logger.debug(stmt.toString());
-			rs = ps.executeQuery();
+		if (rs.next()) {
+			odReg = rs.getString("od_reg");
+			if (odReg != null) {
+				stmt = new StringBuffer();
+				stmt.append("DELETE FROM mapping.observation_departement AS od ");
+				stmt.append("USING raw_data." + tableName + " as rd ");
+				stmt.append("WHERE od.id_observation = rd.ogam_id_" + format + " ");
+				stmt.append("AND od.id_provider = rd.provider_id ");
+				stmt.append("AND submission_id = " + submissionId + ";");
 
-			String odReg;
-
-			if (rs.next()) {
-				odReg = rs.getString("od_reg");
-				if (odReg != null) {
-					stmt = new StringBuffer();
-					stmt.append("DELETE FROM mapping.observation_departement ");
-					stmt.append("USING metadata.table_format as tf ");
-					stmt.append("WHERE tf.format = format");
-
-					ps = con.prepareStatement(stmt.toString());
-					logger.debug(stmt.toString());
-					ps.executeUpdate();
-
-				}
-			}
-
-		} finally {
-			try {
-				if (ps != null) {
-					ps.close();
-				}
-			} catch (SQLException e) {
-				logger.error("Error while closing statement : " + e.getMessage());
-			}
-			try {
-				if (con != null) {
-					con.close();
-				}
-			} catch (SQLException e) {
-				logger.error("Error while closing statement : " + e.getMessage());
+				genericDao.executeUpdateRequest(stmt.toString());
 			}
 		}
-
 	}
 
 	/**
 	 * 
-	 * Populates the field "codeDepartementCalcule", depending on the value of natureObjetGeo and getting the information from table "observation_departement".
+	 * Populates the field "codeDepartementCalcule" by getting the information from table "observation_departement".
 	 * 
 	 * @param format
 	 *            the table format
 	 * @param tableName
 	 *            the tablename in raw_data schema
 	 * @param parameters
-	 *            values including : ogam_id, provider_id, natureobjetgeo
+	 *            values including : ogam_id, provider_id
 	 * @throws Exception
 	 */
-	@SuppressWarnings("resource")
 	public void setCodeDepartementCalcule(String format, String tableName, Map<String, Object> parameters) throws Exception {
 		logger.debug("setCodeDepartementCalcule");
 
-		Connection con = null;
-		PreparedStatement ps = null;
-		ResultSet rs = null;
+		StringBuffer stmt = null;
 
-		try {
+		String providerId = (String) parameters.get(DSRConstants.PROVIDER_ID);
+		String ogamId = (String) parameters.get(DSRConstants.OGAM_ID);
 
-			con = getConnection();
+		// Get the list of the departements
+		stmt = new StringBuffer();
+		stmt.append("SELECT id_departement ");
+		stmt.append("FROM mapping.observation_departement ");
+		stmt.append("WHERE id_observation = '" + ogamId + "' ");
+		stmt.append("AND id_provider = '" + providerId + "' ");
+		stmt.append("AND table_format = '" + format + "' ");
 
-			StringBuffer stmt = null;
+		ResultSet rs = genericDao.executeQueryRequest(stmt.toString());
 
-			String providerId = (String) parameters.get(DSRConstants.PROVIDER_ID);
-			String ogamId = (String) parameters.get(DSRConstants.OGAM_ID);
-			String natureObjetGeo = (String) parameters.get(DSRConstants.NATURE_OBJET_GEO);
-
-			// Get the list of the mailles
-			stmt = new StringBuffer();
-			stmt.append("SELECT id_departement ");
-			stmt.append("FROM mapping.observation_departement ");
-			stmt.append("WHERE id_observation = '" + ogamId + "' ");
-			stmt.append("AND id_provider = '" + providerId + "' ");
-			stmt.append("AND table_format = '" + format + "' ");
-
-			if ("In".equals(natureObjetGeo)) {
-				stmt.append("ORDER BY percentage DESC LIMIT 1");
-			} else if ("St".equals(natureObjetGeo)) {
-				stmt.append("ORDER BY percentage DESC");
-			}
-
-			ps = con.prepareStatement(stmt.toString());
-			logger.trace(stmt.toString());
-			rs = ps.executeQuery();
-
-			// Create a list of code departements found
-			List<String> codesDepartements = new ArrayList<String>();
-			while (rs.next()) {
-				codesDepartements.add(rs.getString("id_departement"));
-			}
-
-			StringBuffer codeDepartementCalcule = new StringBuffer("{");
-
-			for (String codeDepartement : codesDepartements) {
-				codeDepartementCalcule.append(codeDepartement);
-				codeDepartementCalcule.append(",");
-			}
-
-			codeDepartementCalcule.delete(codeDepartementCalcule.length() - 1, codeDepartementCalcule.length());
-			codeDepartementCalcule.append("}");
-
-			stmt = new StringBuffer();
-			stmt.append("UPDATE raw_data." + tableName + " ");
-			stmt.append("SET " + DSRConstants.CODE_DEPARTEMENT_CALC + " = '" + codeDepartementCalcule.toString() + "' ");
-			stmt.append("WHERE provider_id = '" + providerId + "' ");
-			stmt.append("AND ogam_id_" + format + " = '" + ogamId + "' ");
-
-			ps = con.prepareStatement(stmt.toString());
-			logger.trace(stmt.toString());
-			ps.executeUpdate();
-
-		} finally {
-			try {
-				if (ps != null) {
-					ps.close();
-				}
-			} catch (SQLException e) {
-				logger.error("Error while closing statement : " + e.getMessage());
-			}
-			try {
-				if (con != null) {
-					con.close();
-				}
-			} catch (SQLException e) {
-				logger.error("Error while closing statement : " + e.getMessage());
-			}
+		// Create a list of code departements found
+		List<String> codesDepartements = new ArrayList<String>();
+		while (rs.next()) {
+			codesDepartements.add(rs.getString("id_departement"));
 		}
 
-	}
+		StringBuffer codeDepartementCalcule = new StringBuffer("{");
 
+		for (String codeDepartement : codesDepartements) {
+			codeDepartementCalcule.append(codeDepartement);
+			codeDepartementCalcule.append(",");
+		}
+
+		if (codeDepartementCalcule.length() != 1) {
+			codeDepartementCalcule.delete(codeDepartementCalcule.length() - 1, codeDepartementCalcule.length());
+		}
+		codeDepartementCalcule.append("}");
+
+		stmt = new StringBuffer();
+		stmt.append("UPDATE raw_data." + tableName + " ");
+		stmt.append("SET " + DSRConstants.CODE_DEPARTEMENT_CALC + " = '" + codeDepartementCalcule.toString() + "' ");
+		stmt.append("WHERE provider_id = '" + providerId + "' ");
+		stmt.append("AND ogam_id_" + format + " = '" + ogamId + "' ");
+
+		genericDao.executeUpdateRequest(stmt.toString());
+	}
 }

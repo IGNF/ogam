@@ -29,6 +29,7 @@ public class HarmonizationServiceThread extends AbstractThread {
 	private String datasetId;
 	private String providerId;
 	private boolean removeOnly;
+	private Integer srid;
 
 	/**
 	 * The logger used to log the errors or several information.
@@ -44,13 +45,18 @@ public class HarmonizationServiceThread extends AbstractThread {
 	 *            the dataset identifier
 	 * @param providerId
 	 *            the country code
+	 * @param removeOnly
+	 *            Indicate if we only want to remove data
+	 * @param userSrid
+	 *            The SRID
 	 * @throws Exception
 	 */
-	public HarmonizationServiceThread(String datasetId, String providerId, boolean removeOnly) throws Exception {
+	public HarmonizationServiceThread(String datasetId, String providerId, boolean removeOnly, Integer srid) throws Exception {
 
 		this.datasetId = datasetId;
 		this.providerId = providerId;
 		this.removeOnly = removeOnly;
+		this.srid = srid;
 
 	}
 
@@ -74,7 +80,7 @@ public class HarmonizationServiceThread extends AbstractThread {
 			} else {
 
 				// Harmonize data
-				harmonizationService.harmonizeData(datasetId, providerId);
+				harmonizationService.harmonizeData(datasetId, providerId, srid);
 
 			}
 

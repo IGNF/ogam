@@ -30,6 +30,7 @@ import org.apache.log4j.Logger;
 
 import fr.ifn.ogam.common.util.LocalCache;
 import fr.ifn.ogam.common.business.MappingTypes;
+import fr.ifn.ogam.common.business.Schemas;
 
 /**
  * Data Access Object used to access metadata.
@@ -42,6 +43,7 @@ public class MetadataDAO {
 	 * Local cache, for static data.
 	 */
 	private static LocalCache tableNamesCache = LocalCache.getLocalCache();
+	private static LocalCache allTablesCache = LocalCache.getLocalCache();
 	private static LocalCache modesCache = LocalCache.getLocalCache();
 	private static LocalCache dynamodeSQLCache = LocalCache.getLocalCache();
 	private static LocalCache dynamodeCache = LocalCache.getLocalCache();
@@ -170,7 +172,12 @@ public class MetadataDAO {
 	/**
 	 * Get the list of modes of a given unit from a taxonomic referential.
 	 */
-	private static final String GET_TAXREF_MODES_STMT = "SELECT code FROM mode_taxref ORDER BY code";
+	private static final String GET_TAXREF_MODES_STMT = "SELECT code, label FROM mode_taxref ORDER BY code";
+
+	/**
+	 * Get the name associated with the code from a taxonomic referential.
+	 */
+	private static final String GET_TAXREF_NAME_FROM_CODE_STMT = "SELECT lb_name FROM mode_taxref WHERE code = ?";
 
 	/**
 	 * Get the one mode of a given unit.
@@ -201,6 +208,11 @@ public class MetadataDAO {
 	 * Get the table physical name.
 	 */
 	private static final String GET_TABLE_FORMAT_STMT = "SELECT * FROM table_format WHERE format = ?";
+
+	/**
+	 * Get all the tables physical names.
+	 */
+	private static final String GET_ALL_TABLE_FORMAT_STMT = "SELECT * FROM table_format";
 
 	/**
 	 * Get the list of available datasets.
@@ -290,6 +302,76 @@ public class MetadataDAO {
 				}
 
 				tableNamesCache.put(format, result);
+
+			} finally {
+				try {
+					if (rs != null) {
+						rs.close();
+					}
+				} catch (SQLException e) {
+					logger.error("Error while closing statement : " + e.getMessage());
+				}
+				try {
+					if (ps != null) {
+						ps.close();
+					}
+				} catch (SQLException e) {
+					logger.error("Error while closing statement : " + e.getMessage());
+				}
+				try {
+					if (con != null) {
+						con.close();
+					}
+				} catch (SQLException e) {
+					logger.error("Error while closing statement : " + e.getMessage());
+				}
+			}
+		}
+
+		return result;
+	}
+
+	/**
+	 * Return all the table formats.
+	 * 
+	 * @return list of table format descriptor
+	 */
+	public List<TableFormatData> getAllTables() throws Exception {
+		TableFormatData table = null;
+		Connection con = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+
+		Object cacheTables = "allTables";
+		List<TableFormatData> result = (List<TableFormatData>) allTablesCache.get(cacheTables);
+
+		if (result == null || result.isEmpty()) {
+
+			result = new ArrayList<TableFormatData>();
+
+			try {
+				con = getConnection();
+
+				ps = con.prepareStatement(GET_ALL_TABLE_FORMAT_STMT);
+				logger.trace(GET_ALL_TABLE_FORMAT_STMT);
+				rs = ps.executeQuery();
+
+				while (rs.next()) {
+					table = new TableFormatData();
+					table.setFormat(rs.getString("format"));
+					table.setTableName(rs.getString("table_name"));
+					table.setSchemaCode(rs.getString("schema_code"));
+					String primaryKeys = rs.getString("primary_key");
+					if (primaryKeys != null) {
+						StringTokenizer tokenizer = new StringTokenizer(primaryKeys, ",");
+						while (tokenizer.hasMoreTokens()) {
+							table.addPrimaryKey(tokenizer.nextToken());
+						}
+					}
+					result.add(table);
+				}
+
+				allTablesCache.put(cacheTables, result);
 
 			} finally {
 				try {
@@ -1722,6 +1804,60 @@ public class MetadataDAO {
 				// fill the cache
 				taxrefmodeCache.put(unit, result);
 
+			}
+
+			return result;
+
+		} finally {
+			try {
+				if (rs != null) {
+					rs.close();
+				}
+			} catch (SQLException e) {
+				logger.error("Error while closing resultset : " + e.getMessage());
+			}
+			try {
+				if (ps != null) {
+					ps.close();
+				}
+			} catch (SQLException e) {
+				logger.error("Error while closing statement : " + e.getMessage());
+			}
+			try {
+				if (con != null) {
+					con.close();
+				}
+			} catch (SQLException e) {
+				logger.error("Error while closing connexion : " + e.getMessage());
+			}
+		}
+	}
+
+	/**
+	 * Get the name associated with the code given in mode_taxref table.
+	 * 
+	 * @param code
+	 *            the cd_ref or cd_nom
+	 * @return String the name associated with the code given
+	 */
+	public List<String> getNameFromTaxrefCode(String code) throws Exception {
+
+		Connection con = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+
+		try {
+			List<String> result = new ArrayList<String>();
+
+			con = getConnection();
+
+			// Execute the statement
+			ps = con.prepareStatement(GET_TAXREF_NAME_FROM_CODE_STMT);
+			ps.setString(1, code);
+			rs = ps.executeQuery();
+
+			while (rs.next()) {
+				result.add(rs.getString("lb_name"));
 			}
 
 			return result;

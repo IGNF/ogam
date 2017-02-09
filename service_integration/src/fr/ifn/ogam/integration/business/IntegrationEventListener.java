@@ -40,9 +40,11 @@ public interface IntegrationEventListener {
 	 *            The table name
 	 * @param values
 	 *            Entry values
+	 * @param id
+	 *            The identifier corresponding to the ogamId
 	 * @throws Exception
 	 *             in case of database error
 	 */
-	public void afterLineInsertion(Integer submissionId, String format, String tableName, Map<String, GenericData> values) throws Exception;
+	public void afterLineInsertion(Integer submissionId, String format, String tableName, Map<String, GenericData> values, String id) throws Exception;
 
 }
