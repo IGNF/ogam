@@ -61,7 +61,7 @@
         <a onclick="return confirmDeletion();" href="{{ path('harmonization_removeharmonizationdata',{'DATASET_ID':harmonizationProcess.dataset.id, 'PROVIDER_ID':harmonizationProcess.providerId}) }}" >{{ 'Remove Harmonization Data'|trans }}</a>
         {% endif %}
     {% elseif harmonizationProcess.status is not same as("UNDONE") %}
-        <a href="{{ path('integration_home') }}">{{ 'Validate the submission'|trans }}</a>
+        <a href="{{ path('harmonization_home') }}">{{ 'Validate the submission'|trans }}</a>
     {% endif %}
     </td>
 </tr>

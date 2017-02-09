@@ -152,8 +152,15 @@ public class GenericDAO {
 			}
 
 			// Build the SQL INSERT
-			String statement = "INSERT INTO " + tableName + " (" + colNames.toString() + ") VALUES (" + colValues.toString() + ") RETURNING ogam_id_"
-					+ tableFormat + " AS id;";
+			String statement = "INSERT INTO " + tableName + " (" + colNames.toString() + ") VALUES (" + colValues.toString();
+			// Return value of OGAM_ID if OGAM_ID key is present
+			String ogamId = "OGAM_ID_" + tableFormat;
+			if (colNames.toString().contains(ogamId)) {
+				statement += ") RETURNING " + ogamId + " AS id;";
+			} else {
+				statement += ");";
+			}
+
 			logger.trace(statement);
 
 			// Prepare the statement
@@ -228,9 +235,14 @@ public class GenericDAO {
 			}
 
 			// Execute the query
-			ResultSet rs = ps.executeQuery();
-			rs.next();
-			return rs.getString("id");
+			if (colNames.toString().contains(ogamId)) {
+				ResultSet rs = ps.executeQuery();
+				rs.next();
+				return rs.getString("id");
+			} else {
+				ps.execute();
+				return null;
+			}
 
 		} catch (SQLException sqle) {
 
@@ -314,9 +326,8 @@ public class GenericDAO {
 			}
 			// Do not accept GeometryCollection as geometry type
 			if (geometry.getGeometryType().equalsIgnoreCase("GeometryCollection")) {
-				throw new CheckException(WRONG_GEOMETRY_TYPE,
-						"Geometry type " + geometry.getGeometryType() + " does not correspond to expected geometry."
-								+ " Please use POINT, MULTIPOINT, LINESTRING, MULTILINESTRING, POLYGON, or MULTIPOLYGON");
+				throw new CheckException(WRONG_GEOMETRY_TYPE, "Geometry type " + geometry.getGeometryType() + " does not correspond to expected geometry."
+						+ " Please use POINT, MULTIPOINT, LINESTRING, MULTILINESTRING, POLYGON, or MULTIPOLYGON");
 			}
 
 		} catch (ParseException pe) {
