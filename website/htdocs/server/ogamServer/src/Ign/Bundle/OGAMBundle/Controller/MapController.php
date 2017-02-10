@@ -83,7 +83,7 @@ class MapController extends Controller {
 			'layerTreeNodes' => $this->get('doctrine')
 				->getRepository(LayerTreeNode::class)
 				->findBy([], [
-				'position' => 'ASC'
+				'position' => 'DESC'
 			])
 		), $response);
 	}

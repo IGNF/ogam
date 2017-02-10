@@ -121,9 +121,9 @@ Ext.define('OgamDesktop.controller.map.Layer',{
         mapTb.getController().setupButtonsMenus(this.buildVectorLayersCollection());
 
         // Adds the layers to the map
-        var mapLayersCollection = mapCmp.getMap().getLayers();
+        var mapLayersCollection = mapCmp.getMap().getLayers(); // ol.Collection
         layersCollection.each(function(item, index, len){
-            mapLayersCollection.insertAt(0,item);
+            mapLayersCollection.insertAt(index,item); // keep the static layers (drawingLayer, snappingLayer) to the end
         }, this);
 
         // Adds the store to the layers tree
@@ -163,7 +163,6 @@ Ext.define('OgamDesktop.controller.map.Layer',{
     	var newNode;
 		if (!node.get('isLayer')) { // Create a group
 			newNode = new ol.layer.Group({
-                // TODO check if necessary (sylvain) name: node.get('label'),
                 text: node.get('label'),
                 grpId: node.get('nodeId'),
                 visible: !node.get('isHidden'),
@@ -173,13 +172,15 @@ Ext.define('OgamDesktop.controller.map.Layer',{
                 disabled: node.get('isDisabled')
             });
 			// Add the child to its parent
+			var groupChildren = [];
         	node.getChildren().each(
     			function(child){
-    				this.addChild(newNode.getLayers().getArray(), child);
+    				this.addChild(groupChildren, child);
     			},
     			this
         	);
-            parentChildrenArray.push(newNode);
+        	newNode.setLayers(new ol.Collection(groupChildren));
+        	parentChildrenArray.push(newNode);
 		} else { // Create a layer
 	        var mapCmp = this.getMappanel().child('mapcomponent');
 	        var curRes = mapCmp.getMap().getView().getResolution();
@@ -361,7 +362,8 @@ Ext.define('OgamDesktop.controller.map.Layer',{
         var treeLayerStore = Ext.create('GeoExt.data.store.LayersTree', {
             layerGroup: mapCmp.getMap().getLayerGroup(),
             textProperty: 'text',
-            folderToggleMode: 'classic'
+            folderToggleMode: 'classic',
+            inverseLayerOrder: true
         });
 
         // Filters the layers in function of their 'displayInLayerSwitcher' property
