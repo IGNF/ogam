@@ -35,7 +35,7 @@ public class EventListenerDAO {
 	/**
 	 * Get all the listeners.
 	 */
-	private static final String GET_EVENT_LISTENERS_STMT = "SELECT listener_id, classname FROM metadata.eventlistener";
+	private static final String GET_EVENT_LISTENERS_STMT = "SELECT listener_id, classname FROM metadata.event_listener";
 
 	/**
 	 * Get a connexion to the database.

@@ -56,6 +56,11 @@ public class SubmissionDAO {
 	private static final String VALIDATE_SUBMISSION_STMT = "UPDATE submission SET STEP = ?, _validationdt = ? WHERE submission_id = ?";
 
 	/**
+	 * Invalidate the submission.
+	 */
+	private static final String INVALIDATE_SUBMISSION_STMT = "UPDATE submission SET STEP = ?, _validationdt = ? WHERE submission_id = ?";
+
+	/**
 	 * Update the submission step.
 	 */
 	private static final String UPDATE_SUBMISSION_STEP_STMT = "UPDATE submission SET STEP = ? WHERE submission_id = ?";
@@ -391,6 +396,46 @@ public class SubmissionDAO {
 			ps = con.prepareStatement(VALIDATE_SUBMISSION_STMT);
 			logger.trace(VALIDATE_SUBMISSION_STMT);
 			ps.setString(1, SubmissionStep.DATA_VALIDATED);
+			ps.setTimestamp(2, new java.sql.Timestamp(new Date().getTime()));
+			ps.setInt(3, submissionId);
+			ps.execute();
+
+		} finally {
+			try {
+				if (ps != null) {
+					ps.close();
+				}
+			} catch (SQLException e) {
+				logger.error("Error while closing statement : " + e.getMessage());
+			}
+			try {
+				if (con != null) {
+					con.close();
+				}
+			} catch (SQLException e) {
+				logger.error("Error while closing connexion : " + e.getMessage());
+			}
+		}
+	}
+
+	/**
+	 * Invalidate the submission.
+	 * 
+	 * @param submissionId
+	 *            the identifier of the submission
+	 */
+	public void invalidateSubmission(Integer submissionId) throws Exception {
+
+		Connection con = null;
+		PreparedStatement ps = null;
+		try {
+
+			con = getConnection();
+
+			// Get the submission ID from the sequence
+			ps = con.prepareStatement(INVALIDATE_SUBMISSION_STMT);
+			logger.trace(INVALIDATE_SUBMISSION_STMT);
+			ps.setString(1, SubmissionStep.DATA_INVALIDATED);
 			ps.setTimestamp(2, new java.sql.Timestamp(new Date().getTime()));
 			ps.setInt(3, submissionId);
 			ps.execute();

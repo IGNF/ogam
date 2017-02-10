@@ -56,11 +56,13 @@ public class SimpleEventLogger implements IntegrationEventListener {
 	 *            The table name
 	 * @param values
 	 *            Entry values
+	 * @param id
+	 *            The identifier corresponding to the ogamId
 	 * @throws Exception
 	 *             in case of database error
 	 */
 	@Override
-	public void afterLineInsertion(Integer submissionId, String format, String tableName, Map<String, GenericData> values) throws Exception {
+	public void afterLineInsertion(Integer submissionId, String format, String tableName, Map<String, GenericData> values, String id) throws Exception {
 		logger.debug("afterLineInsertion event called for submission " + submissionId + " and format " + format);
 	}
 

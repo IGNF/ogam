@@ -100,5 +100,10 @@ public interface CheckCodes {
 	 * Wrong geometry type.
 	 */
 	Integer WRONG_GEOMETRY_TYPE = 1112;
+	
+	/**
+	 * Wrong geometry srid.
+	 */
+	Integer WRONG_GEOMETRY_SRID = 1113;
 
 }

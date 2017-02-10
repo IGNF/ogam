@@ -15,6 +15,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.io.IOException;
+import java.net.MalformedURLException;
 
 import org.apache.log4j.Logger;
 
@@ -37,6 +41,7 @@ import fr.ifn.ogam.common.database.referentiels.DepartementDAO;
 import fr.ifn.ogam.common.database.referentiels.MailleDAO;
 import fr.ifn.ogam.integration.business.IntegrationEventNotifier;
 import fr.ifn.ogam.integration.business.IntegrationService;
+import fr.ifn.ogam.common.database.website.ApplicationParametersDAO;
 
 /**
  * Service managing plot and tree data.
@@ -56,6 +61,7 @@ public class DataService extends AbstractService {
 	private SubmissionDAO submissionDAO = new SubmissionDAO();
 	private MetadataDAO metadataDAO = new MetadataDAO();
 	private GenericDAO genericDAO = new GenericDAO();
+	private ApplicationParametersDAO parameterDAO = new ApplicationParametersDAO();
 
 	/**
 	 * The integration service.
@@ -95,8 +101,6 @@ public class DataService extends AbstractService {
 	 * @param submissionId
 	 *            the identifier of the submission
 	 * @return the data submission object
-	 * @throws Exception
-	 *             in case of error with the database
 	 */
 	public SubmissionData getSubmission(Integer submissionId) throws Exception {
 
@@ -114,10 +118,11 @@ public class DataService extends AbstractService {
 	 * @param userLogin
 	 *            the login of the user who creates the submission
 	 * @return the identifier of the created submission
-	 * @throws Exception
-	 *             in case of error with the database
 	 */
 	public Integer newSubmission(String providerId, String datasetId, String userLogin) throws Exception {
+
+		// Clear caches to be sure providerId is known
+		metadataDAO.clearCaches();
 
 		// Create the submission
 		Integer submissionId = submissionDAO.newSubmission(providerId, datasetId, userLogin);
@@ -133,8 +138,6 @@ public class DataService extends AbstractService {
 	 * 
 	 * @param submissionId
 	 *            the identifier of the submission
-	 * @throws Exception
-	 *             in case of error with the database
 	 */
 	public void validateSubmission(Integer submissionId) throws Exception {
 
@@ -146,28 +149,34 @@ public class DataService extends AbstractService {
 	}
 
 	/**
+	 * Invalidate a data submission.
+	 * 
+	 * @param submissionId
+	 *            the identifier of the submission
+	 */
+	public void invalidateSubmission(Integer submissionId) throws Exception {
+
+		// Update the status of the submission
+		submissionDAO.invalidateSubmission(submissionId);
+
+		logger.debug("Data submission invalidated : " + submissionId);
+
+	}
+
+	/**
 	 * Cancel a data submission.
 	 * 
 	 * @param submissionId
 	 *            the identifier of the submission
-	 * @throws Exception
-	 *             in case of error with the database
 	 */
 	public void cancelSubmission(Integer submissionId) throws Exception {
 
 		// Get some info about the submission
 		SubmissionData submissionData = submissionDAO.getSubmission(submissionId);
 
-		// Get the list of requested files concerned by the submission
-		List<FileFormatData> requestedFiles = metadataDAO.getDatasetFiles(submissionData.getDatasetId());
-
-		// Get the list of destination tables concerned by the submission
+		// Get the list of potential destination tables
 		List<TableFormatData> destinationTables = new ArrayList<TableFormatData>();
-		Iterator<FileFormatData> requestedFilesIter = requestedFiles.iterator();
-		while (requestedFilesIter.hasNext()) {
-			FileFormatData requestedFile = requestedFilesIter.next();
-			destinationTables.addAll(metadataDAO.getFormatMapping(requestedFile.getFormat(), MappingTypes.FILE_MAPPING).values());
-		}
+		destinationTables = metadataDAO.getAllTables();
 
 		// Get the tables with their ancestors sorted in the right order
 		List<String> toDeleteFormats = integrationService.getSortedAncestors(Schemas.RAW_DATA, destinationTables);
@@ -177,9 +186,8 @@ public class DataService extends AbstractService {
 		while (tableIter.hasNext()) {
 			String tableFormat = tableIter.next();
 			TableFormatData tableFormatData = metadataDAO.getTableFormat(tableFormat);
+			deleteFromGincoBacsData(tableFormatData, submissionId);
 			genericDAO.deleteRawData(tableFormatData.getTableName(), submissionId);
-			deleteFromGincoBacsData(tableFormatData.getFormat());
-
 		}
 
 		// Update the status of the submission
@@ -192,22 +200,21 @@ public class DataService extends AbstractService {
 	/**
 	 * Specific to GINCO. Deletes all data related to the submission inside tables used for visualization.
 	 * 
-	 * @param format
+	 * @param tableFormatData
 	 *            the tableFormatData
 	 * @throws Exception
-	 *             in case of error with the database
 	 */
-	public void deleteFromGincoBacsData(String format) throws Exception {
+	public void deleteFromGincoBacsData(TableFormatData tableFormat, Integer submissionId) throws Exception {
 
 		GeometryDAO geometryDAO = new GeometryDAO();
 		CommuneDAO communeDAO = new CommuneDAO();
 		DepartementDAO departementDAO = new DepartementDAO();
 		MailleDAO mailleDAO = new MailleDAO();
 
-		geometryDAO.deleteGeometriesFromFormat(format);
-		communeDAO.deleteCommunesFromFormat(format);
-		departementDAO.deleteDepartmentsFromFormat(format);
-		mailleDAO.deleteMaillesFromFormat(format);
+		geometryDAO.deleteGeometriesFromFormat(tableFormat, submissionId);
+		communeDAO.deleteCommunesFromFormat(tableFormat, submissionId);
+		departementDAO.deleteDepartmentsFromFormat(tableFormat, submissionId);
+		mailleDAO.deleteMaillesFromFormat(tableFormat, submissionId);
 	}
 
 	/**
@@ -215,11 +222,13 @@ public class DataService extends AbstractService {
 	 * 
 	 * @param submissionId
 	 *            the identifier of the submission
+	 * @param userSrid
+	 *            the srid given by the user
 	 * @param requestParameters
 	 *            the map of static parameter values (the upload path, ...)
 	 * @return the created submission object
 	 */
-	public SubmissionData submitData(Integer submissionId, Map<String, String> requestParameters) {
+	public SubmissionData submitData(Integer submissionId, Integer userSrid, Map<String, String> requestParameters) {
 
 		try {
 
@@ -247,13 +256,14 @@ public class DataService extends AbstractService {
 				String filePath = requestParameters.get(fileFormat.getFormat());
 
 				// Insert the data in database with automatic mapping ...
-				isSubmitValid = isSubmitValid && integrationService.insertData(submissionId, filePath, fileFormat.getFormat(), fileFormat.getFileType(),
-						requestParameters, this.thread);
+				isSubmitValid = isSubmitValid && integrationService.insertData(submissionId, userSrid, filePath, fileFormat.getFormat(),
+						fileFormat.getFileType(), requestParameters, this.thread);
 
 			}
 
 			// Launch post-processing (if not cancelled)
 			if (this.thread == null || !this.thread.isCancelled()) {
+				// SQL post-processing (table metadata.process)
 				processingService.processData(ProcessingStep.INTEGRATION, submission, this.thread);
 
 				// Notify the event listeners that insertion is done
@@ -272,6 +282,24 @@ public class DataService extends AbstractService {
 					submissionDAO.updateSubmissionStatus(submissionId, SubmissionStep.SUBMISSION_CANCELLED, SubmissionStatus.ERROR);
 				} else {
 					submissionDAO.updateSubmissionStatus(submissionId, SubmissionStep.DATA_INSERTED, SubmissionStatus.ERROR);
+				}
+			}
+
+			// Launch PHP post-treatments (reports generation)
+			if (this.thread == null || !this.thread.isCancelled()) {
+				if ("true".equals(requestParameters.get("CUSTOM_GINCO_TREATMENTS"))) {
+					try {
+						String baseUrl = parameterDAO.getApplicationParameter("site_url");
+						URL myURL = new URL(baseUrl + "/dataset/generate-reports?submissionId=" + submissionId);
+						HttpURLConnection conn = (HttpURLConnection) myURL.openConnection();
+						int responseCode = conn.getResponseCode();
+					} catch (MalformedURLException e) {
+						// new URL() failed
+						logger.debug("Malformed URL exception", e);
+					} catch (IOException e) {
+						// openConnection() failed
+						logger.debug("IOException", e);
+					}
 				}
 			}
 

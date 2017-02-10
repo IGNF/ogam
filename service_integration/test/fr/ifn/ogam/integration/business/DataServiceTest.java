@@ -63,7 +63,8 @@ public class DataServiceTest extends AbstractEFDACTest {
 		String userLogin = "Test user";
 
 		Integer dataSubmissionId = null;
-
+		Integer userSrid = 3857;
+		
 		try {
 
 			// Create a new data submission
@@ -80,7 +81,7 @@ public class DataServiceTest extends AbstractEFDACTest {
 			dataParameters.put(Formats.SPECIES_FILE, speciesFile);
 
 			// Submit Data
-			dataService.submitData(dataSubmissionId, dataParameters);
+			dataService.submitData(dataSubmissionId, userSrid, dataParameters);
 
 			// Get the data submission status
 			SubmissionData submission = dataService.getSubmission(dataSubmissionId);

@@ -31,6 +31,7 @@ import javax.sql.DataSource;
 import org.apache.log4j.Logger;
 
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
 
@@ -72,16 +73,22 @@ public class GenericDAO {
 	 * 
 	 * @param schema
 	 *            the name of the schema
+	 * @param tableFormat
+	 *            the format of the destination table
 	 * @param tableName
 	 *            the name of the destination table
 	 * @param tableColumns
 	 *            the descriptor of the columns of the destination table
 	 * @param valueColumns
 	 *            the list of values to insert in the table
+	 * @param userSrid
+	 *            the srid given by the user
+	 * @return id the id returned by the insert request
 	 * 
 	 * @throws Exception
 	 */
-	public void insertData(String schema, String tableName, Map<String, TableFieldData> tableColumns, Map<String, GenericData> valueColumns) throws Exception {
+	public String insertData(String schema, String tableFormat, String tableName, Map<String, TableFieldData> tableColumns,
+			Map<String, GenericData> valueColumns, Integer userSrid) throws Exception {
 
 		Connection con = null;
 		PreparedStatement ps = null;
@@ -112,16 +119,29 @@ public class GenericDAO {
 						if (colData.getValue() == null || colData.getValue().equals("")) {
 							colValues.append("null");
 						} else {
-							// We suppose that the SRID is the one expected in the table
-							TableFieldData tableData = tableColumns.get(sourceData);
 
-							Integer srid = geometryDAO.getSRID(tableData.getTableName(), tableData.getColumnName());
 							if (colData.getValue().getClass().getName().equals("org.postgresql.util.PGobject")) {
 								colValues.append("'" + colData.getValue().toString() + "'");
 							} else {
 								// Checks the WKT
+								TableFieldData tableData = tableColumns.get(sourceData);
 								checkGeomValidity(colData.getValue().toString(), tableData.getSubtype());
-								colValues.append("ST_GeomFromText('" + colData.getValue() + "', " + srid + ")");
+
+								String geomColValue = null;
+								Integer tableSrid = geometryDAO.getSRID(tableData.getTableName(), tableData.getColumnName());
+								if (tableSrid.equals(userSrid)) {
+									geomColValue = "ST_GeomFromText('" + colData.getValue() + "', " + tableSrid + ")";
+								} else {
+									// transform imported geometry to match table srid
+									geomColValue = "ST_Transform(ST_GeomFromText('" + colData.getValue() + "', " + userSrid + "), " + tableSrid + ")";
+								}
+
+								if (tableSrid == 4326) {
+									// checks transformed geometry is in degrees
+									String geom = geometryDAO.getGeomWktInTableSrid(geomColValue);
+									checkGeomDegree(geom);
+								}
+								colValues.append(geomColValue);
 							}
 						}
 					} else {
@@ -132,7 +152,15 @@ public class GenericDAO {
 			}
 
 			// Build the SQL INSERT
-			String statement = "INSERT INTO " + tableName + " (" + colNames.toString() + ") VALUES (" + colValues.toString() + ")";
+			String statement = "INSERT INTO " + tableName + " (" + colNames.toString() + ") VALUES (" + colValues.toString();
+			// Return value of OGAM_ID if OGAM_ID key is present
+			String ogamId = "OGAM_ID_" + tableFormat;
+			if (colNames.toString().contains(ogamId)) {
+				statement += ") RETURNING " + ogamId + " AS id;";
+			} else {
+				statement += ");";
+			}
+
 			logger.trace(statement);
 
 			// Prepare the statement
@@ -207,7 +235,14 @@ public class GenericDAO {
 			}
 
 			// Execute the query
-			ps.execute();
+			if (colNames.toString().contains(ogamId)) {
+				ResultSet rs = ps.executeQuery();
+				rs.next();
+				return rs.getString("id");
+			} else {
+				ps.execute();
+				return null;
+			}
 
 		} catch (SQLException sqle) {
 
@@ -289,6 +324,11 @@ public class GenericDAO {
 							"Geometry type " + geometry.getGeometryType() + " does not correspond to expected geometry " + geometryType);
 				}
 			}
+			// Do not accept GeometryCollection as geometry type
+			if (geometry.getGeometryType().equalsIgnoreCase("GeometryCollection")) {
+				throw new CheckException(WRONG_GEOMETRY_TYPE, "Geometry type " + geometry.getGeometryType() + " does not correspond to expected geometry."
+						+ " Please use POINT, MULTIPOINT, LINESTRING, MULTILINESTRING, POLYGON, or MULTIPOLYGON");
+			}
 
 		} catch (ParseException pe) {
 			throw new CheckException(INVALID_GEOMETRY);
@@ -297,7 +337,34 @@ public class GenericDAO {
 	}
 
 	/**
-	 * Remove all data from a submisson.
+	 * Check that the geometry is in degrees.
+	 * 
+	 * @param geomColValue
+	 *            the geometry string
+	 */
+	private void checkGeomDegree(String geomColValue) throws CheckException {
+		try {
+			logger.trace("geomColValue (supposed in 4326) : " + geomColValue);
+			WKTReader wktReader = new WKTReader();
+
+			Geometry geometry = wktReader.read(geomColValue);
+			Envelope envelope = geometry.getEnvelopeInternal();
+
+			Double minx = envelope.getMinX();
+			Double miny = envelope.getMinY();
+			Double maxx = envelope.getMaxX();
+			Double maxy = envelope.getMaxY();
+
+			if (minx < -180 || miny < -90 || maxx > 180 || maxy > 90) {
+				throw new CheckException(WRONG_GEOMETRY_SRID);
+			}
+		} catch (ParseException pe) {
+			throw new CheckException(INVALID_GEOMETRY);
+		}
+	}
+
+	/**
+	 * Remove all data from a submission.
 	 * 
 	 * @param tableName
 	 *            the name of the table
@@ -530,4 +597,126 @@ public class GenericDAO {
 		}
 	}
 
+	/**
+	 * Executes any SQL query.
+	 * 
+	 * @param request
+	 *            the request to execute
+	 * @throws Exception
+	 */
+	public ResultSet executeQueryRequest(String request) throws Exception {
+		Connection con = null;
+		PreparedStatement ps = null;
+
+		try {
+
+			con = getConnection();
+
+			ps = con.prepareStatement(request);
+			logger.trace(request);
+			return ps.executeQuery();
+
+		} finally {
+			try {
+				if (con != null) {
+					con.close();
+				}
+			} catch (SQLException e) {
+				logger.error("Error while closing statement : " + e.getMessage());
+			}
+		}
+	}
+
+	/**
+	 * Executes any INSERT, UPDATE or DELETE SQL query.
+	 * 
+	 * @param request
+	 *            the request to execute
+	 * @throws Exception
+	 */
+	public void executeUpdateRequest(String request) throws Exception {
+		Connection con = null;
+		PreparedStatement ps = null;
+
+		try {
+
+			con = getConnection();
+
+			ps = con.prepareStatement(request);
+			logger.trace(request);
+			ps.executeUpdate();
+
+		} finally {
+			try {
+				if (ps != null) {
+					ps.close();
+				}
+			} catch (SQLException e) {
+				logger.error("Error while closing statement : " + e.getMessage());
+			}
+			try {
+				if (con != null) {
+					con.close();
+				}
+			} catch (SQLException e) {
+				logger.error("Error while closing statement : " + e.getMessage());
+			}
+		}
+	}
+
+	/**
+	 * 
+	 * Returns the length of a geometry. If execution fails, will return -1.
+	 * 
+	 * @param format
+	 *            the table_format of the table
+	 * @param tableName
+	 *            the tablename in raw_data schema
+	 * @param id
+	 *            the ogam_id
+	 * @param providerId
+	 *            the provider_id
+	 * @return the length of the geometry
+	 * @throws Exception
+	 */
+	public float getGeometryLength(String format, String tableName, String id, String providerId) throws Exception {
+		StringBuffer stmt = new StringBuffer();
+		stmt.append("SELECT St_Length(geometrie) as length ");
+		stmt.append("FROM raw_data." + tableName + " ");
+		stmt.append("WHERE ogam_id_" + format + " = '" + id + "' ");
+		stmt.append("AND provider_id = '" + providerId + "'");
+		ResultSet rs = executeQueryRequest(stmt.toString());
+		if (rs.next()) {
+			return rs.getFloat("length");
+		}
+		return -1;
+	}
+
+	/**
+	 * 
+	 * Returns the area of a geometry. If execution fails, will return -1.
+	 * 
+	 * @param format
+	 *            the table_format of the table
+	 * @param tableName
+	 *            the tablename in raw_data schema
+	 * @param id
+	 *            the ogam_id
+	 * @param providerId
+	 *            the provider_id
+	 * @return the area of the geometry
+	 * @throws Exception
+	 */
+	public float getGeometryArea(String format, String tableName, String id, String providerId) throws Exception {
+		StringBuffer stmt = new StringBuffer();
+		stmt.append("SELECT St_Area(geometrie) as area ");
+		stmt.append("FROM raw_data." + tableName + " ");
+		stmt.append("WHERE ogam_id_" + format + " = '" + id + "' ");
+		stmt.append("AND provider_id = '" + providerId + "'");
+		ResultSet rs = executeQueryRequest(stmt.toString());
+		if (rs.next()) {
+			return rs.getInt("area");
+		}
+		return -1;
+	}
 }

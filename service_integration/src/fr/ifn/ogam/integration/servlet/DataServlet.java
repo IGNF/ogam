@@ -28,6 +28,7 @@ import org.apache.commons.fileupload.FileItem;
 import fr.ifn.ogam.common.servlet.AbstractUploadServlet;
 import fr.ifn.ogam.common.business.ThreadLock;
 import fr.ifn.ogam.common.business.submissions.SubmissionStatus;
+import fr.ifn.ogam.common.database.website.ApplicationParametersDAO;
 import fr.ifn.ogam.integration.business.IntegrationEventListener;
 import fr.ifn.ogam.integration.business.IntegrationEventNotifier;
 import fr.ifn.ogam.integration.business.submissions.datasubmission.DataService;
@@ -58,9 +59,11 @@ public class DataServlet extends AbstractUploadServlet {
 	private static final String ACTION_UPLOAD_DATA = "UploadData";
 	private static final String ACTION_CANCEL_DATA_SUBMISSION = "CancelDataSubmission";
 	private static final String ACTION_VALIDATE_DATA_SUBMISSION = "ValidateDataSubmission";
+	private static final String ACTION_INVALIDATE_DATA_SUBMISSION = "InvalidateDataSubmission";
 	private static final String ACTION_STATUS = "status";
 
 	private static final String SUBMISSION_ID = "SUBMISSION_ID";
+	private static final String SRID = "SRID";
 	private static final String PROVIDER_ID = "PROVIDER_ID";
 	private static final String DATASET_ID = "DATASET_ID";
 	private static final String USER_LOGIN = "USER_LOGIN";
@@ -80,10 +83,9 @@ public class DataServlet extends AbstractUploadServlet {
 			// Get the list of listeners to register
 			EventListenerDAO eventDAO = new EventListenerDAO();
 			List<EventListenerData> eventListenerList = eventDAO.getEventListeners();
-
 			for (EventListenerData eventListenerName : eventListenerList) {
 
-				// Instanciante the class
+				// Instanciate the class
 				Class<?> clazz = Class.forName(eventListenerName.getClassName());
 				IntegrationEventListener eventListener = (IntegrationEventListener) clazz.newInstance();
 
@@ -207,6 +209,25 @@ public class DataServlet extends AbstractUploadServlet {
 			} else
 
 			//
+			// Invalidate the submission
+			//
+			if (action.equals(ACTION_INVALIDATE_DATA_SUBMISSION)) {
+
+				// Get the posted form parameters
+				String submissionIDStr = request.getParameter(SUBMISSION_ID);
+
+				if (submissionIDStr == null) {
+					throw new Exception("The " + SUBMISSION_ID + " parameter is mandatory");
+				}
+
+				Integer submissionID = Integer.valueOf(submissionIDStr);
+
+				dataService.invalidateSubmission(submissionID);
+
+				out.print(generateResult("OK"));
+			} else
+
+			//
 			// Get the STATUS of the process for a submission
 			//
 			if (action.equals(ACTION_STATUS)) {
@@ -274,6 +295,15 @@ public class DataServlet extends AbstractUploadServlet {
 					throw new Exception("The " + PROVIDER_ID + " parameter is mandatory");
 				}
 
+				String userSridStr = requestParameters.get(SRID);
+
+				if (userSridStr == null) {
+					// Pick the default parameter
+					ApplicationParametersDAO parameterDao = new ApplicationParametersDAO();
+					userSridStr = parameterDao.getApplicationParameter("srs_raw_data");
+				}
+				Integer userSrid = Integer.valueOf(userSridStr);
+
 				// Upload the file items in the directory
 				Iterator<FileItem> fileIter = fileFieldsList.iterator();
 				while (fileIter.hasNext()) {
@@ -292,7 +322,7 @@ public class DataServlet extends AbstractUploadServlet {
 				}
 
 				// Launch the thread
-				process = new DataServiceThread(submissionId, requestParameters);
+				process = new DataServiceThread(submissionId, userSrid, requestParameters);
 				process.start();
 
 				// Register the running thread

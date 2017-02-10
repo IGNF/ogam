@@ -37,6 +37,11 @@ public interface SubmissionStep {
 	String DATA_VALIDATED = "VALIDATE";
 
 	/**
+	 * Data has been invalidated.
+	 */
+	String DATA_INVALIDATED = "CHECK";
+
+	/**
 	 * The submission has been cancelled.
 	 */
 	String SUBMISSION_CANCELLED = "CANCEL";

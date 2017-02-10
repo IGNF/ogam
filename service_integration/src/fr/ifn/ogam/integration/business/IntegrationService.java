@@ -74,22 +74,20 @@ public class IntegrationService extends GenericMapper {
 	 * 
 	 * @param submissionId
 	 *            the submission identifier
+	 * @param userSrid
+	 *            the srid given by the user
 	 * @param filePath
 	 *            the source data file path
 	 * @param sourceFormat
 	 *            the source format identifier
-	 * @param fileType
-	 *            the type of the file
 	 * @param requestParameters
 	 *            the static values (PROVIDER_ID, DATASET_ID, SUBMISSION_ID, ...)
 	 * @param thread
 	 *            the thread that is running the process (optionnal, this is too keep it informed of the progress)
 	 * @return the status of the update
-	 * @throws Exception
-	 *             in case of error with the database
 	 */
-	public boolean insertData(Integer submissionId, String filePath, String sourceFormat, String fileType, Map<String, String> requestParameters,
-			AbstractThread thread) throws Exception {
+	public boolean insertData(Integer submissionId, Integer userSrid, String filePath, String sourceFormat, String fileType,
+			Map<String, String> requestParameters, AbstractThread thread) throws Exception {
 
 		logger.debug("insertData");
 		boolean isInsertValid = true;
@@ -260,8 +258,6 @@ public class IntegrationService extends GenericMapper {
 							throw e;
 						}
 
-						// Compute the administrative attachment
-
 						// Get the mapped column destination
 						TableFieldData mappedFieldDescriptor = mappedFieldDescriptors.get(sourceFieldDescriptor.getData());
 
@@ -309,10 +305,10 @@ public class IntegrationService extends GenericMapper {
 							commonFieldsMap.put(Data.LINE_NUMBER, lineNumber);
 
 							// Insert a list of values in the destination table
-							genericDAO.insertData(Schemas.RAW_DATA, tableName, tableFieldsMap.get(format), commonFieldsMap);
+							String id = genericDAO.insertData(Schemas.RAW_DATA, format, tableName, tableFieldsMap.get(format), commonFieldsMap, userSrid);
 
 							// Notify the event listeners that a line has been inserted
-							eventNotifier.afterLineInsertion(submissionId, format, tableName, commonFieldsMap);
+							eventNotifier.afterLineInsertion(submissionId, format, tableName, commonFieldsMap, id);
 
 						} catch (CheckException e) {
 							// Complete the description of the problem
