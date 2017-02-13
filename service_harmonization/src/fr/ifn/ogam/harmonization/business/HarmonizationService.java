@@ -117,11 +117,11 @@ public class HarmonizationService extends AbstractService {
 
 			logger.debug("harmonize data for " + datasetId + " and provider " + providerId);
 
-			// Initialize the process
-			processId = harmonisationProcessDAO.newHarmonizationProcess(datasetId, providerId, HarmonizationStatus.RUNNING);
-
 			// Delete old data
 			removeHarmonizedData(datasetId, providerId);
+
+			// Initialize the process
+			processId = harmonisationProcessDAO.newHarmonizationProcess(datasetId, providerId, HarmonizationStatus.RUNNING);
 
 			// Prepare some static data
 			GenericData datasetIdData = new GenericData();
