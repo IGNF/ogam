@@ -565,9 +565,7 @@ class QueryController extends Controller {
 
 				// Prepend the Byte Order Mask to inform Excel that the file is in UTF-8
 				if ($charset === 'UTF-8') {
-					echo (chr(0xEF));
-					echo (chr(0xBB));
-					echo (chr(0xBF));
+					$content = chr(0xEF).chr(0xBB).chr(0xBF). $content;
 				}
 
 				// Get the request from the session
