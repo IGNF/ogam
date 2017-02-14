@@ -7,140 +7,132 @@ class QueryControllerTest extends AbstractControllerTest {
 	// *************************************************** //
 	// Access Right Tests //
 	// *************************************************** //
-	
 	/**
-	 * Test access with a visitor login (RAW_DATA, CHAINED)
+	 * test configured chained actions
+	 * @dataProvider getChainedAcess
 	 */
-	public function testControllerActionVisitorAccess() {
-		$this->logIn('visitor', array(
-			'ROLE_VISITOR'
-		)); // The session must be keeped for the chained requests
-		echo "Schema: RAW_DATA\n\r";
-		echo "Chained: TRUE\n\r";
-		$urls = array_merge(
-		    $this->getRawDataUrls(Response::HTTP_FORBIDDEN),
-		    $this->getOthersChainedUrls(Response::HTTP_FORBIDDEN)
-		);
-		$this->checkControllerActionAccess($urls, Response::HTTP_FORBIDDEN);
+	public function testChainedAccess($user , $urls, $status) {
+		$this->logIn($user['name'], $user['role'] );
+		try{
+			foreach($urls as $key => $urlParam) {
+				$this->client->insulate();
+				$this->checkControllerActionAccess($urlParam, $status);
+			}
+		} catch (\Exception $e){
+			$this->fail('On the loop key '.$key."\n".$e);//to know which url failed
+		}
+	}
+	
+	
+	public function getChainedAcess() {
+		return [
+			'visitor rawData' => [
+				[
+					'name' => 'visitor',
+					'role' => array(
+						'ROLE_VISITOR'
+					)
+				],
+				array_merge($this->getRawDataUrls(Response::HTTP_FORBIDDEN), $this->getOthersChainedUrls()),
+				Response::HTTP_FORBIDDEN
+			],
+			'visitor HARMONIZED' => [
+				[
+					'name' => 'visitor',
+					'role' => array(
+						'ROLE_VISITOR'
+					)
+				],
+				array_merge($this->getHarmonizedDataUrls(), $this->getOthersChainedUrls()),
+				Response::HTTP_OK
+			],
+			'admin rawData' => [
+				[
+					'name' => 'admin',
+					'role' => array(
+						'ROLE_ADMIN'
+					)
+				],
+				array_merge($this->getRawDataUrls(), $this->getOthersChainedUrls()),
+				Response::HTTP_OK
+			],
+			'admin HARMONIZED' => [
+				[
+					'name' => 'admin',
+					'role' => array(
+						'ROLE_ADMIN'
+					)
+				],
+				array_merge($this->getHarmonizedDataUrls(), $this->getOthersChainedUrls()),
+				Response::HTTP_OK
+			]
+		]
+		;
 	}
 	
 	/**
 	 * Test access with a visitor login (RAW_DATA, NOT CHAINED)
+	 * @dataProvider getOthersNotChainedUrlsForVisitor 
 	 */
 	public function testControllerActionVisitorAccess2() {
 		$this->logIn('visitor', array(
 			'ROLE_VISITOR'
 		)); // The session must be keeped for the chained requests
-		echo "Schema: RAW_DATA\n\r";
-		echo "Chained: FALSE\n\r";
-		$urls = array_merge(
-		    $this->getRawDataUrls(Response::HTTP_FORBIDDEN),
-		    $this->getOthersNotChainedUrls(Response::HTTP_FORBIDDEN)
-		);
-		$this->checkControllerActionAccess($urls, Response::HTTP_FORBIDDEN);
+// 		echo "Schema: RAW_DATA\n\r";
+// 		echo "Chained: FALSE\n\r";
+		$this->checkControllerActionAccess(func_get_args(), Response::HTTP_FORBIDDEN);
 	}
 	
-	/**
-	 * Test access with a visitor login (HARMONIZED_DATA, CHAINED)
-	 */
-	public function testControllerActionVisitorAccess3() {
-	    $this->logIn('visitor', array(
-	        'ROLE_VISITOR'
-	    )); // The session must be keeped for the chained requests
-	    echo "Schema: HARMONIZED_DATA\n\r";
-	    echo "Chained: TRUE\n\r";
-	    $urls = array_merge(
-	        $this->getHarmonizedDataUrls(),
-	        $this->getOthersChainedUrls()
-	    );
-	    $this->checkControllerActionAccess($urls, Response::HTTP_OK);
+	public function getOthersNotChainedUrlsForVisitor(){
+		return $this->getOthersNotChainedUrls(Response::HTTP_FORBIDDEN);
 	}
 	
-	/**
-	 * Test access with a visitor login (HARMONIZED_DATA, NOT CHAINED)
-	 */
-	public function testControllerActionVisitorAccess4() {
-	    $this->logIn('visitor', array(
-	        'ROLE_VISITOR'
-	    )); // The session must be keeped for the chained requests
-	    echo "Schema: HARMONIZED_DATA\n\r";
-	    echo "Chained: FALSE\n\r";
-	    $urls = array_merge(
-	        $this->getHarmonizedDataUrls(),
-	        $this->getOthersNotChainedUrls()
-	    );
-	    $this->checkControllerActionAccess($urls, Response::HTTP_OK);
+	public function getOthersNotChainedUrlsForAdmin(){
+		return $this->getOthersNotChainedUrls();
 	}
+	
 
-	/**
-	 * Test access with a admin login (RAW_DATA, CHAINED)
-	 */
-	public function testControllerActionAdminAccess() {
-	    $this->logIn('admin', array(
-	        'ROLE_ADMIN'
-	    )); // The session must be keeped for the chained requests
-	    echo "Schema: RAW_DATA\n\r";
-	    echo "Chained: TRUE\n\r";
-	    $urls = array_merge(
-	        $this->getRawDataUrls(),
-	        $this->getOthersChainedUrls()
-	        );
-	    $this->checkControllerActionAccess($urls, Response::HTTP_OK);
-	}
 
 	/**
 	 * Test access with a admin login (RAW_DATA, NOT CHAINED)
+	 * @dataProvider getOthersNotChainedUrlsForAdmin
 	 */
 	public function testControllerActionAdminAccess2() {
 		$this->logIn('admin', array(
 			'ROLE_ADMIN'
 		)); // The session must be keeped for the chained requests
-		echo "Schema: RAW_DATA\n\r";
-		echo "Chained: FALSE\n\r";
-		$urls = array_merge(
-		    $this->getRawDataUrls(),
-		    $this->getOthersNotChainedUrls()
-		);
-		$this->checkControllerActionAccess($urls, Response::HTTP_OK);
+// 		echo "Schema: RAW_DATA\n\r";
+// 		echo "Chained: FALSE\n\r";
+
+		foreach($this->getHarmonizedDataUrls() as $url){
+			$this->checkControllerActionAccess($url, Response::HTTP_OK);
+		}
+		$this->checkControllerActionAccess(func_get_args(), Response::HTTP_OK);
 	}
 	
-	/**
-	 * Test access with a admin login (HARMONIZED_DATA, CHAINED)
-	 */
-	public function testControllerActionAdminAccess3() {
-	    $this->logIn('admin', array(
-	        'ROLE_ADMIN'
-	    )); // The session must be keeped for the chained requests
-	    echo "Schema: HARMONIZED_DATA\n\r";
-	    echo "Chained: TRUE\n\r";
-	    $urls = array_merge(
-	        $this->getHarmonizedDataUrls(),
-	        $this->getOthersChainedUrls()
-	        );
-	    $this->checkControllerActionAccess($urls, Response::HTTP_OK);
-	}
 
 	/**
 	 * Test access with a admin login (HARMONIZED_DATA, NOT CHAINED)
+	 * @dataProvider getOthersNotChainedUrlsForAdmin
 	 */
 	public function testControllerActionAdminAccess4() {
 	    $this->logIn('admin', array(
 	        'ROLE_ADMIN'
 	    )); // The session must be keeped for the chained requests
-	    echo "Schema: HARMONIZED_DATA\n\r";
-	    echo "Chained: FALSE\n\r";
-	    $urls = array_merge(
-	        $this->getHarmonizedDataUrls(),
-	        $this->getOthersNotChainedUrls()
-	        );
-	    $this->checkControllerActionAccess($urls, Response::HTTP_OK);
+// 	    echo "Schema: HARMONIZED_DATA\n\r";
+// 	    echo "Chained: FALSE\n\r";
+
+	    foreach($this->getHarmonizedDataUrls() as $url){
+	    	$this->checkControllerActionAccess($url, Response::HTTP_OK);
+	    }
+
+	    $this->checkControllerActionAccess(func_get_args(), Response::HTTP_OK);
 	}
 
 	public function getNotLoggedUrls() {
 		return [
             'query' => [['uri' => '/query/index']],
             'show-query-form' => [['uri' => '/query/show-query-form']],
-			// 'odp-index' => [['uri' => '/odp/index.html?locale=fr']], // TODO: Not found. Why?
             'getgridparameters' => [['uri' => '/query/getgridparameters']],
             'ajaxgetdatasets' => [['uri' => '/query/ajaxgetdatasets']],
             'ajaxgetqueryform' => [['uri' => '/query/ajaxgetqueryform']],
@@ -166,6 +158,10 @@ class QueryControllerTest extends AbstractControllerTest {
 		];
 	}
 
+	public function getRawDataUrlsForVisitor(){
+		return $this->getRawDataUrls(Response::HTTP_FORBIDDEN);
+	}
+	
 	public function getRawDataUrls($defaultStatusCode = Response::HTTP_FOUND) {
 		return [
             'query_RAW_DATA' => [[
@@ -194,6 +190,12 @@ class QueryControllerTest extends AbstractControllerTest {
 					'parameters' => [
 						'SCHEMA' => 'HARMONIZED_DATA'
 					]
+            	,
+            	'sessionParameters' => [
+            		'SCHEMA' => [
+            			'value' => 'HARMONIZED_DATA'
+            		]
+            	]
             ],[
 					'statusCode' => Response::HTTP_FOUND,
 					'redirectionLocation' => '/query/show-query-form'
@@ -201,7 +203,7 @@ class QueryControllerTest extends AbstractControllerTest {
 		];
 	}
 
-	public function getOthersChainedUrls($defaultStatusCode = Response::HTTP_FOUND) {
+	public function getOthersChainedUrls() {
 	    return [
 	        'ajaxresetresultlocation' => [['uri' => '/query/ajaxresetresultlocation'], ['isJson' => true]],
 	        'ajaxbuildrequest' => [[
@@ -261,7 +263,6 @@ class QueryControllerTest extends AbstractControllerTest {
 					'statusCode' => $defaultStatusCode,
 					'redirectionLocation' => '/odp/index.html?locale=fr'
             ]],
-			// 'odp-index' => [['uri' => '/odp/index.html?locale=fr']], // TODO: Not found. Why?
             'getgridparameters' => [['uri' => '/query/getgridparameters']],
             'ajaxgetdatasets' => [[
 					'uri' => '/query/ajaxgetdatasets',

@@ -12,22 +12,22 @@ use Ign\Bundle\OGAMBundle\Entity\Generic\QueryForm;
 use Symfony\Component\BrowserKit\Request;
 use Symfony\Component\HttpFoundation\Session\Storage\Handler\NativeFileSessionHandler;
 use Symfony\Component\HttpFoundation\Session\Storage\NativeSessionStorage;
+use phpDocumentor\Reflection\Types\This;
 
 class AbstractControllerTest extends WebTestCase {
 
 	protected $client = null;
 
 	public function setUp() {
-	    ini_set("max_execution_time", 960);
-	    echo "\n\rStarting the access tests...\n\r";
-	    $fullClassName = explode('\\', get_class($this));
-	    $shortClassName = substr(end($fullClassName),0,-4);
-	    echo "Controller: ", $shortClassName, "\n\r";
+// 	    echo "\n\rStarting the access tests...\n\r";
+// 	    $fullClassName = explode('\\', get_class($this));
+// 	    $shortClassName = substr(end($fullClassName),0,-4);
+// 	    echo "Controller: ", $shortClassName, "\n\r";
 		$this->client = static::createClient();
 	}
 
 	protected function logIn($login = 'admin', $roles = array('ROLE_ADMIN')) {
-	    echo "User Role: ", implode(" ,", $roles), "\n\r";
+// 	    echo "User Role: ", implode(" ,", $roles), "\n\r";
 	    $session = $this->client->getContainer()->get('session');
 		
 		// the firewall context (defaults to the firewall name)
@@ -47,41 +47,44 @@ class AbstractControllerTest extends WebTestCase {
 	
 	/**
 	 * Test access without login
+	 * @dataProvider getNotLoggedUrls
 	 */
 	public function testControllerActionNotLoggedAccess() {
-	    echo "User Role: NOT LOGGED\n\r";
-		$this->checkControllerActionAccess($this->getNotLoggedUrls(), Response::HTTP_FOUND);
+// 	    echo "User Role: NOT LOGGED\n\r";
+		$this->checkControllerActionAccess( func_get_args(), Response::HTTP_FOUND);
 	}
 
 	/**
 	 * Test access with a visitor login
+	 * @dataProvider getVisitorUrls
 	 */
 	public function testControllerActionVisitorAccess() {
 		$this->logIn('visitor', array(
 			'ROLE_VISITOR'
 		)); // The session must be keeped for the chained requests
-		$this->checkControllerActionAccess($this->getVisitorUrls(), Response::HTTP_FORBIDDEN);
+		$this->checkControllerActionAccess(func_get_args(), Response::HTTP_FORBIDDEN);
 	}
 
 	/**
 	 * Test access with a admin login
+	 * @dataProvider getAdminUrls
 	 */
 	public function testControllerActionAdminAccess() {
 		$this->logIn('admin', array(
 			'ROLE_ADMIN'
 		)); // The session must be keeped for the chained requests
-		$this->checkControllerActionAccess($this->getAdminUrls(), Response::HTTP_OK);
+		$this->checkControllerActionAccess(func_get_args(), Response::HTTP_OK);
 	}
+	
 
+	
 	/**
 	 * Tests all accesses to controller actions
 	 */
-	public function checkControllerActionAccess($urls, $defaultStatusCode = Response::HTTP_OK) {
+	public function checkControllerActionAccess($url, $defaultStatusCode = Response::HTTP_OK) {
 		$client = $this->client;
-		
 		// Loop on the urls
-		foreach ($urls as $urlName => $url) {
-			echo "\n\r", $urlName, "...";
+// 			echo "\n\r", $urlName, "...";
 			
             // Set the request parameters
 			$requestParameters = $url[0];
@@ -145,23 +148,23 @@ class AbstractControllerTest extends WebTestCase {
 			
 			// Display the response status and error message
 			$responseStatusCode = $client->getResponse()->getStatusCode();
-			echo " Status code : ", $responseStatusCode;
+// 			echo " Status code : ", $responseStatusCode;
 			if ($isJson && $responseStatusCode === Response::HTTP_OK) {
 				$response = json_decode($client->getResponse()->getContent());
 				if ($response->success === true) {
-					echo ", Success : true";
+// 					echo ", Success : true";
 					// echo "\n\r", $client->getResponse()->getContent();
 				} else {
-					echo ", Success : ", $response->success ? 'true' : 'false', ", Error message : \n\r", $response->errorMessage;
+// 					echo ", Success : ", $response->success ? 'true' : 'false', ", Error message : \n\r", $response->errorMessage;
 				}
 			}
 			if ($responseStatusCode === Response::HTTP_INTERNAL_SERVER_ERROR) {
-				echo ", Error message : ";
-				print_r($crawler->filter('div#traces-text')->text());
+// 				echo ", Error message : ";
+//				print_r($crawler->filter('div#traces-text')->text());
 			}
 			
 			// Asserts
-			try {
+//		try {
 				// Check the status code
 				$this->assertEquals($statusCode, $responseStatusCode);
 				// Check the content
@@ -189,12 +192,11 @@ class AbstractControllerTest extends WebTestCase {
 							->getContent());
 					}
 				}
-			} catch (\Exception $e) {
-				echo ", Assert error message : ", $e->getMessage();
-				throw $e;
-			}
-		}
-		echo "\n\n\r";
+//			} catch (\Exception $e) {
+//				echo ", Assert error message : ", $e->getMessage();
+//				throw $e;
+//			}
+// 		echo "\n\n\r";
 	}
 
 	/**
