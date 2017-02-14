@@ -352,7 +352,7 @@ class DataEditionController extends Controller {
 	 *        	('ADD' or 'EDIT')
 	 * @return \Symfony\Component\Form\FormInterface
 	 */
-	protected function getEditDataForm($data, $mode) {
+	protected function getEditDataForm(GenericTableFormat $data, $mode) {
 		$formBuilder = $this->get('form.factory')->createNamedBuilder('edit_data_form', AjaxType::class); // use in ajax often
 
 		// FIXME : action needed ?
