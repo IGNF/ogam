@@ -34,7 +34,7 @@
     <td>{{ harmonizationProcess.dataset.label }}</td>
     <td>{{ harmonizationProcess.date|date("Y-m-d") }}</td>
     <td>
-        {% if harmonizationProcess.submissionStatus is same as("NOT_VALID") %}
+        {% if harmonizationProcess.submissionStatus == 'NOT_VALIDATE' %}
             {{ harmonizationProcess.status|trans }}
             {% image '@OGAMBundle/Resources/public/img/warning_orange.png' %}
                 <img src="{{ asset_url }}" title="{{ 'The submission has not been validated'|trans }}" />
@@ -54,14 +54,14 @@
             <img src="{{ asset('img/Red_x.png') }}" />
         {% endif %}</td>
     <td>
-    {% if harmonizationProcess.submissionStatus is not same as("NOT_VALID") and harmonizationProcess.status is not same as("RUNNING") %}
+    {% if harmonizationProcess.submissionStatus == 'VALIDATE' and harmonizationProcess.status != 'RUNNING' %}
         <a onclick="return confirmLauch();" href="{{ path('harmonization_launch',{'DATASET_ID':harmonizationProcess.dataset.id, 'PROVIDER_ID':harmonizationProcess.providerId}) }}" >{{ 'Launch Harmonization'|trans }}</a>
         <br/>
-        {% if harmonizationProcess.status is not same as("UNDONE") and harmonizationProcess.status is not same as("INIT") %}
+        {% if harmonizationProcess.status != 'REMOVED' and harmonizationProcess.status != '' %}
         <a onclick="return confirmDeletion();" href="{{ path('harmonization_removeharmonizationdata',{'DATASET_ID':harmonizationProcess.dataset.id, 'PROVIDER_ID':harmonizationProcess.providerId}) }}" >{{ 'Remove Harmonization Data'|trans }}</a>
         {% endif %}
-    {% elseif harmonizationProcess.status is not same as("UNDONE") %}
-        <a href="{{ path('harmonization_home') }}">{{ 'Validate the submission'|trans }}</a>
+    {% elseif harmonizationProcess.submissionStatus == 'NOT_VALIDATE' %}
+        <a href="{{ path('integration_home') }}">{{ 'Validate the submission'|trans }}</a>
     {% endif %}
     </td>
 </tr>
