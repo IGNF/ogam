@@ -10,19 +10,21 @@ class UserControllerTest extends AbstractControllerTest {
 	
 	/**
 	 * Test access without login
+	 * @dataProvider getAdminUrls
 	 */
 	public function testControllerActionNotLoggedAccess() {
-		$this->checkControllerActionAccess($this->getAdminUrls(), Response::HTTP_OK);
+		$this->checkControllerActionAccess(func_get_args(), Response::HTTP_OK);
 	}
 
 	/**
 	 * Test access with a visitor login
+	 * @dataProvider getAdminUrls
 	 */
 	public function testControllerActionVisitorAccess() {
 		$this->logIn('visitor', array(
 			'ROLE_VISITOR'
 		)); // The session must be keeped for the chained requests
-		$this->checkControllerActionAccess($this->getAdminUrls(), Response::HTTP_OK);
+		$this->checkControllerActionAccess(func_get_args(), Response::HTTP_OK);
 	}
 
 	public function getAdminUrls() {
@@ -57,41 +59,5 @@ class UserControllerTest extends AbstractControllerTest {
 				]
 			]
 		];
-	}
-
-	public function testIndex() {
-		$client = static::createClient();
-		
-		$crawler = $client->request('GET', '/');
-	}
-
-	public function testLogout() {
-		$client = static::createClient();
-		
-		$crawler = $client->request('GET', '/logout');
-	}
-
-	public function testShowchangepassword() {
-		$client = static::createClient();
-		
-		$crawler = $client->request('GET', '/showChangePassword');
-	}
-
-	public function testShowloginform() {
-		$client = static::createClient();
-		
-		$crawler = $client->request('GET', '/showLoginForm');
-	}
-
-	public function testValidatechangepassword() {
-		$client = static::createClient();
-		
-		$crawler = $client->request('GET', '/validateChangePassword');
-	}
-
-	public function testValidatelogin() {
-		$client = static::createClient();
-		
-		$crawler = $client->request('GET', '/validateLogin');
 	}
 }

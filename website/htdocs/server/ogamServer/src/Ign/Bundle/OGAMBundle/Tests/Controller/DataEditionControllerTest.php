@@ -5,12 +5,20 @@ use Symfony\Component\HttpFoundation\Response;
 
 class DataEditionControllerTest extends AbstractControllerTest {
 
-	public function testGetEditFormAction() {
+	/**
+	 * @dataProvider getEditionData
+	 */
+	public function testGetEditFormAction($url, $defaultStatusCode) {
 		$this->logIn('admin', array(
 			'ROLE_ADMIN'
 		));
-		$this->checkControllerActionAccess([
-			'ajaxGetEditFormAction_Location' => [
+		$this->checkControllerActionAccess($url, $defaultStatusCode);
+	}
+	
+	public function getEditionData() {
+		return [
+			'ajax-get-edit-form location'=>[
+			[
 				[
 					'uri' => '/dataedition/ajax-get-edit-form/SCHEMA/RAW_DATA/FORMAT/LOCATION_DATA/PROVIDER_ID/1/PLOT_CODE/95552-P6040-2-4T'
 				],
@@ -18,8 +26,12 @@ class DataEditionControllerTest extends AbstractControllerTest {
 					'isJson' => true,
 					'jsonFile' => __DIR__ . '/Mock/DataEditionController/ajax-get-edit-form-95552-P6040-2-4T.json'
 				]
+				
 			],
-			'ajaxGetEditFormAction_Plot' => [
+			 Response::HTTP_OK
+			],
+		'ajax-get-edit-form plot'=>[
+			[
 				[
 					'uri' => '/dataedition/ajax-get-edit-form/SCHEMA/RAW_DATA/FORMAT/PLOT_DATA/PROVIDER_ID/1/PLOT_CODE/95552-P6040-2-4T/CYCLE/5'
 				],
@@ -27,8 +39,10 @@ class DataEditionControllerTest extends AbstractControllerTest {
 					'isJson' => true,
 					'jsonFile' => __DIR__ . '/Mock/DataEditionController/ajax-get-edit-form-cyle-5.json'
 				]
+				],
+			Response::HTTP_OK
 			]
-		], Response::HTTP_OK);
+		];
 	}
 	
 	// *************************************************** //
