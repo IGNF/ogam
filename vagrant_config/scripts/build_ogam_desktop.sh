@@ -19,4 +19,4 @@ echo "--------------------------------------------------"
 # Launch Sencha Cmd to compile the JS and CSS
 #----------------------------------------------------------------
 cd /vagrant/ogam/website/htdocs/client/ogamDesktop
-sencha app build
+sencha app build -e development
