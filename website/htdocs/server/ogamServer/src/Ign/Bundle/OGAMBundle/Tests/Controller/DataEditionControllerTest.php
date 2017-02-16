@@ -76,39 +76,6 @@ class DataEditionControllerTest extends AbstractControllerTest {
 					'contentFile' => __DIR__ . '/Mock/DataEditionController/show-add-data.json'
 				]
 			],
-			'ajaxGetAddFormAction' => [
-				[
-					'uri' => '/dataedition/ajax-get-add-form/SCHEMA/RAW_DATA/FORMAT/SPECIES_DATA/PROVIDER_ID/1/PLOT_CODE/95552-P6040-2-4T/CYCLE/5/ID_TAXON/',
-					'parameters' => [
-						'page' => 1,
-						'start' => 0,
-						'limit' => 25
-					]
-				],
-				[
-					'isJson' => true,
-					'jsonFile' => __DIR__ . '/Mock/DataEditionController/ajax-get-add-form.json'
-				]
-			],
-			'ajaxValidateEditDataAction' => [
-				[ // Chained to the ajaxGetAddForm action
-					'uri' => '/dataedition/ajax-validate-edit-data',
-					'method' => 'POST',
-					'parameters' => [
-						'SPECIES_DATA__PROVIDER_ID' => 1,
-						'SPECIES_DATA__PLOT_CODE' => '95552-P6040-2-4T',
-						'SPECIES_DATA__CYCLE' => 5,
-						'SPECIES_DATA__ID_TAXON' => 349525,
-						'SPECIES_DATA__BASAL_AREA' => null,
-						'SPECIES_DATA__COMMENT' => null,
-						'MODE' => 'ADD'
-					]
-				],
-				[
-					'isJson' => true,
-					'jsonFile' => __DIR__ . '/Mock/DataEditionController/ajax-validate-edit-data.json'
-				]
-			],
 			'ajaxGetEditFormAction' => [
 				[
 					'uri' => '/dataedition/ajax-get-edit-form/SCHEMA/RAW_DATA/FORMAT/PLOT_DATA/PROVIDER_ID/1/PLOT_CODE/95552-P6040-2-4T/CYCLE/5',
@@ -123,15 +90,7 @@ class DataEditionControllerTest extends AbstractControllerTest {
 					'jsonFile' => __DIR__ . '/Mock/DataEditionController/ajax-get-edit-form.json'
 				]
 			],
-			'ajaxDeleteDataAction' => [
-				[
-					'uri' => '/dataedition/ajax-delete-data/SCHEMA/RAW_DATA/FORMAT/SPECIES_DATA/PROVIDER_ID/1/PLOT_CODE/95552-P6040-2-4T/CYCLE/5/ID_TAXON/349525'
-				],
-				[
-					'isJson' => true,
-					'jsonFile' => __DIR__ . '/Mock/DataEditionController/ajax-delete-data.json'
-				]
-			],
+
 			'getparametersAction' => [
 				[
 					'uri' => '/dataedition/getParameters'
@@ -149,5 +108,71 @@ class DataEditionControllerTest extends AbstractControllerTest {
 				]
 			]
 		];
+	}
+	
+	public function testDataInsertionAction(){
+		$this->logIn('admin', array(
+			'ROLE_ADMIN'
+		));
+		$this->checkControllerActionAccess( [
+			[
+				'uri' => '/dataedition/ajax-get-add-form/SCHEMA/RAW_DATA/FORMAT/SPECIES_DATA/PROVIDER_ID/1/PLOT_CODE/95552-P6040-2-4T/CYCLE/5/ID_TAXON/',
+				'parameters' => [
+					'page' => 1,
+					'start' => 0,
+					'limit' => 25
+				]
+			],
+			[
+				'isJson' => true,
+				'jsonFile' => __DIR__ . '/Mock/DataEditionController/ajax-get-add-form.json'
+			]
+		]);
+		return $this->client;
+	}
+	
+	/**
+	 * 
+	 * @depends testDataInsertionAction
+	 */
+	public function testValidation($client){
+		$this->client =$client;
+		$this->checkControllerActionAccess(
+		[
+		[ // Chained to the ajaxGetAddForm action
+			'uri' => '/dataedition/ajax-validate-edit-data',
+			'method' => 'POST',
+			'parameters' => [
+				'SPECIES_DATA__PROVIDER_ID' => 1,
+				'SPECIES_DATA__PLOT_CODE' => '95552-P6040-2-4T',
+				'SPECIES_DATA__CYCLE' => 5,
+				'SPECIES_DATA__ID_TAXON' => 349525,
+				'SPECIES_DATA__BASAL_AREA' => null,
+				'SPECIES_DATA__COMMENT' => null,
+				'MODE' => 'ADD'
+			]
+		],
+		[
+			'isJson' => true,
+			'jsonFile' => __DIR__ . '/Mock/DataEditionController/ajax-validate-edit-data.json'
+		]
+		]);
+		return $this->client;
+	}
+	
+	/**
+	 *  @depends testValidation
+	 */
+	public function testDeleteDataAction($client){
+		$this->client =$client;
+		$this->checkControllerActionAccess([
+			[
+				'uri' => '/dataedition/ajax-delete-data/SCHEMA/RAW_DATA/FORMAT/SPECIES_DATA/PROVIDER_ID/1/PLOT_CODE/95552-P6040-2-4T/CYCLE/5/ID_TAXON/349525'
+			],
+			[
+				'isJson' => true,
+				'jsonFile' => __DIR__ . '/Mock/DataEditionController/ajax-delete-data.json'
+			]
+		]);
 	}
 }
