@@ -12,13 +12,18 @@ use Ign\Bundle\OGAMBundle\Entity\Generic\QueryForm;
 use Symfony\Component\BrowserKit\Request;
 use Symfony\Component\HttpFoundation\Session\Storage\Handler\NativeFileSessionHandler;
 use Symfony\Component\HttpFoundation\Session\Storage\NativeSessionStorage;
-use phpDocumentor\Reflection\Types\This;
 
 class AbstractControllerTest extends WebTestCase {
 
 	protected $client = null;
-
+	
+	/**
+	 * 
+	 * {@inheritDoc}
+	 * @see PHPUnit_Framework_TestCase::setUp()
+	 */
 	public function setUp() {
+		parent::setUp();
 // 	    echo "\n\rStarting the access tests...\n\r";
 // 	    $fullClassName = explode('\\', get_class($this));
 // 	    $shortClassName = substr(end($fullClassName),0,-4);
@@ -51,7 +56,7 @@ class AbstractControllerTest extends WebTestCase {
 	 */
 	public function testControllerActionNotLoggedAccess() {
 // 	    echo "User Role: NOT LOGGED\n\r";
-		$this->checkControllerActionAccess( func_get_args(), Response::HTTP_FOUND);
+		$this->checkControllerActionAccess(func_get_args(), Response::HTTP_FOUND);
 	}
 
 	/**
@@ -84,7 +89,6 @@ class AbstractControllerTest extends WebTestCase {
 	public function checkControllerActionAccess($url, $defaultStatusCode = Response::HTTP_OK) {
 		$client = $this->client;
 		// Loop on the urls
-// 			echo "\n\r", $urlName, "...";
 			
             // Set the request parameters
 			$requestParameters = $url[0];
@@ -107,11 +111,11 @@ class AbstractControllerTest extends WebTestCase {
 			$alertMessage = empty($responseParameters['alertMessage']) ? null : $responseParameters['alertMessage'];
 			
             // Set the session
-            if(!empty($sessionParameters)){
+            if (!empty($sessionParameters)) {
                 $sessionParametersOldsValues = [];
                 $session = $client->getContainer()->get('session');
-                foreach($sessionParameters as $key => $values) {
-                    if($session->has($key)) {
+                foreach ($sessionParameters as $key => $values) {
+                    if ($session->has($key)) {
                         $sessionParametersOldsValues[$key] = $session->get($key);
                     }
                     if (!isset($values['value'])) {
@@ -131,11 +135,11 @@ class AbstractControllerTest extends WebTestCase {
             );
 
             // Clean the session
-            if(!empty($sessionParameters)){
+            if (!empty($sessionParameters)) {
                 $session = $client->getContainer()->get('session');
-                foreach($sessionParameters as $key => $values) {
+                foreach ($sessionParameters as $key => $values) {
                     $isPermanent = empty($values['isPermanent']) ? false : $values['isPermanent'];
-                    if(!$isPermanent){
+                    if (!$isPermanent) {
                         if(isset($sessionParametersOldsValues[$key])) {
                             $session->set($key, $sessionParametersOldsValues[$key]);
                         } else {
@@ -223,19 +227,29 @@ class AbstractControllerTest extends WebTestCase {
 	 *     'redirectionLocation' => '/ControllerRoute/ActionRoute', // Default : '/user/login'
 	 *     'alertMessage' => 'The alert message.' // Default : null
 	 * ]]
+	 * @return array
 	 */
 	public function getUrls() {
 		return [];
 	}
-
+	/**
+	 * provision list url when not logged
+	 * @see ::getUrls()
+	 */
 	public function getNotLoggedUrls() {
 		return $this->getUrls();
 	}
-
+	/**
+	 * provision list url when user role visitor
+	 * @see ::getUrls()
+	 */
 	public function getVisitorUrls() {
 		return $this->getUrls();
 	}
-
+	/**
+	 * provision list url when user role admin
+	 * @see ::getUrls()
+	 */
 	public function getAdminUrls() {
 		return $this->getUrls();
 	}

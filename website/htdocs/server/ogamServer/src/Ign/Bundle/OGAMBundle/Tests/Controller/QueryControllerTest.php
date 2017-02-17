@@ -2,7 +2,10 @@
 namespace Ign\Bundle\OGAMBundle\Tests\Controller;
 
 use Symfony\Component\HttpFoundation\Response;
-
+/**
+ * Tests for QueryController routed by /query/*
+ *
+ */
 class QueryControllerTest extends AbstractControllerTest {
 	// *************************************************** //
 	// Access Right Tests //
@@ -13,19 +16,23 @@ class QueryControllerTest extends AbstractControllerTest {
 	 * @runInSeparateProcess
 	 * @preserveGlobalState disabled
 	 */
-	public function testChainedAccess($user , $urls, $status) {
-		$this->logIn($user['name'], $user['role'] );
-		try{
+	public function testChainedAccess($user, $urls, $status) {
+		$this->logIn($user['name'], $user['role']);
+		try {
 			foreach($urls as $key => $urlParam) {
 				//$this->client->insulate(); //insulate break coverage in request
 				$this->checkControllerActionAccess($urlParam, $status);
 			}
-		} catch (\Exception $e){
-			$this->fail('On the loop key '.$key."\n".$e);//to know which url failed
+		} catch (\Exception $e) {
+			$this->fail('On the loop key ' . $key . "\n" . $e);//to know which url failed
 		}
 	}
 	
-	
+	/**
+	 * provide several case of chained actions/querys/urls
+	 * foreach case provide role, list chaine url, default http response
+	 * @return [][][]
+	 */
 	public function getChainedAcess() {
 		return [
 			'visitor rawData' => [
@@ -84,12 +91,19 @@ class QueryControllerTest extends AbstractControllerTest {
 // 		echo "Chained: FALSE\n\r";
 		$this->checkControllerActionAccess(func_get_args(), Response::HTTP_FORBIDDEN);
 	}
-	
-	public function getOthersNotChainedUrlsForVisitor(){
+	/**
+	 * provision of testControllerActionVisitorAccess2
+	 * @return string[][][]|unknown[][][]|boolean[][][]|number[][][][]|string[][][][]
+	 */
+	public function getOthersNotChainedUrlsForVisitor() {
 		return $this->getOthersNotChainedUrls(Response::HTTP_FORBIDDEN);
 	}
-	
-	public function getOthersNotChainedUrlsForAdmin(){
+	/**
+	 * 
+	 * Provide testControllerActionAdminAccess2 & testControllerActionAdminAccess4
+	 * @return string[][][]|unknown[][][]|boolean[][][]|number[][][][]|string[][][][]
+	 */
+	public function getOthersNotChainedUrlsForAdmin() {
 		return $this->getOthersNotChainedUrls();
 	}
 	
@@ -131,6 +145,11 @@ class QueryControllerTest extends AbstractControllerTest {
 	    $this->checkControllerActionAccess(func_get_args(), Response::HTTP_OK);
 	}
 
+	/**
+	 * 
+	 * {@inheritDoc}
+	 * @see \Ign\Bundle\OGAMBundle\Tests\Controller\AbstractControllerTest::getNotLoggedUrls()
+	 */
 	public function getNotLoggedUrls() {
 		return [
             'query' => [['uri' => '/query/index']],
@@ -160,7 +179,7 @@ class QueryControllerTest extends AbstractControllerTest {
 		];
 	}
 
-	public function getRawDataUrlsForVisitor(){
+	public function getRawDataUrlsForVisitor() {
 		return $this->getRawDataUrls(Response::HTTP_FORBIDDEN);
 	}
 	
@@ -184,6 +203,10 @@ class QueryControllerTest extends AbstractControllerTest {
 		];
 	}
 
+	/**
+	 * 
+	 * @return string[][][]|string[][][][]|string[][][][][]|number[][][]
+	 */
 	public function getHarmonizedDataUrls() {
 		return [
             'query_HARMONIZED_DATA' => [[
@@ -198,7 +221,7 @@ class QueryControllerTest extends AbstractControllerTest {
             			'value' => 'HARMONIZED_DATA'
             		]
             	]
-            ],[
+            ], [
 					'statusCode' => Response::HTTP_FOUND,
 					'redirectionLocation' => '/query/show-query-form'
             ]]
@@ -257,11 +280,16 @@ class QueryControllerTest extends AbstractControllerTest {
 	    ];
 	}
 
+	/**
+	 * 
+	 * @param integer $defaultStatusCode
+	 * @return string[][][]|unknown[][][]|boolean[][][]|number[][][][]|string[][][][]
+	 */
 	public function getOthersNotChainedUrls($defaultStatusCode = Response::HTTP_FOUND) {
 		return [
             'show-query-form' => [[
 					'uri' => '/query/show-query-form'
-            ],[
+            ], [
 					'statusCode' => $defaultStatusCode,
 					'redirectionLocation' => '/odp/index.html?locale=fr'
             ]],
