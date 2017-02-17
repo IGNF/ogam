@@ -41,13 +41,13 @@ task phpcheckstyle(type:Exec, description: 'Launch PHPCHeckstyle for static anal
 
 // Launch PHPUnit
 task phpunit(type:Exec, description: 'Launch PHPUnit for unit testing.') {
-  workingDir '.'
+  workingDir 'ogamServer/'
   if (System.getProperty('os.name').toLowerCase().contains('windows')) {
-  	commandLine "cmd", "/c", "php ./ogamServer/vendor/phpunit/phpunit/phpunit"
+  	commandLine "cmd", "/c", "php ./vendor/phpunit/phpunit/phpunit"
   } else {
-  	commandLine './ogamServer/vendor/phpunit/phpunit/phpunit'
+  	commandLine './vendor/phpunit/phpunit/phpunit'
   }
-  args "--configuration", "./ogamServer/phpunit.xml"
+  args "--configuration", "./phpunit.xml"
 }
 
 // Clean the deploy directory
