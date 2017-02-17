@@ -10,12 +10,14 @@ class QueryControllerTest extends AbstractControllerTest {
 	/**
 	 * test configured chained actions
 	 * @dataProvider getChainedAcess
+	 * @runInSeparateProcess
+	 * @preserveGlobalState disabled
 	 */
 	public function testChainedAccess($user , $urls, $status) {
 		$this->logIn($user['name'], $user['role'] );
 		try{
 			foreach($urls as $key => $urlParam) {
-				$this->client->insulate();
+				//$this->client->insulate(); //insulate break coverage in request
 				$this->checkControllerActionAccess($urlParam, $status);
 			}
 		} catch (\Exception $e){
