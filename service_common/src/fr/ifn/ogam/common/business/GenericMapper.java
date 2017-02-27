@@ -310,13 +310,35 @@ public class GenericMapper {
 			}
 
 			if (type.equalsIgnoreCase(ARRAY)) {
+				String[] resultArray;
 				try {
-					result = getArray(fieldValue);
+					 resultArray = getArray(fieldValue);
 				} catch (Exception e) {
 					throw new CheckException(INVALID_TYPE_FIELD);
 				}
-			}
 
+				// Check all values if they are of type code
+				String subtype = fieldDescriptor.getSubtype();
+				if (subtype.equalsIgnoreCase(UnitSubTypes.TREE) ||
+						subtype.equalsIgnoreCase(UnitSubTypes.DYNAMIC) ||
+						subtype.equalsIgnoreCase(UnitSubTypes.TAXREF) ||
+						subtype.equalsIgnoreCase(UnitSubTypes.MODE) ) {
+					for (int i = 0; i < resultArray.length; i++) {
+						if (!resultArray[i].equalsIgnoreCase("")) {
+							if (subtype.equalsIgnoreCase(UnitSubTypes.TREE)) {
+								checkTreeCode(fieldDescriptor.getUnit(), resultArray[i]);
+							} else if (fieldDescriptor.getSubtype().equalsIgnoreCase(UnitSubTypes.DYNAMIC)) {
+								checkDynaCode(fieldDescriptor.getUnit(), resultArray[i]);
+							} else if (fieldDescriptor.getSubtype().equalsIgnoreCase(UnitSubTypes.TAXREF)) {
+								checkTaxrefCode(fieldDescriptor.getUnit(), resultArray[i]);
+							} else if (fieldDescriptor.getSubtype().equalsIgnoreCase(UnitSubTypes.MODE)) {
+								checkCode(fieldDescriptor.getUnit(), resultArray[i]);
+							}
+						}
+					}
+				}
+				result = resultArray;
+			}
 			return result;
 
 		} catch (CheckException ce) {
