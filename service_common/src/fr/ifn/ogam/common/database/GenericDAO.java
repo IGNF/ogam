@@ -29,6 +29,8 @@ import javax.naming.NamingException;
 import javax.sql.DataSource;
 
 import org.apache.log4j.Logger;
+import org.postgis.PGgeometry;
+import org.postgresql.util.PGobject;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Envelope;
@@ -121,7 +123,21 @@ public class GenericDAO {
 						} else {
 
 							if (colData.getValue().getClass().getName().equals("org.postgresql.util.PGobject")) {
-								colValues.append("'" + colData.getValue().toString() + "'");
+
+								TableFieldData tableData = tableColumns.get(sourceData);
+								Integer tableSrid = geometryDAO.getSRID(tableData.getTableName(), tableData.getColumnName());
+
+								if (tableSrid.equals(userSrid)) {
+									// copy directly the binary blob
+									colValues.append("'" + colData.getValue().toString() + "'");
+								} else {
+									// transform imported geometry to match table srid
+									PGgeometry pggeom = new PGgeometry(((PGobject) colData.getValue()).getValue());
+
+									colValues.append("ST_Transform(ST_GeomFromText('" + pggeom.toString() + "', " + userSrid + "), " + tableSrid + ")");
+
+								}
+
 							} else {
 								// Checks the WKT
 								TableFieldData tableData = tableColumns.get(sourceData);
