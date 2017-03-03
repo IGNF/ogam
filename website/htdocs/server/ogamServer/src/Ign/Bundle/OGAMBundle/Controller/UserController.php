@@ -1,12 +1,15 @@
 <?php
 namespace Ign\Bundle\OGAMBundle\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+
 use Ign\Bundle\OGAMBundle\Form\ChangeUserPasswordType;
-use Ign\Bundle\OGAMBundle\Form\RequestChangePasswordType;
 use Ign\Bundle\OGAMBundle\Entity\Website\User;
 
 /**
@@ -118,8 +121,14 @@ class UserController extends Controller {
 	public function forgottenPasswordFormAction(Request $request) {
 
 		// Get the change password form
-		$user = new User();
-		$form = $this->createForm(RequestChangePasswordType::class, $user);
+		//$user = new User();
+		//$form = $this->createForm(RequestChangePasswordType::class, $user);
+
+		$defaultData = array('message' => 'Type your message here');
+		$form = $this->createFormBuilder($defaultData)
+			->add('email', EmailType::class)
+			->add('send', SubmitType::class)
+			->getForm();
 
 		$form->handleRequest($request);
 
@@ -129,7 +138,7 @@ class UserController extends Controller {
 
 			// On récupère les infos sur l'utilisateur
 			$userRepo = $this->getDoctrine()->getRepository('Ign\Bundle\OGAMBundle\Entity\Website\User', 'website');
-			$user = $providerRepo->findByEmail($email);
+			$user = $userRepo->findOneByEmail($email);
 
 			// On génère un nouveau code d'activation
 			$encoder = $this->get('ogam.challenge_response_encoder');
@@ -138,18 +147,23 @@ class UserController extends Controller {
 			$user->setActivationCode($codeActivation);
 
 
+			dump($user);
+
+
 			$em = $this->getDoctrine()->getManager();
 			$em->persist($user);
 			$em->flush();
 
-			dump($user);
 
 
 			// TODO : Send an email to the user
 			// $this->_envoiMailReinitialisation($utilisateur, $codeActivation);
 
 			//
-			// return $this->afficheConfirmationEnvoiMotDePasse();
+
+			$this->addFlash('success', 'An email has been sent at your address.');
+
+			return $this->redirectToRoute('homepage');
 		}
 
 		// Display the login form
