@@ -26,7 +26,7 @@ Ext.define('OgamDesktop.model.map.LayerService',{
 		var fullUrls = [];
 		for(var index in urls) {
 			var url = urls[index];
-			url.endsWith("?") && (url += '?');
+			Ext.String.endsWith(url, "?") && (url += '?');
 			url += paramsToString;
 			fullUrls.push(url);
 		}
