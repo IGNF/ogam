@@ -6,6 +6,8 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Ign\Bundle\OGAMBundle\Form\ChangeUserPasswordType;
+use Ign\Bundle\OGAMBundle\Form\RequestChangePasswordType;
+use Ign\Bundle\OGAMBundle\Entity\Website\User;
 
 /**
  * @Route("/user")
@@ -103,6 +105,56 @@ class UserController extends Controller {
 			'last_username' => $lastUsername,
 			'error' => $error,
 			'challenge' => $challenge
+		));
+	}
+
+
+
+	/**
+	 * Display the forgotten password form.
+	 *
+	 * @Route("/forgottenpassword", name = "user_forgotten_password")
+	 */
+	public function forgottenPasswordFormAction(Request $request) {
+
+		// Get the change password form
+		$user = new User();
+		$form = $this->createForm(RequestChangePasswordType::class, $user);
+
+		$form->handleRequest($request);
+
+		if ($form->isSubmitted() && $form->isValid()) {
+
+			$email = $form->get('email')->getData();
+
+			// On récupère les infos sur l'utilisateur
+			$userRepo = $this->getDoctrine()->getRepository('Ign\Bundle\OGAMBundle\Entity\Website\User', 'website');
+			$user = $providerRepo->findByEmail($email);
+
+			// On génère un nouveau code d'activation
+			$encoder = $this->get('ogam.challenge_response_encoder');
+			$codeActivation = $encoder->generateChallenge();
+
+			$user->setActivationCode($codeActivation);
+
+
+			$em = $this->getDoctrine()->getManager();
+			$em->persist($user);
+			$em->flush();
+
+			dump($user);
+
+
+			// TODO : Send an email to the user
+			// $this->_envoiMailReinitialisation($utilisateur, $codeActivation);
+
+			//
+			// return $this->afficheConfirmationEnvoiMotDePasse();
+		}
+
+		// Display the login form
+		return $this->render('OGAMBundle:User:forgotten_password.html.twig', array(
+			'form' => $form->createView()
 		));
 	}
 

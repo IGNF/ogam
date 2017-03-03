@@ -176,6 +176,8 @@ User Module;Module utilisateur
 Authentication;Authentification
 Username;Identifiant
 Password;Mot de passe
+Password_forgotten;Mot de passe oublié ?
+Forgotten_password_send_email_message;Un mail va être envoyé a votre adresse
 
 ﻿##########################
 #  Data integration      #
