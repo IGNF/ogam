@@ -19,7 +19,7 @@ class SubmissionRepository extends \Doctrine\ORM\EntityRepository {
 	 * @return Array[Submission]
 	 */
 	public function getActiveSubmissions($providerId = null) {
-		$dql = "SELECT s " . "FROM OGAMBundle:RawData\Submission s " . "WHERE s.step NOT IN ('CANCEL', 'INIT') ";
+		$dql = "SELECT s " . "FROM OGAMBundle:RawData\Submission s " . "WHERE s.step NOT IN ('CANCEL') ";
 
 		if ($providerId !== null) {
 			$dql .= " AND s.provider = :provider ";
