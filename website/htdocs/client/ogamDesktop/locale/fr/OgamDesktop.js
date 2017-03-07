@@ -243,6 +243,7 @@ Ext.define("OgamDesktop.locale.fr.view.request.AdvancedRequest", {
 
 Ext.define('OgamDesktop.locale.fr.view.request.AdvancedRequestController', {
 	override:'OgamDesktop.view.request.AdvancedRequestController',
+	loadingText: 'Chargement...',
 	toastTitle_noColumn: 'Soumission du formulaire :',
 	toastHtml_noColumn: "Il semblerait qu'aucune colonne n'ait été sélectionnées. Veuillez sélectionner au moins une colonne.",
 	invalidValueSubmittedErrorTitle: 'Soumission du formulaire :',

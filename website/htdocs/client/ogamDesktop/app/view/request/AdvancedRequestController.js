@@ -27,6 +27,11 @@ Ext.define('OgamDesktop.view.request.AdvancedRequestController', {
 
 //<locale>
 	/**
+     * @cfg {String} loadingText
+     * The loading text used when the submit button is pressed(defaults to <tt>'Loading...'</tt>)
+     */
+	loadingText: 'Loading...',
+	/**
      * @cfg {String} toastTitle_noColumn
      * The toast title used for the no column error (defaults to <tt>'Form submission:'</tt>)
      */
@@ -77,6 +82,12 @@ Ext.define('OgamDesktop.view.request.AdvancedRequestController', {
 	 */
     onSubmit: function(button){
     	var form = button.up('form').getForm();
+    	var mask = new Ext.LoadMask({
+			target : button,
+			msg: this.loadingText,
+			width: 110 // Must be as width as the submit button (see AdvancedRequest.js)
+		});
+    	mask.show();
 
     	// Checks the presence of minimum of one column
     	if (form.getFields().filter('name', 'column__').getCount() > 0) {
@@ -96,6 +107,7 @@ Ext.define('OgamDesktop.view.request.AdvancedRequestController', {
 				success: function(form, action) {
 					this.requestConn = null;
 					this.fireEvent('requestSuccess', action.result.columns);
+					mask.hide();
 				},
 				failure: function(form, action) {
 					switch (action.failureType) {
@@ -106,11 +118,13 @@ Ext.define('OgamDesktop.view.request.AdvancedRequestController', {
 							OgamDesktop.toast(action.result.errorMessage, this.invalidValueSubmittedErrorTitle);
 							break;
 					}
+			    	mask.hide();
 				},
 				scope: this
 			});
 		} else {
 			OgamDesktop.toast(this.toastHtml_noColumn, this.toastTitle_noColumn);
+			mask.hide();
 		}
 	},
 
