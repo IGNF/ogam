@@ -15,7 +15,7 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
  * This form is used by an administrator with full power to change a password without verification.
  *
  */
-class ChangePasswordType extends AbstractType {
+class ChangeForgottenPasswordType extends AbstractType {
 
 	/**
 	 * Build the user change password form.
@@ -45,7 +45,6 @@ class ChangePasswordType extends AbstractType {
 	 */
 	public function configureOptions(OptionsResolver $resolver) {
 		$resolver->setDefaults(array(
-			'data_class' => User::class,
 		));
 	}
 }
