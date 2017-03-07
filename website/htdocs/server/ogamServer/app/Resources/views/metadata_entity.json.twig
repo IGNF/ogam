@@ -2,12 +2,12 @@
 {%- block form_format -%}
 {% autoescape false %}
 {
-"id": "{{ form.format }}",
-"format": "{{ form.format }}",
-"label": "{{ form.label }}",
-"definition": "{{ form.definition }}",
-"position": {{ form.position|json_encode }},
-"is_opened": {{ form.isOpened|json_encode }}
+"id":{{ form.format|json_encode }},
+"format":{{ form.format|json_encode }},
+"label":{{ form.label|json_encode }},
+"definition":{{ form.definition|json_encode }},
+"position":{{ form.position|json_encode }},
+"is_opened":{{ form.isOpened|json_encode }}
 {% set field = form.fields %}
 {% block form_format_fields %}
 ,"fields": [
@@ -27,19 +27,19 @@
 {%- block form_field -%}
 {% autoescape false %}
 {
-"id" : "{{ field.id }}",
-"format": "{{ field.format.format }}",
-"is_criteria": {{ field.isCriteria|json_encode }},
-"is_result": {{ field.isResult|json_encode }},
-"input_type": "{{ field.inputType }}",
-"position": {{ field.position|json_encode }},
-"is_default_criteria": {{ field.isDefaultCriteria|json_encode }},
-"is_default_result": {{ field.isDefaultResult|json_encode }},
-"default_value": {% block form_field_default_value %}{{ field.defaultValue|json_encode }}{% endblock %},
-"decimals": {{ field.decimals|json_encode }},
-"mask": "{{ field.mask }}",
+"id":{{ field.id|json_encode }},
+"format":{{ field.format.format|json_encode }},
+"is_criteria":{{ field.isCriteria|json_encode }},
+"is_result":{{ field.isResult|json_encode }},
+"input_type":{{ field.inputType|json_encode }},
+"position":{{ field.position|json_encode }},
+"is_default_criteria":{{ field.isDefaultCriteria|json_encode }},
+"is_default_result":{{ field.isDefaultResult|json_encode }},
+"default_value":{% block form_field_default_value %}{{ field.defaultValue|json_encode }}{% endblock %},
+"decimals":{{ field.decimals|json_encode }},
+"mask":{{ field.mask|json_encode }},
 {% set data = field.data %}
-"data": {% block form_field_data %}{{ block('data') }}{% endblock %}
+"data":{% block form_field_data %}{{ block('data') }}{% endblock %}
 {% block form_field_additional_fields %}{% endblock %}
 }
 {% endautoescape %}
@@ -49,12 +49,12 @@
 {%- block data -%}
 {% autoescape false %}
 {
-"id" : "{{ data.data }}",
-"data": "{{ data.data }}",
-"label": "{{ data.label }}",
-"definition": "{{ data.definition }}",
+"id":{{ data.data|json_encode }},
+"data":{{ data.data|json_encode }},
+"label":{{ data.label|json_encode }},
+"definition":{{ data.definition|json_encode }},
 {% set unit = data.unit %}
-"unit": {% block data_unit %}{{ block('unit') }}{% endblock %}
+"unit":{% block data_unit %}{{ block('unit') }}{% endblock %}
 }
 {% endautoescape %}
 {%- endblock -%}
@@ -63,16 +63,16 @@
 {%- block unit -%}
 {% autoescape false %}
 {
-"id" : "{{ unit.unit }}",
-"unit": "{{ unit.unit }}",
-"type": "{{ unit.type }}",
-"subtype": "{{ unit.subtype }}",
-"label": "{{ unit.label }}",
-"definition": "{{ unit.definition }}"
+"id":{{ unit.unit|json_encode }},
+"unit":{{ unit.unit|json_encode }},
+"type":{{ unit.type|json_encode }},
+"subtype":{{ unit.subtype|json_encode }},
+"label":{{ unit.label|json_encode }},
+"definition":{{ unit.definition|json_encode }}
 {% if unit.range %}
 ,"range": {
-    "min": {{ unit.range.min|json_encode }},
-    "max": {{ unit.range.max|json_encode }}
+    "min":{{ unit.range.min|json_encode }},
+    "max":{{ unit.range.max|json_encode }}
 }
 {% endif %}
 {% if unit.modes %}
@@ -93,12 +93,12 @@
 {%- block code -%}
 {% autoescape false %}
 {
-"id" : "{{ code.id }}",
-"unit": "{{ code.unit }}",
-"code": "{{ code.code }}",
-"position": {{ code.position|json_encode }},
-"label": "{{ code.label }}",
-"definition": "{{ code.definition }}"
+"id":{{ code.id|json_encode }},
+"unit":{{ code.unit|json_encode }},
+"code":{{ code.code|json_encode }},
+"position":{{ code.position|json_encode }},
+"label":{{ code.label|json_encode }},
+"definition":{{ code.definition|json_encode }}
 }
 {% endautoescape %}
 {%- endblock -%}

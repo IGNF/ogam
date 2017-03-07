@@ -65,10 +65,17 @@ public class IntegrationService extends GenericMapper {
 	private SubmissionDAO submissionDAO = new SubmissionDAO();
 
 	/**
+	 * Event notifier
+	 */
+	private IntegrationEventNotifier eventNotifier = new IntegrationEventNotifier();
+
+	/**
 	 * Insert a dataset coming from a CSV in database.
 	 * 
 	 * @param submissionId
 	 *            the submission identifier
+	 * @param userSrid
+	 *            the srid given by the user
 	 * @param filePath
 	 *            the source data file path
 	 * @param sourceFormat
@@ -79,17 +86,12 @@ public class IntegrationService extends GenericMapper {
 	 *            the thread that is running the process (optionnal, this is too keep it informed of the progress)
 	 * @return the status of the update
 	 */
-	public boolean insertData(Integer submissionId, String filePath, String sourceFormat, String fileType, Map<String, String> requestParameters,
-			AbstractThread thread) throws Exception {
+	public boolean insertData(Integer submissionId, Integer userSrid, String filePath, String sourceFormat, String fileType,
+			Map<String, String> requestParameters, AbstractThread thread) throws Exception {
 
 		logger.debug("insertData");
 		boolean isInsertValid = true;
 		CSVFile csvFile = null;
-
-		ComputeGeoAssociationService cgas = null;
-		if ("true".equals(requestParameters.get("COMPUTE_GEO_ATTACHMENT"))) {
-			cgas = new ComputeGeoAssociationService();
-		}
 
 		try {
 
@@ -224,7 +226,8 @@ public class IntegrationService extends GenericMapper {
 						FileFieldData sourceFieldDescriptor = sourceFieldDescriptors.get(col);
 
 						// Check the mask if available and the variable is not a date (date format is tested with a date format)
-						if (sourceFieldDescriptor.getMask() != null && !sourceFieldDescriptor.getType().equalsIgnoreCase(DATE) && !sourceFieldDescriptor.getType().equalsIgnoreCase(TIME)) {							
+						if (sourceFieldDescriptor.getMask() != null && !sourceFieldDescriptor.getType().equalsIgnoreCase(DATE)
+								&& !sourceFieldDescriptor.getType().equalsIgnoreCase(TIME)) {
 							try {
 								checkMask(sourceFieldDescriptor.getMask(), value);
 							} catch (CheckException e) {
@@ -254,8 +257,6 @@ public class IntegrationService extends GenericMapper {
 							e.setSubmissionId(submissionId);
 							throw e;
 						}
-
-						// Compute the administrative attachment
 
 						// Get the mapped column destination
 						TableFieldData mappedFieldDescriptor = mappedFieldDescriptors.get(sourceFieldDescriptor.getData());
@@ -304,10 +305,11 @@ public class IntegrationService extends GenericMapper {
 							commonFieldsMap.put(Data.LINE_NUMBER, lineNumber);
 
 							// Insert a list of values in the destination table
-							genericDAO.insertData(Schemas.RAW_DATA, tableName, tableFieldsMap.get(format), commonFieldsMap);
-							if (cgas != null) {
-								cgas.insertAdministrativeAssociations(format, tableName, commonFieldsMap);
-							}
+							String id = genericDAO.insertData(Schemas.RAW_DATA, format, tableName, tableFieldsMap.get(format), commonFieldsMap, userSrid);
+
+							// Notify the event listeners that a line has been inserted
+							eventNotifier.afterLineInsertion(submissionId, format, tableName, commonFieldsMap, id);
+
 						} catch (CheckException e) {
 							// Complete the description of the problem
 							e.setSourceFormat(sourceFormat);

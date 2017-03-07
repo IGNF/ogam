@@ -100,6 +100,7 @@ GRANT ALL ON TABLE metadata."mode" TO ogam;
 GRANT SELECT ON TABLE metadata.mode_taxref TO ogam;
 GRANT SELECT ON TABLE metadata.mode_tree TO ogam;
 GRANT SELECT ON TABLE metadata.process TO ogam;
+GRANT SELECT ON TABLE metadata.event_listener TO ogam;
 GRANT SELECT ON TABLE metadata.range TO ogam;
 GRANT SELECT ON TABLE metadata.table_field TO ogam;
 GRANT SELECT ON TABLE metadata.table_format TO ogam;

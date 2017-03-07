@@ -105,9 +105,11 @@ public class HarmonizationService extends AbstractService {
 	 *            The dataset identifier
 	 * @param providerId
 	 *            The country code
+	 * @param userSrid
+	 *            The SRID
 	 * @return the process identifier
 	 */
-	public Integer harmonizeData(String datasetId, String providerId) {
+	public Integer harmonizeData(String datasetId, String providerId, Integer userSrid) {
 
 		Integer processId = null;
 
@@ -115,11 +117,11 @@ public class HarmonizationService extends AbstractService {
 
 			logger.debug("harmonize data for " + datasetId + " and provider " + providerId);
 
-			// Initialize the process
-			processId = harmonisationProcessDAO.newHarmonizationProcess(datasetId, providerId, HarmonizationStatus.RUNNING);
-
 			// Delete old data
 			removeHarmonizedData(datasetId, providerId);
+
+			// Initialize the process
+			processId = harmonisationProcessDAO.newHarmonizationProcess(datasetId, providerId, HarmonizationStatus.RUNNING);
 
 			// Prepare some static data
 			GenericData datasetIdData = new GenericData();
@@ -202,7 +204,9 @@ public class HarmonizationService extends AbstractService {
 						sourceFields.put(Data.PROVIDER_ID, providerIdData);
 
 						// Insert the record data in the destination table
-						genericDAO.insertData(Schemas.HARMONIZED_DATA, destTableFormatData.getTableName(), destFields, sourceFields);
+						genericDAO.insertData(Schemas.HARMONIZED_DATA, destTableFormatData.getFormat(), destTableFormatData.getTableName(), destFields,
+								sourceFields, userSrid);
+
 						count++;
 					}
 

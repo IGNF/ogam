@@ -1,34 +1,36 @@
 imports:
     - { resource: config.yml }
 
+
 doctrine:
     orm:
+      default_entity_manager: website #needed, link with the under one
       auto_generate_proxy_classes: "FILE_NOT_EXISTS" # TODO: Find a way to pass that parameter to false (see https://github.com/doctrine/doctrine2/issues/3337)
-      entity_managers:
-        website:
-             metadata_cache_driver: apc
-             result_cache_driver: apc
-             query_cache_driver: apc
-        mapping:
-             metadata_cache_driver: apc
-             result_cache_driver: apc
-             query_cache_driver: apc
-        metadata:
-             metadata_cache_driver: apc
-             result_cache_driver: apc
-             query_cache_driver: apc
-        raw_data:
-             metadata_cache_driver: apc
-             result_cache_driver: apc
-             query_cache_driver: apc
-        harmonized_data:
-             metadata_cache_driver: apc
-             result_cache_driver: apc
-             query_cache_driver: apc
-        result_location:
-             metadata_cache_driver: apc
-             result_cache_driver: apc
-             query_cache_driver: apc
+#      entity_managers:
+#        website:
+#             metadata_cache_driver: apcu
+#             result_cache_driver: apcu
+#             query_cache_driver: apcu
+#        mapping:
+#             metadata_cache_driver: apcu
+#             result_cache_driver: apcu
+#             query_cache_driver: apcu
+#        metadata:
+#             metadata_cache_driver: apcu
+#             result_cache_driver: apcu
+#             query_cache_driver: apcu
+#        raw_data:
+#             metadata_cache_driver: apcu
+#             result_cache_driver: apcu
+#             query_cache_driver: apcu
+#        harmonized_data:
+#             metadata_cache_driver: apcu
+#             result_cache_driver: apcu
+#             query_cache_driver: apcu
+#        result_location:
+#             metadata_cache_driver: apcu
+#             result_cache_driver: apcu
+#             query_cache_driver: apcu
 
 monolog:
     handlers:

@@ -1,6 +1,6 @@
 <?php
 
-include_once('includes/authentication.php');
+include_once('authentication.php');
 
 // Gets the query parameters
 parse_str(ltrim($_SERVER["QUERY_STRING"],'?'), $query);

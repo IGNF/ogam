@@ -1,6 +1,6 @@
 <?php
 
-include_once('includes/authentication.php');
+include_once('authentication.php');
 
 parse_str(ltrim($_SERVER["QUERY_STRING"],'?'), $query); //recupere la requete envoyée partie (GET params)...
 $query = array_change_key_case($query, CASE_UPPER); // force les clés en majuscule
@@ -15,6 +15,8 @@ $queryParamsAllow = array(//paramNom => requis
     'HEIGHT' ,
     'PROVIDER_ID' ,// TODO: use the query parameter
     'PLOT_CODE' ,// TODO: use the query parameter
+    'CYCLE' ,// TODO: use the query parameter
+    'TREE_ID' ,// TODO: use the query parameter
     'TRANSPARENT' ,
     'VERSION' ,
     'STYLES' ,

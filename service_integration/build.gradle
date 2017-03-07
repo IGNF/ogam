@@ -36,6 +36,25 @@ cargo {
     }
 }
 
+
+// Copy the config files
+task deployConfig(description: 'Copy the config files') << {
+
+    def tomcatHome = project.hasProperty('tomcatHome') ? project.getProperty('tomcatHome') : 'C:/Apache/tomcat-7'
+    def applicationName = project.hasProperty('applicationName') ? project.getProperty('applicationName') : 'OGAM'
+    
+	// Copy the config file
+	if (!file('${tomcatHome}/conf/Catalina/localhost/${applicationName}IntegrationService.xml').exists()) {
+		copy {
+	  		from "./config/"
+	  		into "${tomcatHome}/conf/Catalina/localhost"
+	  		include "${applicationName}IntegrationService.xml"
+		}
+	}
+}
+
+
+
 // Old version : Manually build the war file
 // Define a new task to deploy the war
 task deploy(dependsOn: war, description: 'Deploy the war file to a local Tomcat server.') << {

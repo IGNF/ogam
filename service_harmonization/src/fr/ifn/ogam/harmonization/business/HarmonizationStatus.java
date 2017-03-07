@@ -17,11 +17,6 @@ package fr.ifn.ogam.harmonization.business;
 public interface HarmonizationStatus {
 
 	/**
-	 * Initial status.
-	 */
-	String INIT = "INIT";
-
-	/**
 	 * Running status.
 	 */
 	String RUNNING = "RUNNING";

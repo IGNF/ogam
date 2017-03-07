@@ -25,7 +25,7 @@ export GRADLE_USER_HOME=/vagrant/ogam/gradle
 # Launch gradlew to install gradle
 # ---------------------------------------------------------------
 cd /vagrant/ogam/ 
-chmod a+x gradlew 
+sudo chmod a+x gradlew 
 ./gradlew
 
 # ---------------------------------------------------------------

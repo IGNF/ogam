@@ -8,6 +8,8 @@ VAGRANTFILE_API_VERSION = "2"
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.box = "debian/jessie64"
+  config.vm.box_version = "8.6.1"
+  # config.vm.box = "debian/contrib-jessie64" # Box with Virtualbox Guest Additions
  
    #Dev config 
    config.vm.define "ogam_dev" do |ogam_dev|
@@ -52,19 +54,19 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.provision "install_postgres", type: "shell", inline: "/vagrant/ogam/vagrant_config/scripts/install_postgres.sh"
 
   config.vm.provision "install_db", type: "shell", inline: "/vagrant/ogam/vagrant_config/scripts/install_db.sh"
-    
-  config.vm.provision "install_gradle", type: "shell", inline: "/vagrant/ogam/vagrant_config/scripts/install_gradle.sh"
  
   config.vm.provision "install_sencha_cmd_6", type: "shell", inline: "/vagrant/ogam/vagrant_config/scripts/install_sencha_cmd_6.sh"
   
   config.vm.provision "install_dev_tools", type: "shell", inline: "/vagrant/ogam/vagrant_config/scripts/install_dev_tools.sh"
   
-  config.vm.provision "fix_var_perf", run:"always", type: "shell", inline: "localpath=$1 ; sharedpath=$2 ; /vagrant/ogam/vagrant_config/scripts/build_locale_dir.sh $localpath && mount -o bind $localpath $sharedpath", args:['/home/vagrant/ogam/var','/vagrant/ogam/website/htdocs/server/ogamServer/var']
+  config.vm.provision "fix_var_perf", run:"always", type: "shell", inline: "localpath=$1 ; sharedpath=$2 ; /vagrant/ogam/vagrant_config/scripts/build_locale_dir.sh $localpath && mount -o bind $localpath $sharedpath", args:['/home/vagrant/ogam/var/cache','/vagrant/ogam/website/htdocs/server/ogamServer/app/cache']
   
   #
   # Application deployment
   # The following provisions are executed as "vagrant" 
   #
+  config.vm.provision "install_gradle", privileged: false, type: "shell", inline: "/vagrant/ogam/vagrant_config/scripts/install_gradle.sh"
+  
   config.vm.provision "install_composer_libraries", privileged: false, type: "shell", inline: "/vagrant/ogam/vagrant_config/scripts/install_composer_libraries.sh"
   
   #for windows and vboxfs (no nfs) sharing, improve perf, TODO: download (rsync-back ?) on host the vendor dir for ide ie

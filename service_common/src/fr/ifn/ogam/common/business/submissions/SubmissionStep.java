@@ -24,21 +24,26 @@ public interface SubmissionStep {
 	/**
 	 * Data is inserted.
 	 */
-	String DATA_INSERTED = "INSERTED";
+	String DATA_INSERTED = "INSERT";
 
 	/**
 	 * Data has been checked.
 	 */
-	String DATA_CHECKED = "CHECKED";
+	String DATA_CHECKED = "CHECK";
 
 	/**
 	 * Data has been validated.
 	 */
-	String DATA_VALIDATED = "VALIDATED";
+	String DATA_VALIDATED = "VALIDATE";
+
+	/**
+	 * Data has been invalidated.
+	 */
+	String DATA_INVALIDATED = "CHECK";
 
 	/**
 	 * The submission has been cancelled.
 	 */
-	String SUBMISSION_CANCELLED = "CANCELLED";
+	String SUBMISSION_CANCELLED = "CANCEL";
 
 }

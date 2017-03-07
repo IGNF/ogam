@@ -41,13 +41,13 @@ task phpcheckstyle(type:Exec, description: 'Launch PHPCHeckstyle for static anal
 
 // Launch PHPUnit
 task phpunit(type:Exec, description: 'Launch PHPUnit for unit testing.') {
-  workingDir '.'
+  workingDir 'ogamServer/'
   if (System.getProperty('os.name').toLowerCase().contains('windows')) {
-  	commandLine "cmd", "/c", "php ./ogamServer/vendor/phpunit/phpunit/phpunit"
+  	commandLine "cmd", "/c", "php ./vendor/phpunit/phpunit/phpunit"
   } else {
-  	commandLine './ogamServer/vendor/phpunit/phpunit/phpunit'
+  	commandLine './vendor/phpunit/phpunit/phpunit'
   }
-  args "--configuration", "./ogamServer/phpunit.xml"
+  args "--configuration", "./phpunit.xml"
 }
 
 // Clean the deploy directory
@@ -110,10 +110,19 @@ task setBuildNumber(type: Copy, description: 'Update the build number.', depends
 
 
 // Clear cache
-task clearCache(type:Exec, description: 'Clear symfony cache.') {
-  workingDir './ogamServer'
-  commandLine "php" 
-  args "bin/console", "cache:clear", "--env=prod"
+//
+// Console command does not work correctly
+// cf : https://github.com/symfony/symfony/issues/2600
+//
+// task clearCache(type:Exec, description: 'Clear symfony cache.') {
+//    workingDir './ogamServer'
+//    commandLine "php" 
+//    args "app/console", "cache:clear", "--env=prod"
+//} 
+
+task clearCache(type: Delete, description: 'Clear symfony cache.') {
+    def dirName = "ogamServer/app/cache"
+    delete fileTree('dirName')
 } 
 
 
@@ -121,13 +130,18 @@ task clearCache(type:Exec, description: 'Clear symfony cache.') {
 task installAssets(type:Exec, description: 'Install assets.') {
   workingDir './ogamServer'
   commandLine "php" 
-  args "bin/console", "assets:install", "--env=prod", "--no-debug"
+  args "app/console", "assets:install", "--env=prod", "--no-debug"
+} 
+
+// update assets links
+task asseticDump(type:Exec, description: 'Assetic dump.') {
+  workingDir './ogamServer'
+  commandLine "php" 
+  args "app/console", "assetic:dump", "--env=prod", "--no-debug"
 } 
 
 
-
-
-// Deploy the application
-task deployAll(description: 'Copy the PHP files to the deploy directory.', dependsOn: 'setBuildNumber') {
+// Build the application
+task buildAll(description: 'Build the application.', dependsOn: [clearCache, asseticDump, installAssets]) {
 
 }

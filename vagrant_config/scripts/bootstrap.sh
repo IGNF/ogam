@@ -22,6 +22,13 @@ cp /vagrant/ogam/vagrant_config/conf/sources.list /etc/apt/sources.list
 cp /vagrant/ogam/vagrant_config/conf/apt-proxy.conf /etc/apt/apt.conf.d/proxy
 
 echo "
+[global]
+http-proxy-host = proxy.ign.fr
+http-proxy-port = 3128
+http-proxy-compression = no
+" > /home/vagrant/.subversion/servers
+
+echo "
 http_proxy=http://proxy.ign.fr:3128
 https_proxy=http://proxy.ign.fr:3128
 HTTP_PROXY=http://proxy.ign.fr:3128

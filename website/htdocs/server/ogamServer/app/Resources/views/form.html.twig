@@ -1,21 +1,18 @@
 {% extends 'form_div_layout.html.twig'  %}
-{% block form %}
+
+{%- block form_start -%}
 <div class="{{ name }}">
     <div class="form-super-ct">
         <div class="form-ct">
+            <div class="zend_form">
             {{- parent() -}}
-         </div>
-     </div>
-</div>
-{% endblock %}
-
-{%- block form_start -%}
-<div class="zend_form">
-    {{- parent() -}}
 {%- endblock form_start -%}
 
 {%- block form_end -%}
-    {{- parent() -}}
+             {{- parent() -}}
+            </div>
+        </div>
+    </div>
 </div>
 {%- endblock form_end -%}
 

@@ -1,25 +1,24 @@
 {
-	"name" : "symfony/framework-standard-edition",
-	"license" : "MIT",
-	"type" : "project",
-	"description" : "The \"Symfony Standard Edition\" distribution",
-	"autoload" : {
-		"psr-4" : {
-			"" : "src/"
-		},
-		"classmap" : [
-			"app/AppKernel.php",
-			"app/AppCache.php"
-		]
-	},
+    "name": "ign/ogamserver",
+    "license": "proprietary",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "": "src/"
+        },
+        "classmap": [
+            "app/AppKernel.php",
+            "app/AppCache.php"
+        ]
+    },
 	"autoload-dev" : {
 		"psr-4" : {
 			"Tests\\" : "tests/"
 		}
 	},
-	"require" : {
+    "require": {
 		"php" : ">=5.5.9",
-		"symfony/symfony" : "2.8.*",
+        "symfony/symfony": "2.8.*",
 		"doctrine/orm" : "^2.4",
 		"doctrine/doctrine-bundle" : "^1.2",
 		"doctrine/doctrine-cache-bundle" : "^1.2",
@@ -27,54 +26,51 @@
 		"symfony/monolog-bundle" : "^2.8",
 		"symfony/polyfill-apcu" : "^1.0",
 		"sensio/distribution-bundle" : "^5.0",
-		"sensio/framework-extra-bundle" : "^3.0.2",
+        "sensio/framework-extra-bundle": "^3.0.2",
 		"incenteev/composer-parameter-handler" : "^2.0",
 		"zendframework/zend-http" : "^2.5",
 		"phpunit/phpunit" : "^4.8",
-		"phpcheckstyle/phpcheckstyle" : "^0.14.3",
-		"whiteoctober/breadcrumbs-bundle" : "^1.2"
-	},
-	"require-dev" : {
+	    "whiteoctober/breadcrumbs-bundle": "^1.2",
+        "symfony/assetic-bundle": "^2.8",
+        "phpcheckstyle/phpcheckstyle" : "^0.14.4"
+    },
+    "require-dev": {
 		"sensio/generator-bundle" : "^3.0",
 		"symfony/phpunit-bridge" : "^3.0"
-	},
-	"scripts" : {
-		"post-install-cmd" : [
-			"Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
-			"Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
-			"Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
-			"Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installAssets",
-			"Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
-			"Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::prepareDeploymentTarget"
-		],
-		"post-update-cmd" : [
-			"Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
-			"Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
-			"Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
-			"Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installAssets",
-			"Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
-			"Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::prepareDeploymentTarget"
-		]
-	},
-	"config" : {
+    },
+    "scripts": {
+        "symfony-scripts": [
+            "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installAssets",
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::prepareDeploymentTarget"
+        ],
+        "post-install-cmd": [
+            "@symfony-scripts"
+        ],
+        "post-update-cmd": [
+            "@symfony-scripts"
+        ]
+    },
+    "config": {
 		"secure-http" : false,
 		"bin-dir" : "bin",
 		"platform" : {
 			"php" : "5.5.9"
 		}
-	},
-	"extra" : {
-		"symfony-app-dir" : "app",
-		"symfony-bin-dir" : "bin",
-		"symfony-var-dir" : "var",
-		"symfony-web-dir" : "web",
+    },
+    "extra": {
+        "symfony-app-dir": "app",
+        "symfony-web-dir": "web",
 		"symfony-tests-dir" : "tests",
-		"symfony-assets-install" : "relative",
-		"incenteev-parameters" : {
-			"file" : "app/config/parameters.yml"
-		},
+        "symfony-assets-install": "relative",
+        "incenteev-parameters": {
+            "file": "app/config/parameters.yml"
+        },
 		"branch-alias" : {
-			"dev-master" : "3.1-dev"
-		}
-	}
+			"dev-master" : null
+    }
+}
 }

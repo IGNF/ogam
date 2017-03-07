@@ -317,9 +317,9 @@
      },
 
     "OgamDesktop": {
-    	"requestServiceUrl": "../query/",
-    	"mapServiceUrl": "../map/",
-    	"editionServiceUrl": "../dataedition/",
+    	"requestServiceUrl": "/query/",
+    	"mapServiceUrl": "/map/",
+    	"editionServiceUrl": "/dataedition/",
     	"OpenLayers": {
     		"theme":  "lib/OpenLayers/theme/default/style.css", // Tell OpenLayers where the css default theme is
     		"imgPath":  "lib/OpenLayers/img/" // Tell OpenLayers where the control images are (remember the trailing slash)
@@ -331,7 +331,7 @@
      */
     "production": {
         "output": {
-            "base": "${workspace.dir}/../public/${app.name}",
+            "base": "${workspace.build.dir}/${build.environment}/${app.name}",
             "js": "app-${app.theme}-${app.locale}.js",
             "manifest": {
                 "path": "app-${app.theme}-${app.locale}.json"
@@ -351,7 +351,7 @@
             "type": "yui"
         }
     },
-    
+
     /**
      * Settings specific to testing builds.
      */
@@ -363,9 +363,9 @@
      */
     "development": {
         "OgamDesktop": {
-            "requestServiceUrl": "http://192.168.50.4/query/",
-            "mapServiceUrl": "http://192.168.50.4/map/",
-            "editionServiceUrl": "http://192.168.50.4/dataedition/"
+            "requestServiceUrl": "/app_dev.php/query/",
+            "mapServiceUrl": "/app_dev.php/map/",
+            "editionServiceUrl": "/app_dev.php/dataedition/"
         },
         "tags": [
             // You can add this tag to enable Fashion when using app watch or

@@ -21,6 +21,7 @@ import org.apache.log4j.Logger;
 
 import fr.ifn.ogam.common.servlet.AbstractServlet;
 import fr.ifn.ogam.common.business.ThreadLock;
+import fr.ifn.ogam.common.database.website.ApplicationParametersDAO;
 import fr.ifn.ogam.harmonization.business.HarmonizationService;
 import fr.ifn.ogam.harmonization.business.HarmonizationServiceThread;
 import fr.ifn.ogam.harmonization.business.HarmonizationStatus;
@@ -54,6 +55,7 @@ public class HarmonizationServlet extends AbstractServlet {
 
 	private static final String DATASET_ID = "DATASET_ID";
 	private static final String PROVIDER_ID = "PROVIDER_ID";
+	private static final String SRID = "SRID";
 
 	// Service
 	private transient HarmonizationService harmonizationService = new HarmonizationService();
@@ -95,6 +97,15 @@ public class HarmonizationServlet extends AbstractServlet {
 				throw new Exception("The " + PROVIDER_ID + " parameter is mandatory");
 			}
 
+			String userSridStr = request.getParameter(SRID);
+
+			if (userSridStr == null) {
+				// Pick the default parameter
+				ApplicationParametersDAO parameterDao = new ApplicationParametersDAO();
+				userSridStr = parameterDao.getApplicationParameter("srs_raw_data");
+			}
+			Integer userSrid = Integer.valueOf(userSridStr);
+
 			// Identifier of the process
 			String key = datasetId + "_" + providerId;
 
@@ -127,7 +138,7 @@ public class HarmonizationServlet extends AbstractServlet {
 					throw new Exception("A process is already running for this country and dataset");
 				}
 
-				process = new HarmonizationServiceThread(datasetId, providerId, false);
+				process = new HarmonizationServiceThread(datasetId, providerId, false, userSrid);
 				process.start();
 
 				// Register the running thread
@@ -148,7 +159,7 @@ public class HarmonizationServlet extends AbstractServlet {
 					throw new Exception("A process is already running for this country and dataset");
 				}
 
-				process = new HarmonizationServiceThread(datasetId, providerId, true);
+				process = new HarmonizationServiceThread(datasetId, providerId, true, userSrid);
 				process.start();
 
 				// Register the running thread
