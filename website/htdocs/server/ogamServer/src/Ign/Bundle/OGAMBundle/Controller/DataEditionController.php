@@ -557,9 +557,6 @@ class DataEditionController extends Controller {
 		$childrenTableLabels = $this->get('doctrine.orm.metadata_entity_manager')
 			->getRepository('OGAMBundle:Metadata\TableTree')
 			->getChildrenTableLabels($data->getTableFormat());
-		// $bag = new NamespacedAttributeBag('website','/');
-		// $bag->set('data',)
-		$bag = $request->getSession();
 		$response = $this->render('OGAMBundle:DataEdition:edit_data.html.php', array(
 			'dataId' => $data->getId(),
 			'tableFormat' => $data->getTableFormat(),
@@ -570,10 +567,9 @@ class DataEditionController extends Controller {
 			'mode' => $mode,
 			'message' => $message
 		));
-		$bag->replace(array(
-			'data' => $data,
-			'ancestors' => $ancestors
-		));
+		$session = $request->getSession();
+		$session->set('data', $data);
+		$session->set('ancestors', $ancestors);
 
 		return $response;
 	}

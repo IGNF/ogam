@@ -33,7 +33,8 @@ Ext.define('OgamDesktop.view.request.AdvancedRequest', {
   		xtype: 'tbspacer',
   		flex: 1
   	},{
-  		itemId:'SubmitButton',
+  		itemId: 'SubmitButton',
+  		width: 110, // Must be as width as the load mask (see AdvancedRequestController.js)
   		type: 'button',
   		action: 'submit',
   		text : 'Launch',

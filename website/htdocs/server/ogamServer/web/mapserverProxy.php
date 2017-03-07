@@ -15,6 +15,8 @@ $queryParamsAllow = array(//paramNom => requis
     'HEIGHT' ,
     'PROVIDER_ID' ,// TODO: use the query parameter
     'PLOT_CODE' ,// TODO: use the query parameter
+    'CYCLE' ,// TODO: use the query parameter
+    'TREE_ID' ,// TODO: use the query parameter
     'TRANSPARENT' ,
     'VERSION' ,
     'STYLES' ,
