@@ -2,14 +2,13 @@
 namespace Ign\Bundle\OGAMBundle\Controller;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-
 use Ign\Bundle\OGAMBundle\Form\ChangeUserPasswordType;
+use Ign\Bundle\OGAMBundle\Form\ChangeForgottenPasswordType;
 use Ign\Bundle\OGAMBundle\Entity\Website\User;
 
 /**
@@ -111,23 +110,19 @@ class UserController extends Controller {
 		));
 	}
 
-
-
 	/**
 	 * Display the forgotten password form.
 	 *
 	 * @Route("/forgottenpassword", name = "user_forgotten_password")
 	 */
 	public function forgottenPasswordFormAction(Request $request) {
-
-		// Get the change password form
-		//$user = new User();
-		//$form = $this->createForm(RequestChangePasswordType::class, $user);
-
-		$defaultData = array('message' => 'Type your message here');
-		$form = $this->createFormBuilder($defaultData)
-			->add('email', EmailType::class)
-			->add('send', SubmitType::class)
+		$form = $this->createFormBuilder()
+			->add('email', EmailType::class, array(
+			'label' => 'Email'
+		))
+			->add('send', SubmitType::class, array(
+			'label' => 'Submit'
+		))
 			->getForm();
 
 		$form->handleRequest($request);
@@ -146,28 +141,85 @@ class UserController extends Controller {
 
 			$user->setActivationCode($codeActivation);
 
-
-			dump($user);
-
-
 			$em = $this->getDoctrine()->getManager();
 			$em->persist($user);
 			$em->flush();
 
+			// Get the sender adress
+			$configuration = $this->get('ogam.configuration_manager');
+			$fromMail = $configuration->getConfig('fromMail', 'ogam@ign.fr');
 
-
-			// TODO : Send an email to the user
-			// $this->_envoiMailReinitialisation($utilisateur, $codeActivation);
+			// Send an email to the user
+			$message = \Swift_Message::newInstance()->setSubject('Mot de passe oublié')
+				->setFrom($fromMail)
+				->setTo($user->getEmail())
+				->setBody($this->renderView('OGAMBundle:Emails:forgotten_password.html.twig', array(
+				'user' => $user
+			)), 'text/html');
+			$this->get('mailer')->send($message);
 
 			//
+			$this->addFlash('success', 'An email has been sent to your address');
 
-			$this->addFlash('success', 'An email has been sent at your address.');
+			// Display a confirmation message
+			return $this->render('OGAMBundle:User:confirm_password_email_sent.html.twig', array());
+		} else {
 
+			// Display the login form
+			return $this->render('OGAMBundle:User:forgotten_password.html.twig', array(
+				'form' => $form->createView()
+			));
+		}
+	}
+
+	/**
+	 * Validate the password change request for forgotten password.
+	 *
+	 * @Route("/validateForgottenPassword", name = "user_validateForgottenPassword")
+	 */
+	public function validateForgottenPasswordAction(Request $request) {
+		$logger = $this->get('logger');
+		$logger->debug('validateForgottenPasswordAction');
+
+		// Get the change password form
+		$form = $this->createForm(ChangeForgottenPasswordType::class);
+
+		$form->handleRequest($request);
+
+		// Display the change password form
+		if ($form->isSubmitted() && $form->isValid()) {
+
+			// Get URL parameters
+			$login = $request->query->get('login');
+			$activationCode = $request->query->get('activationCode');
+
+			// On récupère les infos sur l'utilisateur
+			$userRepo = $this->getDoctrine()->getRepository('Ign\Bundle\OGAMBundle\Entity\Website\User', 'website');
+			$user = $userRepo->findOneByLogin($login);
+
+			// Check the activation code to confirm this is the correct user
+			if ($activationCode !== $user->getActivationCode()) {
+				$this->addFlash('error', 'The activation code is not valid, check that you have used the last received email.');
+				return $this->redirectToRoute('homepage');
+			}
+
+			// Encrypt the password
+			$encoder = $this->get('ogam.challenge_response_encoder');
+			$plainPassword = $form->get('plainPassword')->getData();
+			$password = $encoder->encodePassword($plainPassword, '');
+			$user->setPassword($password);
+
+			// Save the user
+			$em = $this->getDoctrine()->getManager();
+			$em->persist($user);
+			$em->flush();
+
+			// Display a confirmation message
+			$this->addFlash('success', 'Your password has been changed.');
 			return $this->redirectToRoute('homepage');
 		}
 
-		// Display the login form
-		return $this->render('OGAMBundle:User:forgotten_password.html.twig', array(
+		return $this->render('OGAMBundle:User:forgotten_password_change.html.twig', array(
 			'form' => $form->createView()
 		));
 	}

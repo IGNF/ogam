@@ -7,7 +7,7 @@ parameters:
     database_user: ogam
     database_password: ogam
     mailer_transport: smtp
-    mailer_host: 127.0.0.1
+    mailer_host: 192.134.133.226 # smtp1.ign.fr
     mailer_user: null
     mailer_password: null
     secret: ThisTokenIsNotSoSecretChangeIt
