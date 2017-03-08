@@ -47,12 +47,12 @@ Ext.define('OgamDesktop.ux.window.Toast', {
     extend: 'Ext.window.Toast'
 },
 function (Toast) {
-	OgamDesktop.toast = function (message, title, align, iconCls) {
+    OgamDesktop.toast = function (message, title, align, iconCls) {
         var toast, config = {
-        	closable: true,
-			width: 300,
-			align: 't',
-			autoCloseDelay: 8000
+            closable: true,
+            width: 300,
+            align: 't',
+            autoCloseDelay: 8000
         };
  
         if (Ext.isString(message)) {
@@ -63,7 +63,7 @@ function (Toast) {
                 config.align = align;
             }
         } else {
-        	Ext.apply(config,message);
+            Ext.apply(config,message);
         }
  
         toast = new Toast(config);

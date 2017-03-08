@@ -74,9 +74,9 @@ Ext.define('OgamDesktop.view.main.MainController', {
      * Fonction handling the consultation_panel route
      * @private
      */
-	onConsulation:function (){
-		this.getView().setActiveItem(1);
-	},
+    onConsulation:function (){
+        this.getView().setActiveItem(1);
+    },
 
     /**
      * Fonction handling the edition_panel route
@@ -84,8 +84,8 @@ Ext.define('OgamDesktop.view.main.MainController', {
      */
     onEdition:function(key){
 
-    	if (key !== undefined) {
-	    	var href = Ext.manifest.OgamDesktop.editionServiceUrl + 'show-edit-data/'+key;
+        if (key !== undefined) {
+            var href = Ext.manifest.OgamDesktop.editionServiceUrl + 'show-edit-data/'+key;
             var loadEditionPage = true;
 
             if ( this.getView().down('editionpage') !== null ) {
@@ -100,8 +100,8 @@ Ext.define('OgamDesktop.view.main.MainController', {
                     url:href
                 });
             }
-    	}
-    	this.getView().setActiveItem('edition_panel');
+        }
+        this.getView().setActiveItem('edition_panel');
     },
 
     /**
@@ -109,9 +109,9 @@ Ext.define('OgamDesktop.view.main.MainController', {
      * @private
      */
     onAdd:function(key){
-    	
-    	if (key !== undefined) {
-	    	var href = Ext.manifest.OgamDesktop.editionServiceUrl + 'show-add-data/'+key;
+        
+        if (key !== undefined) {
+            var href = Ext.manifest.OgamDesktop.editionServiceUrl + 'show-add-data/'+key;
             var loadEditionPage = true;
 
             if ( this.getView().down('editionpage') !== null ) {
@@ -119,14 +119,14 @@ Ext.define('OgamDesktop.view.main.MainController', {
             }
 
             if (loadEditionPage) {
-    	    	this.getView().down('#edition_panel').getLoader().load({
-    	    		removeAll:true,
-    	    		renderer:'component',
-    	    		loadMask:true,
-    	    		url:href
-    	    	});
+                this.getView().down('#edition_panel').getLoader().load({
+                    removeAll:true,
+                    renderer:'component',
+                    loadMask:true,
+                    url:href
+                });
             }
-    	}
-    	this.getView().setActiveItem('edition_panel');
+        }
+        this.getView().setActiveItem('edition_panel');
     }
 });

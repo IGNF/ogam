@@ -737,19 +737,19 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 			}
 			
 			field.treePickerColumns = {
-			    items: [{
-			    	xtype: 'treecolumn',
-		            text: OgamDesktop.ux.request.RequestFieldSet.prototype.taxrefLatinNameColumnTitle,
-		            dataIndex: "label"
-		        },{
-		            text: OgamDesktop.ux.request.RequestFieldSet.prototype.taxrefVernacularNameColumnTitle,
-		            dataIndex: "vernacularName"
-		        },Ext.applyIf({
-			            text: OgamDesktop.ux.request.RequestFieldSet.prototype.taxrefReferentColumnTitle,
-			            dataIndex: "isReference",
-			            flex:0,
-			            witdh:15
-			        }, OgamDesktop.ux.grid.column.Factory.buildBooleanColumnConfig())],
+				items: [{
+					xtype: 'treecolumn',
+					text: OgamDesktop.ux.request.RequestFieldSet.prototype.taxrefLatinNameColumnTitle,
+					dataIndex: "label"
+				},{
+					text: OgamDesktop.ux.request.RequestFieldSet.prototype.taxrefVernacularNameColumnTitle,
+					dataIndex: "vernacularName"
+				},Ext.applyIf({
+						text: OgamDesktop.ux.request.RequestFieldSet.prototype.taxrefReferentColumnTitle,
+						dataIndex: "isReference",
+						flex:0,
+						witdh:15
+					}, OgamDesktop.ux.grid.column.Factory.buildBooleanColumnConfig())],
 				defaults : {
 					flex : 1
 				}
@@ -762,8 +762,8 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 						'<tpl if="!Ext.isEmpty(values.isReference) && values.isReference == 1"><b>{label}</b></tpl>',
 						'<br/>',
 						'<tpl if="!Ext.isEmpty(values.vernacularName) && values.vernacularName != null">({vernacularName})</tpl>',
-			        '</div></tpl>'
-			        ]};
+					'</div></tpl>'
+					]};
 			field.store = {
 				xtype : 'jsonstore',
 				autoDestroy : true,
@@ -832,7 +832,7 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 		// Set the label
 		field.fieldLabel = record.get('label');
 		if (record.get('required') == true) {
-		 	field.fieldLabel += '<span style="color: rgb(255, 0, 0); padding-left: 2px;">*</span> ';
+			field.fieldLabel += '<span style="color: rgb(255, 0, 0); padding-left: 2px;">*</span> ';
 			field.cls = ' required';
 		}
 		else {
@@ -1027,7 +1027,7 @@ Ext.define('OgamDesktop.view.edition.Panel', {
         if (this.dataEditForm.isDirty()) {
             return confirm(this.unsavedChangesMessage);
         } else {
-        	return true;
+            return true;
         }
 	}
 });

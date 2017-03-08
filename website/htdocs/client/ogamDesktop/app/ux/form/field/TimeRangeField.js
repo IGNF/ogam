@@ -29,12 +29,12 @@ Ext.define('OgamDesktop.ux.form.field.TimeRangeField', {
               'Ext.form.field.Date'
               ],
     mixins:{
-    	mxTime:'Ext.form.field.Time'
+        mxTime:'Ext.form.field.Time'
     },
-	/*
-	 * Internationalization.
-	 */ 
-	//<locale>
+    /*
+     * Internationalization.
+     */ 
+    //<locale>
     formatText: 'Expected time format: HH:MM',
     minText: "The times in this field must be equal to or after {0}",
     maxText: "The times in this field must be equal to or before {0}",
@@ -99,11 +99,11 @@ Ext.define('OgamDesktop.ux.form.field.TimeRangeField', {
      * @param {Date} value The minimum date that can be selected
      */
     setMinValue : function(dt){
-    	var me = this,
+        var me = this,
         picker = me.picker;
         me.minValue = (typeof dt === "string" ? me.parseDate(dt) : dt);
         if(picker){
-        	picker.minField.setMinValue(me.minValue);
+            picker.minField.setMinValue(me.minValue);
             picker.maxField.setMinValue(me.minValue);
         }
     },
@@ -113,7 +113,7 @@ Ext.define('OgamDesktop.ux.form.field.TimeRangeField', {
      * @param {Date} value The maximum date that can be selected
      */
     setMaxValue : function(dt){
-    	var me = this,
+        var me = this,
         picker = me.picker;
         me.maxValue = (typeof dt === "string" ? me.parseDate(dt) : dt);
         if(picker){
@@ -261,8 +261,8 @@ Ext.define('OgamDesktop.ux.form.field.TimeRangeField', {
      * @return {String} The formated date
      */
     formatDate : function(date, format){
-    	format = format || this.format;
-    	var callFormat =Ext.form.field.Date.prototype.formatDate;
+        format = format || this.format;
+        var callFormat =Ext.form.field.Date.prototype.formatDate;
         if(Ext.isDate(date)){
             return Ext.form.field.Date.prototype.formatDate.call(this, date, format);//this.mixins.mxTime.formatDate.call(this,date);
         }
@@ -295,7 +295,7 @@ Ext.define('OgamDesktop.ux.form.field.TimeRangeField', {
         }
     },
     parseDate:function(value){
-    	return this.mixins.mxTime.parseDate.call(this,value);
+        return this.mixins.mxTime.parseDate.call(this,value);
     },
 
     /**
@@ -307,12 +307,12 @@ Ext.define('OgamDesktop.ux.form.field.TimeRangeField', {
      * @return {Boolean} true if the object is a range date
      */
     isRangeDate : function(rangeDate){
-    	
+        
         return (Ext.isObject(rangeDate) && (this.isDateOTime(rangeDate.startTime) || rangeDate.startTime === null) && (this.isDateOTime(rangeDate.endTime) || rangeDate.endTime === null));
     },
     isDateOTime: function (date){
-		return Ext.isDate(this.parseDate(date));
-	},
+        return Ext.isDate(this.parseDate(date));
+    },
     /**
      * Create the date range picker
      * @private
@@ -343,21 +343,21 @@ Ext.define('OgamDesktop.ux.form.field.TimeRangeField', {
             },
             format:me.format,
             minField: {
-	            minValue : me.minValue,
-	            maxValue : me.maxValue,
-	            value : me.minDefaultValue,
-	            format : me.format,
-	            minText : format(me.minText, me.formatDate(me.minValue)),
-	            maxText : format(me.maxText, me.formatDate(me.maxValue))
+                minValue : me.minValue,
+                maxValue : me.maxValue,
+                value : me.minDefaultValue,
+                format : me.format,
+                minText : format(me.minText, me.formatDate(me.minValue)),
+                maxText : format(me.maxText, me.formatDate(me.maxValue))
             },
             maxField: {
-	            minValue : me.minValue,
-	            maxValue : me.maxValue,
-	            value : me.maxDefaultValue,
-	            format : me.format,
-	            minText : format(me.minText, me.formatDate(me.minValue)),
-	            maxText : format(me.maxText, me.formatDate(me.maxValue))
-	        }
+                minValue : me.minValue,
+                maxValue : me.maxValue,
+                value : me.maxDefaultValue,
+                format : me.format,
+                minText : format(me.minText, me.formatDate(me.minValue)),
+                maxText : format(me.maxText, me.formatDate(me.maxValue))
+            }
         }
         );
     },

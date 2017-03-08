@@ -24,11 +24,11 @@ Ext.define('OgamDesktop.ux.form.field.DateRangeField', {
     extend:'Ext.form.DateField',
     alias:'widget.daterangefield',
     requires:['OgamDesktop.ux.picker.DateRange'],
-	
-	/*
-	 * Internationalization.
-	 */ 
-	//<locale>
+    
+    /*
+     * Internationalization.
+     */ 
+    //<locale>
     minText: "The dates in this field must be equal to or after {0}",
     maxText: "The dates in this field must be equal to or before {0}",
     reverseText: "The end date must be posterior to the start date",
@@ -94,7 +94,7 @@ Ext.define('OgamDesktop.ux.form.field.DateRangeField', {
      * for details on supported values) used to disable a pattern of dates.
      */
     setDisabledDates : function(dd){
-		var me = this,
+        var me = this,
         picker = me.picker;
         me.disabledDates = dd;
         me.initDisabledDays();
@@ -110,12 +110,12 @@ Ext.define('OgamDesktop.ux.form.field.DateRangeField', {
      * config for details on supported values.
      */
     setDisabledDays : function(dd){
-		var me = this,
+        var me = this,
         picker = me.picker;
         me.disabledDays = dd;
         if(picker){
-        	picker.startDatePicker.setDisabledDays(dd);
-        	picker.endDatePicker.setDisabledDays(dd);
+            picker.startDatePicker.setDisabledDays(dd);
+            picker.endDatePicker.setDisabledDays(dd);
         }
     },
 
@@ -124,11 +124,11 @@ Ext.define('OgamDesktop.ux.form.field.DateRangeField', {
      * @param {Date} value The minimum date that can be selected
      */
     setMinValue : function(dt){
-    	var me = this,
+        var me = this,
         picker = me.picker;
         me.minValue = (typeof dt === "string" ? me.parseDate(dt) : dt);
         if(picker){
-        	picker.startDatePicker.setMinDate(me.minValue);
+            picker.startDatePicker.setMinDate(me.minValue);
             picker.endDatePicker.setMinDate(me.minValue);
         }
     },
@@ -138,7 +138,7 @@ Ext.define('OgamDesktop.ux.form.field.DateRangeField', {
      * @param {Date} value The maximum date that can be selected
      */
     setMaxValue : function(dt){
-    	var me = this,
+        var me = this,
         picker = me.picker;
         me.maxValue = (typeof dt === "string" ? me.parseDate(dt) : dt);
         if(picker){
@@ -157,7 +157,7 @@ Ext.define('OgamDesktop.ux.form.field.DateRangeField', {
      * @return {Array} All validation errors for this field
      */
     getErrors: function(value) {
-    	 value = arguments.length > 0 ? value : this.formatDate(this.processRawValue(this.getRawValue()));
+         value = arguments.length > 0 ? value : this.formatDate(this.processRawValue(this.getRawValue()));
         var errors = Ext.form.DateField.superclass.getErrors.apply(this, [value]),
         format = Ext.String.format;
         
@@ -387,23 +387,23 @@ Ext.define('OgamDesktop.ux.form.field.DateRangeField', {
                 }
             }
             ,startDatePickerConfig: {
-	            minDate : this.minValue,
-	            maxDate : this.maxValue,
-	            defaultValue : this.minDefaultValue,
-	            format : this.format,
-	            showToday : this.showToday,
-	            minText : format(this.minText, this.formatDate(this.minValue)),
-	            maxText : format(this.maxText, this.formatDate(this.maxValue))
+                minDate : this.minValue,
+                maxDate : this.maxValue,
+                defaultValue : this.minDefaultValue,
+                format : this.format,
+                showToday : this.showToday,
+                minText : format(this.minText, this.formatDate(this.minValue)),
+                maxText : format(this.maxText, this.formatDate(this.maxValue))
             },
-	        endDatePickerConfig: {
-	            minDate : this.minValue,
-	            maxDate : this.maxValue,
-	            defaultValue : this.maxDefaultValue,
-	            format : this.format,
-	            showToday : this.showToday,
-	            minText : format(this.minText, this.formatDate(this.minValue)),
-	            maxText : format(this.maxText, this.formatDate(this.maxValue))
-	        }
+            endDatePickerConfig: {
+                minDate : this.minValue,
+                maxDate : this.maxValue,
+                defaultValue : this.maxDefaultValue,
+                format : this.format,
+                showToday : this.showToday,
+                minText : format(this.minText, this.formatDate(this.minValue)),
+                maxText : format(this.maxText, this.formatDate(this.maxValue))
+            }
         }
         );
     },

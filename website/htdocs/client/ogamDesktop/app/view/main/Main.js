@@ -50,10 +50,10 @@ Ext.define('OgamDesktop.view.main.Main', {
 					},
 					deferredRender : false,
 					items: [
-					        {
+							{
 						xtype: 'map-mainwin'
 					},
-					        {
+							{
 						xtype: 'result-mainwin'
 					}]
 				},{
@@ -93,17 +93,17 @@ Ext.define('OgamDesktop.view.main.Main', {
 	 */
 	initComponent : function() {
 		this.getTabBar().add(
-	        [{
-	        	xtype:'tbfill'
-	        },{
-	        	xtype:'button',
-	        	ui:'default-toolbar',
-	        	text: this.homeButtonText,
-	        	tooltip: this.homeButtonTooltip,
-	        	handler: function() {
-	                document.location = window.location.origin;
-	            }
-	        }]
+			[{
+				xtype:'tbfill'
+			},{
+				xtype:'button',
+				ui:'default-toolbar',
+				text: this.homeButtonText,
+				tooltip: this.homeButtonTooltip,
+				handler: function() {
+					document.location = window.location.origin;
+				}
+			}]
 		);
 		this.callParent(arguments);
 		var resultsgrid = Ext.ComponentQuery.query('results-grid')[0];

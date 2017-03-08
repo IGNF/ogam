@@ -25,8 +25,8 @@ Ext.define('OgamDesktop.ux.request.RequestFieldSet', {
 	extend: 'Ext.panel.Panel',
 	requires:[
 		'Ext.data.JsonStore','OgamDesktop.store.Tree',
-	    'OgamDesktop.model.request.object.field.Code',
-	    'OgamDesktop.ux.form.field.*'
+		'OgamDesktop.model.request.object.field.Code',
+		'OgamDesktop.ux.form.field.*'
 	],
 
 //<locale>
@@ -256,11 +256,11 @@ Ext.define('OgamDesktop.ux.request.RequestFieldSet', {
 								'unit' : record.get('unit')
 							},
 							reader: {
-							    type : 'json',
-							    rootProperty : 'data',
-							    totalProperty  : 'total',
-							    successProperty: 'success',
-							    messageProperty: 'errorMessage'
+								type : 'json',
+								rootProperty : 'data',
+								totalProperty  : 'total',
+								successProperty: 'success',
+								messageProperty: 'errorMessage'
 							}
 						},
 						data : record.get('data').unit.codes
@@ -407,19 +407,19 @@ Ext.define('OgamDesktop.ux.request.RequestFieldSet', {
 					}
 	
 					field.treePickerColumns = {
-					    items: [{
-					        xtype: 'treecolumn',
-				            text: cls.prototype.taxrefLatinNameColumnTitle,
-				            dataIndex: "label"
-				        },{
-				            text: cls.prototype.taxrefVernacularNameColumnTitle,
-				            dataIndex: "vernacularName"
-				        },Ext.applyIf({
-				            text: cls.prototype.taxrefReferentColumnTitle,
-				            dataIndex: "isReference",
-				            flex:0,
-				            witdh:15
-				        }, OgamDesktop.ux.grid.column.Factory.buildBooleanColumnConfig())],
+						items: [{
+							xtype: 'treecolumn',
+							text: cls.prototype.taxrefLatinNameColumnTitle,
+							dataIndex: "label"
+						},{
+							text: cls.prototype.taxrefVernacularNameColumnTitle,
+							dataIndex: "vernacularName"
+						},Ext.applyIf({
+							text: cls.prototype.taxrefReferentColumnTitle,
+							dataIndex: "isReference",
+							flex:0,
+							witdh:15
+						}, OgamDesktop.ux.grid.column.Factory.buildBooleanColumnConfig())],
 						defaults : {
 							flex : 1
 						}
@@ -432,8 +432,8 @@ Ext.define('OgamDesktop.ux.request.RequestFieldSet', {
 								'<tpl if="!Ext.isEmpty(values.isReference) && values.isReference == 1"><b>{label}</b></tpl>',
 								'<br/>',
 								'<tpl if="!Ext.isEmpty(values.vernacularName) && values.vernacularName != null">({vernacularName})</tpl>',
-					        '</div></tpl>'
-					        ]};
+							'</div></tpl>'
+							]};
 					field.store = {
 						xtype : 'jsonstore',
 						autoDestroy : true,

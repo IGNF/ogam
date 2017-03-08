@@ -2,28 +2,28 @@
  * This class manages the predefined request view.
  */
 Ext.define('OgamDesktop.view.request.PredefinedRequest', {
-	extend: 'OgamDesktop.view.request.MainWin',
-	alias: 'widget.predefined-request',
-	xtype: 'predefined-request',
-	layout: 'hbox',
-	title: 'Predefined Request',
-	frame: true,
-	requires: [
-		'OgamDesktop.view.request.PredefinedRequestModel',
-		'OgamDesktop.view.request.PredefinedRequestController',
-		'OgamDesktop.ux.request.AdvancedRequestFieldSet',
-		'Ext.grid.feature.Grouping',
-		'OgamDesktop.store.request.predefined.Group',
-		'OgamDesktop.view.request.PredefinedRequestSelector',
-		'Ext.grid.Panel',
-		'OgamDesktop.ux.request.AdvancedRequestSelector'
-		],
-	controller: 'predefinedrequest',
-	viewModel:{
-		type:'predefinedrequest'
-	},
-	labelColumnHeader : "Label",
-//<locale>		
+    extend: 'OgamDesktop.view.request.MainWin',
+    alias: 'widget.predefined-request',
+    xtype: 'predefined-request',
+    layout: 'hbox',
+    title: 'Predefined Request',
+    frame: true,
+    requires: [
+        'OgamDesktop.view.request.PredefinedRequestModel',
+        'OgamDesktop.view.request.PredefinedRequestController',
+        'OgamDesktop.ux.request.AdvancedRequestFieldSet',
+        'Ext.grid.feature.Grouping',
+        'OgamDesktop.store.request.predefined.Group',
+        'OgamDesktop.view.request.PredefinedRequestSelector',
+        'Ext.grid.Panel',
+        'OgamDesktop.ux.request.AdvancedRequestSelector'
+        ],
+    controller: 'predefinedrequest',
+    viewModel:{
+        type:'predefinedrequest'
+    },
+    labelColumnHeader : "Label",
+//<locale>
     /**
      * @cfg {String} resetButtonText
      * The reset Button Text (defaults to <tt>'Reset'</tt>)
@@ -58,7 +58,7 @@ Ext.define('OgamDesktop.view.request.PredefinedRequest', {
      * @cfg {String} criteriaPanelTitle
      * The criteria Panel Title (defaults to <tt>'Request criteria'</tt>)
      */
-    criteriaPanelTitle:"Request criteria",	
+    criteriaPanelTitle:"Request criteria",
     /**
      * @cfg {String} groupTextTpl
      * The group Text Tpl (defaults to <tt>'{name} ({children.length:plural("Requete")})'</tt>)
@@ -69,74 +69,74 @@ Ext.define('OgamDesktop.view.request.PredefinedRequest', {
     /**
      * Initializes the component.
      */
-	initComponent: function(){
-		this.fbar= [{
-			xtype: 'button',
-			margin: '5 5 5 5',
-			text: this.resetButtonText,
-			tooltip:this.resetButtonTooltip,
-			handler:'onResetRequest'
-		},{
-			xtype: 'button',
-			itemId:'launchRequest',
-			margin: '5 5 5 5',
-			text: this.launchRequestButtonText,
-			tooltip:this.launchRequestButtonTooltip
-		}]
-		
-		this.callParent();
-	},
+    initComponent: function(){
+        this.fbar= [{
+            xtype: 'button',
+            margin: '5 5 5 5',
+            text: this.resetButtonText,
+            tooltip:this.resetButtonTooltip,
+            handler:'onResetRequest'
+        },{
+            xtype: 'button',
+            itemId:'launchRequest',
+            margin: '5 5 5 5',
+            text: this.launchRequestButtonText,
+            tooltip:this.launchRequestButtonTooltip
+        }]
+        
+        this.callParent();
+    },
 
     /**
      * Initializes the items.
      */
     initItems: function() {
-		var store = new OgamDesktop.store.request.predefined.Group({
-			groupField:'group_label'});
-		var columns = [{
-			text:this.labelColumnHeader,
-			flex: 1,
-			dataIndex: 'label'
-		}];
+        var store = new OgamDesktop.store.request.predefined.Group({
+            groupField:'group_label'});
+        var columns = [{
+            text:this.labelColumnHeader,
+            flex: 1,
+            dataIndex: 'label'
+        }];
 
-		var features = [{
-			ftype: 'grouping',
-			groupHeaderTpl: this.groupTextTpl,
-			//hideGroupedHeader: true,
-			startCollapsed: true,
-			itemId: 'requestsGrouping'
-		}];
-		
-		this.items = [{
-			xtype: 'gridpanel',
-			height:'100%',
-			store: store,
-			width: '65%',
-			margin: '10 10 10 10',
-			columns: columns,
-			features: features,
-			reference:'requete',
-			plugins: [{
-		        ptype: 'rowexpander',
-		        //columnWidth: 0, doesn't work on extjs 6.0.1.250
-		        //headerWidth: 0, doesn't work properly on extjs 6.0.1.250
-		        rowBodyTpl : new Ext.XTemplate('<p class="o-predefined-request-grid-panel-description-text">{definition}</p>')
-		    }]
-		},{
-			title: this.criteriaPanelTitle,
-			hideMode: 'display',
-			itemId:'myfieldset',
-			xtype:'predefined-request-selector',
-			bind:{
-				criteria :{
-					bindTo:'{criteria}',
-					deep:true
-				}
-			},
-			flex: 1,
-			margin: '5 10 10 10'
-			
-		}];
-		this.callParent();
+        var features = [{
+            ftype: 'grouping',
+            groupHeaderTpl: this.groupTextTpl,
+            //hideGroupedHeader: true,
+            startCollapsed: true,
+            itemId: 'requestsGrouping'
+        }];
+        
+        this.items = [{
+            xtype: 'gridpanel',
+            height:'100%',
+            store: store,
+            width: '65%',
+            margin: '10 10 10 10',
+            columns: columns,
+            features: features,
+            reference:'requete',
+            plugins: [{
+                ptype: 'rowexpander',
+                //columnWidth: 0, doesn't work on extjs 6.0.1.250
+                //headerWidth: 0, doesn't work properly on extjs 6.0.1.250
+                rowBodyTpl : new Ext.XTemplate('<p class="o-predefined-request-grid-panel-description-text">{definition}</p>')
+            }]
+        },{
+            title: this.criteriaPanelTitle,
+            hideMode: 'display',
+            itemId:'myfieldset',
+            xtype:'predefined-request-selector',
+            bind:{
+                criteria :{
+                    bindTo:'{criteria}',
+                    deep:true
+                }
+            },
+            flex: 1,
+            margin: '5 10 10 10'
+            
+        }];
+        this.callParent();
     }
 });
