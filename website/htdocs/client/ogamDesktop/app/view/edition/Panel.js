@@ -850,7 +850,7 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 			//field.editable = false;
 			if (Ext.Array.contains(['combo','tag','treefield'], field.xtype)){
 				field.selectOnFocus = false; //If selectOnFocus is enabled the combo must be editable: true
-				field.typeAhead= false
+				field.typeAhead= false;
 			}
 			field.cls += ' x-item-disabled';
 		}
@@ -968,7 +968,7 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 
 		// Return to the index page
 		if (!Ext.isEmpty(obj.redirectLink)) {
-			this.lookupController().redirectTo(obj.redirectLink, true)
+			this.lookupController().redirectTo(obj.redirectLink, true);
 		} else if (obj.success) {
 			this.close();
 			OgamDesktop.toast(obj.message, this.deleteToastTitle);

@@ -6,4 +6,4 @@ Ext.define('OgamDesktop.model.base', {
     schema: {
         namespace: 'OgamDesktop.model'
     }
-})
+});
