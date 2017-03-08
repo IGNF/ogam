@@ -204,7 +204,7 @@ Ext.define('OgamDesktop.ux.form.field.NumberRangeField', {
      */
     setValue : function(v){
         v = this.formatNumberValue(v);
-        return  this.callParent([v]);;
+        return  this.callParent([v]);
     },
     
     /**

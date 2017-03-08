@@ -85,7 +85,7 @@ Ext.define('OgamDesktop.view.map.MapComponentController', {
                        this.fireEvent('changevisibilityrange', lyr, true);
                    } else if (!this.isResInLayerRange(lyr, resDest) && this.isResInLayerRange(lyr, resDep)) {
                        this.fireEvent('changevisibilityrange', lyr, false);
-                   };
+                   }
                 }
         }, this);
     },
