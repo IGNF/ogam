@@ -136,7 +136,9 @@ Ext.define('OgamDesktop.ux.form.field.TwinNumberField', {
      * @private
      */
     onTrigger1Click : function() {
+//<debug>
         console.log('onTrigger1Click');
+//</debug>
         this.reset();
         this.triggers.cleaner.hide();
     },
@@ -152,7 +154,7 @@ Ext.define('OgamDesktop.ux.form.field.TwinNumberField', {
         } else {
             this.triggers.cleaner.hide();
         }
-        this.callParent(arguments)
+        this.callParent(arguments);
     },
 
     /**
