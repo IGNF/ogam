@@ -110,9 +110,9 @@ Ext.define('OgamDesktop.view.map.MapComponentController', {
                     return;
                 } else if (el.isLayerGroup) {
                     if (this.getMapLayer(layerName, el)) {
-                        me.layer = this.getMapLayer(layerName, el)
+                        me.layer = this.getMapLayer(layerName, el);
                         return;
-                    };
+                    }
                 }
             },
             this
