@@ -123,7 +123,7 @@ Ext.define('OgamDesktop.view.request.AdvancedRequest', {
 				store: '{processStore}',
 				selection:'{currentProcess}'
 			},
-			 listeners:{
+			listeners:{
 				select:'onUpdateDataset'
 			}
 		}]

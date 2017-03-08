@@ -385,8 +385,8 @@ Ext.define('OgamDesktop.ux.form.field.DateRangeField', {
                 esc: function() {
                     me.collapse();
                 }
-            }
-            ,startDatePickerConfig: {
+            },
+            startDatePickerConfig: {
                 minDate : this.minValue,
                 maxDate : this.maxValue,
                 defaultValue : this.minDefaultValue,
