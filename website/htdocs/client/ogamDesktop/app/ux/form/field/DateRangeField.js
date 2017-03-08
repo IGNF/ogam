@@ -426,7 +426,7 @@ Ext.define('OgamDesktop.ux.form.field.DateRangeField', {
      * @private
      */
     onExpand: function() {
-        var value = this.getValue()
+        var value = this.getValue(),
         values =(this.isRangeDate(value) ? value : {startDate:new Date(),endDate:new Date()});
         this.picker.startDatePicker.setValue(values.startDate);
         this.picker.endDatePicker.setValue(values.endDate);
