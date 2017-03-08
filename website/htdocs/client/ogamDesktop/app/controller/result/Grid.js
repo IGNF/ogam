@@ -175,7 +175,7 @@ Ext.define('OgamDesktop.controller.result.Grid',{
                                     columnConfig.xtype = 'gridcolumn';
                                     if (field.subtype === 'LINK'){
                                         columnConfig.width = 30;
-                                        columnConfig.renderer= this.renderLink
+                                        columnConfig.renderer= this.renderLink;
                                     }
                                     break;
                                 case 'INTEGER':

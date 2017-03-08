@@ -82,7 +82,7 @@ Ext.define('OgamDesktop.view.request.PredefinedRequest', {
             margin: '5 5 5 5',
             text: this.launchRequestButtonText,
             tooltip:this.launchRequestButtonTooltip
-        }]
+        }];
         
         this.callParent();
     },

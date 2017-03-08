@@ -47,7 +47,7 @@ Ext.define('OgamDesktop.view.navigation.MainWinController', {
             window.onafterprint = function(){ // After print
                 afterPrint();
                 window.onafterprint = null;
-            }
+            };
         } else { // Opera...
             // TODO: Add a close button like in the map print function
         }
