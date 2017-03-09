@@ -76,5 +76,5 @@ Ext.define('OgamDesktop.ux.data.field.Factory', function () {
             }
             return fieldConfig;
         }
-    }
+    };
 });

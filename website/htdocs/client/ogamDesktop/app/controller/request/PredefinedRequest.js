@@ -2,15 +2,15 @@
  * This class defines a controller with actions related to predefined request
  */
 Ext.define('OgamDesktop.controller.request.PredefinedRequest', {
-	extend: 'Ext.app.Controller',
-	session:{},
+    extend: 'Ext.app.Controller',
+    session:{},
 
     config: {
-    	refs: {
-    		mainView:'app-main',
-			predefReqView: 'predefined-request',
-			advReqView: 'advanced-request'
-		},
+        refs: {
+            mainView:'app-main',
+            predefReqView: 'predefined-request',
+            advReqView: 'advanced-request'
+        },
         control: {
             'predefined-request button#launchRequest': {//#launchRequest
                 click: 'onLaunchRequest'
@@ -19,7 +19,7 @@ Ext.define('OgamDesktop.controller.request.PredefinedRequest', {
     },
     
     routes:{
-    	'predefined_request':'onPredefinedRequest'
+        'predefined_request':'onPredefinedRequest'
     },
 
     /**
@@ -27,7 +27,7 @@ Ext.define('OgamDesktop.controller.request.PredefinedRequest', {
      * @private
      */
     onPredefinedRequest:function(){
-    	this.getMainView().setActiveItem(this.getPredefReqView());
+        this.getMainView().setActiveItem(this.getPredefReqView());
     },
 
     /**
@@ -42,39 +42,39 @@ Ext.define('OgamDesktop.controller.request.PredefinedRequest', {
      * @private
      */
     onLaunchRequest:function(button,e, eopt){
-    	
-    	var prModel= this.getPredefReqView().lookupReference('requete');
-   	
-    	//console.log(prModel.selection.reqfieldsets());
-    	adModel = this.getAdvReqView().getViewModel();
-    	this.getAdvReqView().lookupReference('processComboBox').setValue(prModel.selection.get('dataset_id'));
-    	//prModel.selection.getProcessus({success:function(record){adModel.set('currentProcess',record);},scope:adModel});
-    	
-    	prModel.selection.reqfieldsets({
-    		success:function(records){
-    			var selectedCodes = {};
-    			this.getPredefReqView().child('predefined-request-selector').items.each(function(item){
-    				if(item instanceof Ext.form.field.Tag) {
-    					selectedCodes[item.getName()] = item.getValueRecords();
-    				} else {
-	    				selectedCodes[item.getName()] = new OgamDesktop.model.request.object.field.Code({
-	    					code: item.getValue(),
-	    					label: item.getRawValue()
-	    				});
-    				}
-    			});
-    			this.getAdvReqView().getViewModel().set({
-					'userchoices' : selectedCodes,
-					'fieldsets':records
-	    		});
-    			this.getAdvReqView().getViewModel().notify();
-    			this.getAdvReqView().lookupReference('advancedRequestSelector').reloadForm();
-    			this.getAdvReqView().down('#SubmitButton').click(e);
-    		},
-    		scope:this
-    	});
-    	
-    	this.getMainView().getLayout().setActiveItem('consultationTab');
-    	this.getAdvReqView().collapse();
+        
+        var prModel= this.getPredefReqView().lookupReference('requete');
+       
+        //console.log(prModel.selection.reqfieldsets());
+        adModel = this.getAdvReqView().getViewModel();
+        this.getAdvReqView().lookupReference('processComboBox').setValue(prModel.selection.get('dataset_id'));
+        //prModel.selection.getProcessus({success:function(record){adModel.set('currentProcess',record);},scope:adModel});
+        
+        prModel.selection.reqfieldsets({
+            success:function(records){
+                var selectedCodes = {};
+                this.getPredefReqView().child('predefined-request-selector').items.each(function(item){
+                    if(item instanceof Ext.form.field.Tag) {
+                        selectedCodes[item.getName()] = item.getValueRecords();
+                    } else {
+                        selectedCodes[item.getName()] = new OgamDesktop.model.request.object.field.Code({
+                            code: item.getValue(),
+                            label: item.getRawValue()
+                        });
+                    }
+                });
+                this.getAdvReqView().getViewModel().set({
+                    'userchoices' : selectedCodes,
+                    'fieldsets':records
+                });
+                this.getAdvReqView().getViewModel().notify();
+                this.getAdvReqView().lookupReference('advancedRequestSelector').reloadForm();
+                this.getAdvReqView().down('#SubmitButton').click(e);
+            },
+            scope:this
+        });
+        
+        this.getMainView().getLayout().setActiveItem('consultationTab');
+        this.getAdvReqView().collapse();
     }
 });

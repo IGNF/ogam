@@ -139,19 +139,19 @@ Ext.define('OgamDesktop.controller.map.Drawing', {
 				 * Note about ol v3.15.1: 
 				 * The c_array is not updated (contains all the removed features).
 				 */
-		        drawingFeaturesClt.forEach(
-		            function(el, index, c_array){
-		                if (index < c_array.length - 1) {
-			                drawingLayerSource.removeFeature(el);
-			            }
-		            }
-		        );
+				drawingFeaturesClt.forEach(
+					function(el, index, c_array){
+						if (index < c_array.length - 1) {
+							drawingLayerSource.removeFeature(el);
+						}
+					}
+				);
 
-		        /*
-		         * The collection must be updated to refresh the c_array
-		         * Note about ol v3.15.1: 
-			     * The ol.Collection.removeAt() function doesn't update the layer source.
-			     */
+				/*
+				 * The collection must be updated to refresh the c_array
+				 * Note about ol v3.15.1: 
+				 * The ol.Collection.removeAt() function doesn't update the layer source.
+				 */
 				for(var i = 0; i < featuresCount - 1; i++) {
 					drawingFeaturesClt.removeAt(i);
 				}
@@ -200,10 +200,10 @@ Ext.define('OgamDesktop.controller.map.Drawing', {
 		// Zoom and center on the geometry
 		var map = this.getMapcmp().map;
 		if (!Ext.isEmpty(wkt)) {
-	        map.getView().fit(
-	            this.wktFormat.readGeometry(wkt).getExtent(), 
-	            map.getSize()
-	        );
+			map.getView().fit(
+				this.wktFormat.readGeometry(wkt).getExtent(), 
+				map.getSize()
+			);
 		}
 	},
 

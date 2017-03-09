@@ -43,5 +43,5 @@ Ext.define('OgamDesktop.ux.grid.column.Factory', function () {
             };
             return columnConfig;
         }
-    }
+    };
 });

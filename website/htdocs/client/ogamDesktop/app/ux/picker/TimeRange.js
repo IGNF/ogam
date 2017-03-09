@@ -114,7 +114,6 @@ Ext.define('OgamDesktop.ux.picker.TimeRange', {
     initComponent: function() {
 
         // Initialise the fields
-    	
         this.minField = new Ext.form.field.Time(Ext.apply({},this.minField,{
             fieldLabel : this.minFieldLabel,
             format:this.format

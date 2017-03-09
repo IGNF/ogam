@@ -9,8 +9,8 @@ Ext.define('OgamDesktop.view.edition.PanelController', {
      * Fonction handling the featureEditionValidated and the featureEditionCancelled events
      * @private
      */
-	onFeatureEditionEnded : function () {
-    	var editionPanel = this.getView().ownerCt;
-    	editionPanel.ownerCt.setActiveTab(editionPanel);
+    onFeatureEditionEnded : function () {
+        var editionPanel = this.getView().ownerCt;
+        editionPanel.ownerCt.setActiveTab(editionPanel);
     }
 });

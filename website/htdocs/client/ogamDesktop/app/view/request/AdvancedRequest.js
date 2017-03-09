@@ -24,21 +24,22 @@ Ext.define('OgamDesktop.view.request.AdvancedRequest', {
 		type: 'button',
 		text : 'Cancel',
 		tooltip : 'Cancel the request'
-  	},'-',{
-  		itemId:'ResetButton',
-  		type: 'button',
-  		text : 'Reset',
+	},'-',{
+		itemId:'ResetButton',
+		type: 'button',
+		text : 'Reset',
 		tooltip : 'Reset the request form'
-  	},{
-  		xtype: 'tbspacer',
-  		flex: 1
-  	},{
-  		itemId:'SubmitButton',
-  		type: 'button',
-  		action: 'submit',
-  		text : 'Launch',
+	},{
+		xtype: 'tbspacer',
+		flex: 1
+	},{
+		itemId: 'SubmitButton',
+		width: 110, // Must be as width as the load mask (see AdvancedRequestController.js)
+		type: 'button',
+		action: 'submit',
+		text : 'Launch',
 		tooltip : 'Launch the request'
-  	}],
+	}],
 
 	/**
 	 * @cfg String/object [requestSelectTitle] title for the advance request selector
@@ -122,7 +123,7 @@ Ext.define('OgamDesktop.view.request.AdvancedRequest', {
 				store: '{processStore}',
 				selection:'{currentProcess}'
 			},
-			 listeners:{
+			listeners:{
 				select:'onUpdateDataset'
 			}
 		}]

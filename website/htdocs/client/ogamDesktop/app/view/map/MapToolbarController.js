@@ -373,7 +373,7 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
         if (layer.tileSize) {
             tileSizeArray = [layer.tileSize.h, layer.tileSize.w];
             layerStr += ', "tileSize": [' + tileSizeArray.toString() + ']';
-        };
+        }
         layerStr += '}';
         return layerStr;
     },
@@ -384,7 +384,7 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
             if (lyr.isLayerGroup) {
                 for (var i in this.retrieveLayersToPrint(lyr)) {
                     layersToPrint.push(this.retrieveLayersToPrint(lyr)[i]);
-                };
+                }
             } else {
                 
                 if (lyr.getVisible() && lyr.get('printable')) {

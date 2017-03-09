@@ -66,9 +66,9 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 	 *      <tt>'Remove all the columns'</tt>)
 	 */
 	columnsPanelTbarRemoveAllButtonTooltip : 'Remove all the columns',
-    //</locale>
+	//</locale>
 
-    /**
+	/**
 	 * @cfg {Boolean} frame See {@link Ext.Panel#frame}. Default to true.
 	 */
 	frame : true,
@@ -116,23 +116,23 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 					type: 'ajax',
 					url: Ext.manifest.OgamDesktop.requestServiceUrl +'ajaxgetqueryformfields',
 					reader: {
-					    type : 'json',
-					    rootProperty : 'data',
-					    totalProperty  : 'total',
-					    successProperty: 'success',
-					    messageProperty: 'errorMessage'
+						type : 'json',
+						rootProperty : 'data',
+						totalProperty  : 'total',
+						successProperty: 'success',
+						messageProperty: 'errorMessage'
 					}
-			    },
-			    filters:[{
-			    	"property": "processId",
-			    	"value": this.currentProcessId
-			    },{
-			    	"property": "form",
-			    	"value": this.id
-			    },{
-			    	"property": "fieldsType",
-			    	"value": "criteria"
-			    }],
+				},
+				filters:[{
+					"property": "processId",
+					"value": this.currentProcessId
+				},{
+					"property": "form",
+					"value": this.id
+				},{
+					"property": "fieldsType",
+					"value": "criteria"
+				}],
 				remoteFilter: true,
 				pageSize: this.comboPageSize
 			});
@@ -219,23 +219,23 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 					type: 'ajax',
 					url: Ext.manifest.OgamDesktop.requestServiceUrl +'ajaxgetqueryformfields',
 					reader: {
-					    type : 'json',
-					    rootProperty : 'data',
-					    totalProperty  : 'total',
-					    successProperty: 'success',
-					    messageProperty: 'errorMessage'
+						type : 'json',
+						rootProperty : 'data',
+						totalProperty  : 'total',
+						successProperty: 'success',
+						messageProperty: 'errorMessage'
 					}
-			    },
-			    filters:[{
-			    	"property": "processId",
-			    	"value": this.currentProcessId
-			    },{
-			    	"property": "form",
-			    	"value": this.id
-			    },{
-			    	"property": "fieldsType",
-			    	"value": "result"
-			    }],
+				},
+				filters:[{
+					"property": "processId",
+					"value": this.currentProcessId
+				},{
+					"property": "form",
+					"value": this.id
+				},{
+					"property": "fieldsType",
+					"value": "result"
+				}],
 				remoteFilter: true,
 				pageSize: this.comboPageSize
 			});

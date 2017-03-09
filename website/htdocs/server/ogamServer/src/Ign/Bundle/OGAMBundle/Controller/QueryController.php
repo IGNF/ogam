@@ -35,8 +35,10 @@ class QueryController extends Controller {
 	 * @Route("/index", name = "query_home")
 	 * The "/" route is disabled for security raison (see security.yml)
 	 */
-	public function indexAction() {
-		return $this->redirectToRoute('query_show-query-form');
+	public function indexAction(Request $request) {
+		return $this->redirectToRoute('query_show-query-form', [
+		    'tab' => $request->query->get('tab')
+		]);
 	}
 
 	/**
@@ -54,9 +56,12 @@ class QueryController extends Controller {
 			->cleanPreviousResults(session_id());
 
 		// Check if the parameter of the default page is set
-		if ($request->query->get('default') === "predefined") {
-			$logger->debug('defaultTab predefined');
-			$defaultTab = 'predefined_request';
+		if ($request->query->get('tab') === "predefined") {
+		    $logger->debug('defaultTab predefined');
+		    $defaultTab = 'predefined_request';
+		} elseif ($request->query->get('tab') === "edition") {
+		    $logger->debug('defaultTab edition');
+		    $defaultTab = 'edition-add';
 		}
 
 		// Add the configuration parameters to the session for the map proxies (mapserverProxy and tilecacheProxy)
@@ -67,7 +72,12 @@ class QueryController extends Controller {
 
 		// Forward the user to the next step
 		$visuUrl = ( $this->container->getParameter('kernel.environment') == 'dev') ? '/odd' : '/odp';
-		return $this->redirect( $visuUrl . '/index.html?locale=' . $request->getLocale() . (isset($defaultTab) ? '#' . $defaultTab : ''));
+		if (isset($defaultTab) && $defaultTab === "edition-add") {
+		    $providerId = $this->getUser() ? $this->getUser()->getProvider()->getId() : NULL;
+		    return $this->redirect( $visuUrl . '/index.html?locale=' . $request->getLocale() . (isset($defaultTab) ? '#' . $defaultTab : '') . '/SCHEMA/RAW_DATA/FORMAT/LOCATION_DATA/PROVIDER_ID/' . $providerId);
+		} else {
+		    return $this->redirect( $visuUrl . '/index.html?locale=' . $request->getLocale() . (isset($defaultTab) ? '#' . $defaultTab : ''));
+		}
 	}
 
 	/**

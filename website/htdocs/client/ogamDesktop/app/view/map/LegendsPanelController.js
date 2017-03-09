@@ -16,8 +16,8 @@ Ext.define('OgamDesktop.view.map.LegendsPanelController', {
      * @param {Object} curRes The map current resolution
      */
     buildLegend : function(node, curRes) {
-    	var layer = node.getLayer();
-    	var service = layer.getLegendService();
+        var layer = node.getLayer();
+        var service = layer.getLegendService();
         var legend = this.getView()
             .add(new Ext.Component({
                 // Extjs 5 doesn't accept '.' into ids
