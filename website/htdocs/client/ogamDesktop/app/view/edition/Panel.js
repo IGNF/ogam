@@ -343,8 +343,7 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 			text : this.dataEditFSValidateButtonText,
 			tooltip : this.dataEditFSValidateButtonTooltip,
 			handler : this.editData,
-			formBind : true, // The button is desactivated if the form is not
-			// valid
+			formBind : true, // The button is desactivated if the form is not valid
 			scope : this
 		});
 
@@ -455,7 +454,7 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 		}
 
 		// Add a hidden field for the mode (ADD or EDIT)
-		modeItem = {
+		var modeItem = {
 			xtype : 'hidden',
 			name : 'MODE',
 			hiddenName : 'MODE',
@@ -471,7 +470,7 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 
 			// Look for the provider of the data
 			if (OgamDesktop.userProviderId !== dataProvider) {
-				this.validateButton.disable();
+				this.dataEditForm.disable();
 				this.validateButton.setTooltip(this.dataEditFSValidateButtonDisabledTooltip);
 			}
 		}
