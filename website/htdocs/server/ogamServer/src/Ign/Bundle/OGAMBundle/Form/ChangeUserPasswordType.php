@@ -15,7 +15,7 @@ use Ign\Bundle\OGAMBundle\Entity\Website\User;
  * This form is used by a non-connected user to change is own password when he forgot it.
  *
  */
-class ChangeForgottenPasswordType extends AbstractType {
+class ChangeUserPasswordType extends AbstractType {
 
 	/**
 	 * Build the user change password form.
