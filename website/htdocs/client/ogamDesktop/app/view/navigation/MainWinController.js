@@ -33,7 +33,13 @@ Ext.define('OgamDesktop.view.navigation.MainWinController', {
 
         // Adds a event to close properly the print window
         // https://www.tjvantoll.com/2012/06/15/detecting-print-requests-with-javascript/
-        if (Ext.isWebKit) { // Chrome, Safari...
+        if (Ext.isGecko || Ext.isEdge || Ext.isIE) { // IE et Firefox, html5 standart
+
+            window.onafterprint = function(){ // After print
+                afterPrint();
+                window.onafterprint = null;
+            };
+        } else/* if (Ext.isWebKit)*/ { // Chrome, Safari...
             if ('matchMedia' in window) {
                 window.matchMedia('print').addListener(function (mediaQueryListEvent) {
                     // Note: mediaQueryListEvent.matches will be true before printing, and false afterwards.
@@ -43,15 +49,10 @@ Ext.define('OgamDesktop.view.navigation.MainWinController', {
                     }
                 });
             }
-        } else if(Ext.isIE || Ext.isGecko) { // IE et Firefox
-            window.onafterprint = function(){ // After print
-                afterPrint();
-                window.onafterprint = null;
-            };
-        } else { // Opera...
+       }/* else  { // Opera...
             // TODO: Add a close button like in the map print function
         }
-
+*/
         // Launches the print
         window.print();
     }
