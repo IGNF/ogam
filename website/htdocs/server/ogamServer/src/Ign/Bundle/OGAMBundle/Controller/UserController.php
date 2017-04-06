@@ -145,20 +145,15 @@ class UserController extends Controller {
 			$em->persist($user);
 			$em->flush();
 
-			// Get the sender adress
-			$configuration = $this->get('ogam.configuration_manager');
-			$fromMail = $configuration->getConfig('fromMail', 'ogam@ign.fr');
+			// Send the email
+			$this->get('app.mail_manager')->sendEmail(
+				'OGAMBundle:Emails:forgotten_password.html.twig',
+				array(
+					'user' => $user,
+				),
+				$user->getEmail()
+			);
 
-			// Send an email to the user
-			$message = \Swift_Message::newInstance()->setSubject('Mot de passe oublié')
-				->setFrom($fromMail)
-				->setTo($user->getEmail())
-				->setBody($this->renderView('OGAMBundle:Emails:forgotten_password.html.twig', array(
-				'user' => $user
-			)), 'text/html');
-			$this->get('mailer')->send($message);
-
-			//
 			$this->addFlash('success', 'An email has been sent to your address');
 
 			// Display a confirmation message

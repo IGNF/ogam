@@ -114,7 +114,12 @@ services:
     app.exception_controller:
         class: Ign\Bundle\OGAMBundle\Controller\ExceptionController
         arguments: ['@twig', '%kernel.debug%']
-    
+
+    # Mail Manager
+    app.mail_manager:
+        class: Ign\Bundle\OGAMBundle\Services\MailManager
+        arguments: ["@mailer", "@twig", "@logger", "ogam@ign.fr", "OGAM"]
+
 #    ogam.ajaxError:
 #        class: Ign\Bundle\OGAMBundle\EventListener\AjaxErrorListener
 #        tags:
