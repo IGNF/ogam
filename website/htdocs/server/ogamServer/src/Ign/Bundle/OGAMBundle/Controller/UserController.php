@@ -180,27 +180,30 @@ class UserController extends Controller {
 		$logger = $this->get('logger');
 		$logger->debug('validateForgottenPasswordAction');
 
+		// Get URL parameters
+		$login = $request->query->get('login');
+		$activationCode = $request->query->get('activationCode');
+
+		$userRepo = $this->getDoctrine()->getRepository('Ign\Bundle\OGAMBundle\Entity\Website\User', 'website');
+		$user = $userRepo->findOneByLogin($login);
+
+		if ($user == null) {
+			$this->addFlash('error', 'The user does not exist.');
+			return $this->redirectToRoute('homepage');
+		}
+		// Check the activation code to confirm this is the correct user
+		if ($activationCode !== $user->getActivationCode()) {
+			$this->addFlash('error', 'The activation code is not valid, check that you have used the last received email.');
+			return $this->redirectToRoute('homepage');
+		}
+
 		// Get the change password form
-		$form = $this->createForm(ChangeForgottenPasswordType::class);
+		$form = $this->createForm(ChangeForgottenPasswordType::class, $user);
 
 		$form->handleRequest($request);
 
 		// Display the change password form
 		if ($form->isSubmitted() && $form->isValid()) {
-
-			// Get URL parameters
-			$login = $request->query->get('login');
-			$activationCode = $request->query->get('activationCode');
-
-			// On récupère les infos sur l'utilisateur
-			$userRepo = $this->getDoctrine()->getRepository('Ign\Bundle\OGAMBundle\Entity\Website\User', 'website');
-			$user = $userRepo->findOneByLogin($login);
-
-			// Check the activation code to confirm this is the correct user
-			if ($activationCode !== $user->getActivationCode()) {
-				$this->addFlash('error', 'The activation code is not valid, check that you have used the last received email.');
-				return $this->redirectToRoute('homepage');
-			}
 
 			// Encrypt the password
 			$encoder = $this->get('ogam.challenge_response_encoder');
