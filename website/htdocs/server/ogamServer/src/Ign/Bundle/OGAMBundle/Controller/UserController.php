@@ -135,32 +135,36 @@ class UserController extends Controller {
 			$userRepo = $this->getDoctrine()->getRepository('Ign\Bundle\OGAMBundle\Entity\Website\User', 'website');
 			$user = $userRepo->findOneByEmail($email);
 
-			// On génère un nouveau code d'activation
-			$encoder = $this->get('ogam.challenge_response_encoder');
-			$codeActivation = $encoder->generateChallenge();
+			// Send an email only if a user with this email has been found
+			if ($user) {
 
-			$user->setActivationCode($codeActivation);
+				// On génère un nouveau code d'activation
+				$encoder = $this->get('ogam.challenge_response_encoder');
+				$codeActivation = $encoder->generateChallenge();
 
-			$em = $this->getDoctrine()->getManager();
-			$em->persist($user);
-			$em->flush();
+				$user->setActivationCode($codeActivation);
 
-			// Send the email
-			$this->get('app.mail_manager')->sendEmail(
-				'OGAMBundle:Emails:forgotten_password.html.twig',
-				array(
-					'user' => $user,
-				),
-				$user->getEmail()
-			);
+				$em = $this->getDoctrine()->getManager();
+				$em->persist($user);
+				$em->flush();
 
-			$this->addFlash('success', 'An email has been sent to your address');
+				// Send the email
+				$this->get('app.mail_manager')->sendEmail(
+					'OGAMBundle:Emails:forgotten_password.html.twig',
+					array(
+						'user' => $user,
+					),
+					$user->getEmail()
+				);
+			}
 
-			// Display a confirmation message
-			return $this->render('OGAMBundle:User:confirm_password_email_sent.html.twig', array());
+			// In both cases (user is found or not), display a confirmation message
+			return $this->render('OGAMBundle:User:confirm_password_email_sent.html.twig', array(
+				"email" => $email
+			));
 		} else {
 
-			// Display the login form
+			// Display the forgotten password form
 			return $this->render('OGAMBundle:User:forgotten_password.html.twig', array(
 				'form' => $form->createView()
 			));
