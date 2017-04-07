@@ -119,7 +119,7 @@ Ext.define('OgamDesktop.ux.form.field.NumberRangeField', {
         var format = 0;
         if (this.decimalPrecision > 0) {
             format = format+ this.decimalSeparator;
-            format += "0".repeat(this.decimalPrecision);
+            format += Ext.String.repeat("0", this.decimalPrecision);
         }
         this.formatText = this.formatText + " '{0}', '"+this.maxNumberPrefix+" {0}', '"+this.minNumberPrefix+" {0}', '{0} "+this.numberSeparator+" {0}'.";
         this.formatText = Ext.String.format(this.formatText, format);
