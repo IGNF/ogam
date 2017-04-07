@@ -919,7 +919,7 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 
 		// We redirect
 		if (!Ext.isEmpty(obj.redirectLink)) {
-			if( obj.redirectLink.startsWith('#')){//same hash with # bugs with force
+			if( obj.redirectLink.charAt(0) === '#'){//same hash with # bugs with force
 				//maybe an action route
 				this.lookupController().redirectTo(obj.redirectLink.substr(1), true);
 			}
