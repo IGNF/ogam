@@ -3,7 +3,6 @@ namespace Ign\Bundle\OGAMBundle\Repository\Metadata;
 
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
-use Ign\Bundle\OGAMBundle\Entity\Generic\Query\Field;
 use Ign\Bundle\OGAMBundle\Entity\Generic\GenericField;
 
 /**

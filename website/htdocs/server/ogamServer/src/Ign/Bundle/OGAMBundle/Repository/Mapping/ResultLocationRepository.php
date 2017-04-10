@@ -7,8 +7,6 @@ use Doctrine\ORM\Query\ResultSetMappingBuilder;
 use Ign\Bundle\OGAMBundle\Entity\Metadata\TableFormat;
 use Ign\Bundle\OGAMBundle\Entity\Metadata\TableField;
 use Doctrine\DBAL\Schema\Schema;
-use Doctrine\Bundle\DoctrineBundle\ManagerConfigurator;
-
 /**
  * ResultLocationRepository
  *

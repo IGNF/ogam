@@ -7,10 +7,7 @@ use Ign\Bundle\OGAMBundle\Entity\Metadata\Mode;
 use Ign\Bundle\OGAMBundle\Entity\Metadata\Dynamode;
 use Ign\Bundle\OGAMBundle\Entity\Metadata\ModeTree;
 use Ign\Bundle\OGAMBundle\Entity\Metadata\ModeTaxref;
-use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Selectable;
-use phpDocumentor\Reflection\Types\Mixed;
 use Doctrine\Common\Collections\Collection;
 
 /**

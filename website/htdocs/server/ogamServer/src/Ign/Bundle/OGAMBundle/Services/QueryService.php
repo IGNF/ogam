@@ -17,7 +17,6 @@ use Ign\Bundle\OGAMBundle\Entity\Generic\GenericField;
 use Ign\Bundle\OGAMBundle\Entity\Metadata\FormFormat;
 use Ign\Bundle\OGAMBundle\Entity\Mapping\LayerService;
 use Ign\Bundle\OGAMBundle\Entity\Mapping\Layer;
-use Ign\Bundle\OGAMBundle\Repository\Mapping\LayerRepository;
 use Ign\Bundle\OGAMBundle\Entity\Generic\BoundingBox;
 use Ign\Bundle\OGAMBundle\Entity\Website\PredefinedRequest;
 use Ign\Bundle\OGAMBundle\Entity\Metadata\Format;
