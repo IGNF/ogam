@@ -61,34 +61,12 @@ Ext.define('OgamDesktop.view.request.SaveRequestWindow',{
 	                    name      : 'savingType',
 	                    inputValue: 'CREATION',
 	                    margin: '0 20px 0 0',
-	                    checked   : true,
-	                    listeners: { // The check event doesn't work...
-					        change: function(radioField , newValue , oldValue , eOpts){
-					        	if(newValue){ // Checked
-					        		this.queryById('requestCombo').reset();
-					            	this.queryById('requestCombo').disable();
-					            	this.queryById('groupCombo').reset();
-					        		this.queryById('labelTextField').reset();
-					        		this.queryById('definitionTextField').reset();
-					        		this.queryById('privateRadioField').setValue(true); // Private
-					        		this.fireEvent('requestIdChange', null);
-					        	}
-					        },
-					        scope: this
-    					}
+	                    checked   : true
 	                },{
 	                    itemId    : 'editRadioField',
 	                    boxLabel  : 'Modifier une requête existante',
 	                    name      : 'savingType',
-	                    inputValue: 'EDITION',
-	                    listeners: { // The check event doesn't work...
-					        change: function(radioField , newValue , oldValue , eOpts){
-					        	if(newValue){ // Checked
-					            	this.queryById('requestCombo').enable();
-					        	}
-					        },
-					        scope: this
-    					}
+	                    inputValue: 'EDITION'
 	                },{
 	                	itemId: 'requestCombo',
 	                	disabled: true,
@@ -98,47 +76,12 @@ Ext.define('OgamDesktop.view.request.SaveRequestWindow',{
 						allowBlank: false,
 						width: 500,
 			    		store: new OgamDesktop.store.request.predefined.PredefinedRequest({
-			    			listeners: {
-			    				beforeload (store , operation , eOpts){
-									if(this.requestId !== null){
-										this.mask = new Ext.LoadMask({
-							                target : this,
-							                msg: this.getController().loadingText
-							            });
-							            this.mask.show();
-							        }
-			    				},
-						        load: function(store , records , successful , operation , eOpts){
-									if(this.requestId !== null){
-										this.queryById('editRadioField').setValue(true);
-										this.queryById('requestCombo').setValue(this.requestId);
-										this.mask.hide();
-									}
-						        },
-						        scope: this
-	    					}
+			    			storeId: 'SaveRequestWindowRequestComboStore'
     					}),
 			    		emptyText: 'Sélectionner...',
 			    		queryMode: 'local',
 			    		displayField: 'label',
-			    		valueField: 'request_id',
-	                    listeners: {
-					        change: function(combo , newValue , oldValue , eOpts){
-								var record = combo.getSelectedRecord();
-								if (record !== null) {
-						        	this.queryById('groupCombo').setValue(record.get('group_id'));
-						        	this.queryById('labelTextField').setValue(record.get('label'));
-						        	this.queryById('definitionTextField').setValue(record.get('definition'));
-						        	if (record.get('is_public')) { 
-						        		this.queryById('publicRadioField').setValue(true);
-							        } else {
-							        	this.queryById('privateRadioField').setValue(true);
-							        }
-							        this.fireEvent('requestIdChange', record.get('request_id'));
-							    }
-					        },
-					        scope: this
-    					}
+			    		valueField: 'request_id'
 			    	}]
 		        }]
 		    },{

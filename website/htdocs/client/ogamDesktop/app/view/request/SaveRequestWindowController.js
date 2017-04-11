@@ -7,6 +7,15 @@ Ext.define('OgamDesktop.view.request.SaveRequestWindowController', {
     config: {
         listen: {
             component:{
+            	'#createRadioField': {
+            		change: 'onCreateRadioFieldChange' // The check event doesn't work...
+            	},
+            	'#editRadioField': {
+            		change: 'onEditRadioFieldChange' // The check event doesn't work...
+            	},
+            	'#requestCombo': {
+            		change: 'onRequestComboChange'
+            	},
                 '#CancelButton': {
                     click:'onCancel'
                 },
@@ -16,6 +25,12 @@ Ext.define('OgamDesktop.view.request.SaveRequestWindowController', {
                 '#SaveAndDisplayButton': {
                     click:'onSaveAndDisplay'
                 }
+            },
+            store:{
+            	'#SaveRequestWindowRequestComboStore': {
+            		beforeload: 'onRequestComboStoreBeforeload',
+            		load: 'onRequestComboStoreLoad'
+            	}
             }
         }
     },
@@ -59,7 +74,100 @@ Ext.define('OgamDesktop.view.request.SaveRequestWindowController', {
 //</locale>
 
     /**
+     * Manage the change event on the create radio field.
+     * @private
+     * @param {Ext.form.field.Field} this
+     * @param {Object} newValue The new value
+     * @param {Object} oldValue The original value
+     * @param {Object} eOpts The options object passed to Ext.util.Observable.addListener.
+     */
+    onCreateRadioFieldChange: function(radioField , newValue , oldValue , eOpts){
+    	if(newValue){ // Checked
+    		this.getView().queryById('requestCombo').reset();
+        	this.getView().queryById('requestCombo').disable();
+        	this.getView().queryById('groupCombo').reset();
+    		this.getView().queryById('labelTextField').reset();
+    		this.getView().queryById('definitionTextField').reset();
+    		this.getView().queryById('privateRadioField').setValue(true); // Private
+    		this.getView().fireEvent('requestIdChange', null);
+    	}
+    },
+    
+    /**
+     * Manage the change event on the edit radio field.
+     * @private
+     * @param {Ext.form.field.Field} this
+     * @param {Object} newValue The new value
+     * @param {Object} oldValue The original value
+     * @param {Object} eOpts The options object passed to Ext.util.Observable.addListener.
+     */
+    onEditRadioFieldChange: function(radioField , newValue , oldValue , eOpts){
+    	if(newValue){ // Checked
+        	this.getView().queryById('requestCombo').enable();
+    	}
+    },
+    
+    /**
+     * Manage the change event on the request combo field.
+     * @private
+     * @param {Ext.form.field.Field} this
+     * @param {Object} newValue The new value
+     * @param {Object} oldValue The original value
+     * @param {Object} eOpts The options object passed to Ext.util.Observable.addListener.
+     */
+    onRequestComboChange: function(combo , newValue , oldValue , eOpts){
+		var record = combo.getSelectedRecord();
+		if (record !== null) {
+        	this.getView().queryById('groupCombo').setValue(record.get('group_id'));
+        	this.getView().queryById('labelTextField').setValue(record.get('label'));
+        	this.getView().queryById('definitionTextField').setValue(record.get('definition'));
+        	if (record.get('is_public')) { 
+        		this.getView().queryById('publicRadioField').setValue(true);
+	        } else {
+	        	this.getView().queryById('privateRadioField').setValue(true);
+	        }
+	        this.getView().fireEvent('requestIdChange', record.get('request_id'));
+	    }
+    },
+    
+    /**
+     * Manage the beforeload event on the request combo field store.
+     * @private
+     * @param {Ext.data.Store} store This Store
+     * @param {Ext.data.operation.Operation} operation The Ext.data.operation.Operation object that will be passed to the Proxy to load the Store
+     * @param {Object} eOpts The options object passed to Ext.util.Observable.addListener.
+     */
+	onRequestComboStoreBeforeload: function(store , operation , eOpts){
+		if(this.getView().requestId !== null){
+			this.mask = new Ext.LoadMask({
+                target : this.getView(),
+                msg: this.loadingText
+            });
+            this.mask.show();
+        }
+	},
+	
+    /**
+     * Manage the load event on the request combo field store.
+     * @private
+     * @param {Ext.data.Store} this
+     * @param {Ext.data.Model[]} records An array of records
+     * @param {Boolean} successful True if the operation was successful.
+     * @param {Ext.data.operation.Read} operation The 
+     * {@link Ext.data.operation.Read Operation} object that was used in the data load call
+     * @param {Object} eOpts The options object passed to Ext.util.Observable.addListener.
+     */
+	onRequestComboStoreLoad: function(store , records , successful , operation , eOpts){
+		if(this.getView().requestId !== null){
+			this.getView().queryById('editRadioField').setValue(true);
+			this.getView().queryById('requestCombo').setValue(this.getView().requestId);
+			this.mask.hide();
+		}
+    },
+    
+    /**
      * Cancel the current save request if exist and hide the current window.
+     * @private
      */
     onCancel: function() {
         if (this.requestConn && this.requestConn !== null) {
@@ -70,6 +178,7 @@ Ext.define('OgamDesktop.view.request.SaveRequestWindowController', {
 
     /**
      * Save the current request
+     * @private
      */
     onSave: function(){
         this.saveRequest(false);
@@ -77,6 +186,7 @@ Ext.define('OgamDesktop.view.request.SaveRequestWindowController', {
 
     /**
      * Save the current request and display it
+     * @private
      */
     onSaveAndDisplay: function() {
         this.saveRequest(true);
@@ -84,6 +194,7 @@ Ext.define('OgamDesktop.view.request.SaveRequestWindowController', {
 
     /**
      * Save the current request and display it (if asked).
+     * @private
      * @param boolean display True to display the predefined request after the saving.
      */
     saveRequest: function(display = false) {
