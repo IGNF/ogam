@@ -21,7 +21,7 @@ Ext.define('OgamDesktop.view.request.PredefinedRequestModel', {
                     type:'ajax',
                     url:Ext.manifest.OgamDesktop.requestServiceUrl +'ajaxgetpredefinedrequestcriteria',
                     params:{
-                        request_name:c.get('request_name')
+                        request_id:c.get('request_id')
                     },
                     noCache:false
                 }): [];

@@ -18,6 +18,9 @@ Ext.define('OgamDesktop.view.request.AdvancedRequestController', {
                 '#CancelButton': {
                     click:'onCancel'
                 },
+                '#SaveButton': {
+                    click:'onSave'
+                },
                 '#ResetButton': {
                     click:'onReset'
                 }
@@ -157,5 +160,34 @@ Ext.define('OgamDesktop.view.request.AdvancedRequestController', {
      */
     onReset : function(button) {
         this.lookupReference('advancedRequestSelector').reloadForm();
+    },
+
+    /**
+     * Save the request.
+     */
+    onSave : function(button) {
+        var form = button.up('form').getForm(); // Ext.form.Basic
+        // Checks the presence of minimum of one column
+        if (form.getFields().filter('name', 'column__').getCount() > 0) {
+            var values = form.getValues();
+            var requestFieldsValues = {};
+            for (var prop in values) {
+                if ( values.hasOwnProperty( prop ) ) {
+                    if(prop.indexOf('combobox-') === -1) {
+                        requestFieldsValues[prop] = values[prop];
+                    }
+                }
+            }
+            var win = new OgamDesktop.view.request.SaveRequestWindow({
+                requestId: this.getViewModel().get('requestId'),
+                requestFieldsValues: requestFieldsValues
+            });
+            win.show();
+            win.on('requestIdChange', function(requestId){
+                this.getViewModel().set('requestId', requestId);
+            },this);
+        } else {
+            OgamDesktop.toast(this.toastHtml_noColumn, this.toastTitle_noColumn);
+        }
     }
 });

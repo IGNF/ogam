@@ -22,6 +22,7 @@ Ext.define('OgamDesktop.view.main.Main', {
 	homeButtonTooltip: 'Go back to the home page',
 	items: [{
 		id:'predefined_request',
+		itemId:'predefinedRequestTab',
 		xtype: 'predefined-request',
 		name: 'predefined-request'
 	},{

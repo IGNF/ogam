@@ -29,6 +29,11 @@ Ext.define('OgamDesktop.view.request.AdvancedRequest', {
 		type: 'button',
 		text : 'Reset',
 		tooltip : 'Reset the request form'
+	},'-',{
+		itemId:'SaveButton',
+		type: 'button',
+		text : 'Save',
+		tooltip : 'Save the request'
 	},{
 		xtype: 'tbspacer',
 		flex: 1

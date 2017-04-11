@@ -13,7 +13,7 @@ Ext.define('OgamDesktop.view.request.PredefinedRequest', {
         'OgamDesktop.view.request.PredefinedRequestController',
         'OgamDesktop.ux.request.AdvancedRequestFieldSet',
         'Ext.grid.feature.Grouping',
-        'OgamDesktop.store.request.predefined.Group',
+        'OgamDesktop.store.request.predefined.PredefinedRequest',
         'OgamDesktop.view.request.PredefinedRequestSelector',
         'Ext.grid.Panel',
         'OgamDesktop.ux.request.AdvancedRequestSelector'
@@ -61,7 +61,7 @@ Ext.define('OgamDesktop.view.request.PredefinedRequest', {
     criteriaPanelTitle:"Request criteria",
     /**
      * @cfg {String} groupTextTpl
-     * The group Text Tpl (defaults to <tt>'{name} ({children.length:plural("Requete")})'</tt>)
+     * The group Text Tpl (defaults to <tt>'{name} ({children.length:plural("Request")})'</tt>)
      */
     groupTextTpl:"{name} ({children.length:plural('Request')})",
 //</locale>
@@ -91,24 +91,73 @@ Ext.define('OgamDesktop.view.request.PredefinedRequest', {
      * Initializes the items.
      */
     initItems: function() {
-        var store = new OgamDesktop.store.request.predefined.Group({
-            groupField:'group_label'});
+        var store = new OgamDesktop.store.request.predefined.PredefinedRequest({
+            storeId:'PredefinedRequestTabRequestStore',
+            groupField:'group_label'
+        });
+
         var columns = [{
-            text:this.labelColumnHeader,
+            text: this.labelColumnHeader,
             flex: 1,
-            dataIndex: 'label'
+            dataIndex: 'label',
+            renderer: function (value, object, record) {
+                if (record.get('is_public')) {
+                    return value;
+                } else {
+                    return '<span class="o-predefined-request-grid-panel-private-request">' + value + '</span>';
+                }
+            }
+        },{
+            text: 'Type de données',
+            flex: 1,
+            dataIndex: 'dataset_label'
+        },{
+            text: 'Groupe',
+            flex: 1,
+            dataIndex: 'group_label'
+        },{
+            xtype: 'actioncolumn',
+            width: 40,
+            fixed : true,
+            sortable: false,
+            menuDisabled: true,
+            align : 'center',
+            items:[{
+                iconCls: 'o-predefined-request-grid-panel-tools-edit-edit',
+                tooltip: "<b>"+this.editRequestButtonTitle+"</b><br/>"+this.editRequestButtonTip,
+                handler: function(grid, rowIndex, colIndex, item, e, record, row) {
+                    // Action managed into the advanced request panel
+                    this.fireEvent('predefinedRequestEdition', record);
+                },
+                scope:this
+            },{
+                iconCls: 'o-predefined-request-grid-panel-tools-edit-bin',
+                tooltip: "<b>"+this.removeRequestButtonTitle+"</b><br/>"+this.removeRequestButtonTip,
+                handler: function(grid, rowIndex, colIndex, item, e, record, row) {
+                    // Action managed into the advanced request panel
+                    this.fireEvent('predefinedRequestDeletion', record);
+                },
+                scope:this
+            }]
         }];
 
         var features = [{
             ftype: 'grouping',
-            groupHeaderTpl: this.groupTextTpl,
-            //hideGroupedHeader: true,
-            startCollapsed: true,
-            itemId: 'requestsGrouping'
+            groupHeaderTpl: new Ext.XTemplate(
+                '<tpl if="name !== \'\'">',
+                    '{name}',
+                '<tpl else>',
+                    'Non groupée{[values.rows.length > 1 ? "s" : ""]}',
+                '</tpl>',
+                ' ({children.length:plural(\'Request\')})'
+            ),
+            hideGroupedHeader: true,
+            startCollapsed: false
         }];
         
         this.items = [{
             xtype: 'gridpanel',
+            itemId: 'predefinedRequestGridPanel',
             height:'100%',
             store: store,
             width: '65%',
@@ -137,6 +186,7 @@ Ext.define('OgamDesktop.view.request.PredefinedRequest', {
             margin: '5 10 10 10'
             
         }];
+
         this.callParent();
     }
 });

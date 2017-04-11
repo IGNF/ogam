@@ -14,7 +14,7 @@ Ext.define('OgamDesktop.model.request.fieldset.Criterion', {
         { name: 'is_default', mapping: 'is_default_criteria', type: 'boolean', defaultValue: false },
         { name: 'decimals', type: 'integer' },
         { name: 'default_value', type: 'string' },
-        { name: 'default_label', type: 'string', calculate: function (field) { return (field.inputType === 'TREE' || field.inputType === 'TAXREF') && !Ext.isEmpty(field.default_value) ? field.data.unit.codes[0].label : null; } },
+        { name: 'default_label', type: 'string', calculate: function (field) { return (field.inputType === 'TREE' || field.inputType === 'TAXREF' || field.inputType === 'SELECT' || field.inputType === 'PAGINED_SELECT') && !Ext.isEmpty(field.default_value) ? field.data.unit.codes[0].label : null; } },
         { name: 'inputType', mapping: 'input_type', type: 'string' },
         // Data
         { name: 'label', type: 'string', calculate: function (field) { return field.data.label; } },

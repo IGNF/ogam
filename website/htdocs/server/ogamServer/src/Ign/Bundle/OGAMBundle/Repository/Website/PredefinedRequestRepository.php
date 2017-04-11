@@ -29,20 +29,22 @@ class PredefinedRequestRepository extends \Doctrine\ORM\EntityRepository {
 		
 		// Translate the columns names
 		$columnNames = array(
-			'name' => 'pr.name',
+			'request_id' => 'pr.requestId',
 			'label' => 'pr.label',
 			'definition' => 'pr.definition',
 			'date' => 'pr.date',
 			'position' => 'prga.position',
-			'group_name' => 'prg.name',
+			'is_public' => 'pr.isPublic',
+			'group_id' => 'prg.groupId',
 			'group_label' => 'prg.label',
 			'group_position' => 'prg.position',
-			'dataset_id' => 'ds.datasetId'
+			'dataset_id' => 'ds.datasetId',
+			'dataset_label' => 'ds.label'
 		);
 		if (in_array($sort, $columnNames, true)) {
 			$sort = $columnNames[$sort];
 		} else {
-			$sort = $columnNames['name'];
+			$sort = $columnNames['label'];
 		}
 		$dirs = array(
 			'ASC',
@@ -53,17 +55,15 @@ class PredefinedRequestRepository extends \Doctrine\ORM\EntityRepository {
 		}
 		
 		$qb = $this->_em->createQueryBuilder();
-		$qb->select('pr, ds, t, prga, prg')
+		$qb->select('pr, ds, prga, prg')
 			->from('OGAMBundle:Website\PredefinedRequest', 'pr')
 			->join('pr.datasetId', 'ds')
-			->leftJoin('pr.translation', 't', 'WITH', "t.tableFormat = 'PREDEFINED_REQUEST' AND t.lang = upper(:lang)")
 			->join('pr.groups', 'prga')
-			->join('prga.groupName', 'prg')
+			->join('prga.groupId', 'prg')
 			->where('pr.schemaCode = :schema')
 			->orderBy($sort, $dir)
 			->setParameters([
-			'schema' => $schema,
-			'lang' => $locale
+			'schema' => $schema
 		]);
 		
 		return $qb->getQuery()->getResult();
@@ -72,35 +72,33 @@ class PredefinedRequestRepository extends \Doctrine\ORM\EntityRepository {
 	/**
 	 * Get a predefined request.
 	 *
-	 * @param String $requestName
-	 *        	the name of the request
+	 * @param String $requestId
+	 *        	the id of the request
 	 * @param String $locale
 	 *        	the locale
 	 * @return PredefinedRequest the request
 	 */
-	public function getPredefinedRequest($requestName, $locale) {
+	public function getPredefinedRequest($requestId, $locale) {
 		$qb = $this->_em->createQueryBuilder();
-		$qb->select('pr, ds, t, prga, prg')
+		$qb->select('pr, ds, prga, prg')
 			->from('OGAMBundle:Website\PredefinedRequest', 'pr')
 			->join('pr.datasetId', 'ds')
-			->leftJoin('pr.translation', 't', 'WITH', "t.tableFormat = 'PREDEFINED_REQUEST' AND t.lang = upper(:lang)")
 			->join('pr.groups', 'prga')
-			->join('prga.groupName', 'prg')
-			->where('pr.name = :requestName')
+			->join('prga.groupId', 'prg')
+			->where('pr.requestId = :requestId')
 			->setParameters([
-			'requestName' => $requestName,
-			'lang' => $locale
+			'requestId' => $requestId
 		]);
 		
 		$request = $qb->getQuery()->getSingleResult();
 		
 		// Get the request columns
 		$pRColumnRepository = $this->_em->getRepository(PredefinedRequestColumn::class);
-		$request->setColumns($pRColumnRepository->getPredefinedRequestColumns($requestName, $locale));
+		$request->setColumns($pRColumnRepository->getPredefinedRequestColumns($requestId, $locale));
 		
 		// Get the request criteria
 		$pRCriterionRepository = $this->_em->getRepository(PredefinedRequestCriterion::class);
-		$request->setCriteria($pRCriterionRepository->getPredefinedRequestCriteria($requestName, $locale));
+		$request->setCriteria($pRCriterionRepository->getPredefinedRequestCriteria($requestId, $locale));
 		
 		return $request;
 	}

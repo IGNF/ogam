@@ -126,15 +126,15 @@ class QueryService {
 	 *
 	 * @param String $datasetId
 	 *        	the identifier of the selected dataset
-	 * @param String $requestName
-	 *        	the name of the predefined request if available
+	 * @param String $requestId
+	 *        	the id of the predefined request if available
 	 * @return FormFormat[]
 	 */
-	public function getQueryForms($datasetId, $requestName) {
-		if (!empty($requestName)) {
+	public function getQueryForms($datasetId, $requestId) {
+		if (!empty($requestId)) {
 			// If request name is filled then we are coming from the predefined request screen
 			// and we build the form corresponding to the request
-			return $this->_getPredefinedRequest($requestName);
+			return $this->_getPredefinedRequest($requestId);
 		} else {
 			// Otherwise we get all the fields available with their default value
 			return $this->metadataModel->getRepository(FormFormat::class)->getFormFormats($datasetId, $this->schema, $this->locale);
@@ -144,15 +144,15 @@ class QueryService {
 	/**
 	 * Get the predefined request.
 	 *
-	 * @param String $requestName
-	 *        	The request name
+	 * @param String $requestId
+	 *        	The request id
 	 * @return Forms
 	 */
-	private function _getPredefinedRequest($requestName) {
+	private function _getPredefinedRequest($requestId) {
 		$this->logger->debug('_getPredefinedRequest');
 
 		// Get the predefined request
-		$predefinedRequest = $this->doctrine->getRepository(PredefinedRequest::class)->getPredefinedRequest($requestName, $this->locale);
+		$predefinedRequest = $this->doctrine->getRepository(PredefinedRequest::class)->getPredefinedRequest($requestId, $this->locale);
 
 		// Get the default values for the forms
 		$forms = $this->metadataModel->getRepository(FormFormat::class)->getFormFormats($predefinedRequest->getDatasetId()

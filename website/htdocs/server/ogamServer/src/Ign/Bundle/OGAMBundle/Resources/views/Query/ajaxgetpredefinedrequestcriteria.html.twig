@@ -9,8 +9,7 @@
 
 {%- block form_field_additional_fields -%}
 {% autoescape false %}
-    ,"requestName": {{ criteria.requestName.name|json_encode }}
-    ,"fixed": {{ criteria.fixed|json_encode }}
+    ,"requestId": {{ criteria.requestId.requestId|json_encode }}
 {% endautoescape %}
 {%- endblock -%}
 

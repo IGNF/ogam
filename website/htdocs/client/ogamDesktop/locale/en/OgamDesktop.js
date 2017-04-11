@@ -234,8 +234,13 @@ Ext.define("OgamDesktop.locale.en.view.request.AdvancedRequest", {
 		text : 'Reset',
 		tooltip : 'Reset the default values of the form'
 	});
-	// Submit button
+	// Save button
 	Ext.apply(bbar[4], {
+		text : 'Save',
+		tooltip : 'Save the request'
+	});
+	// Submit button
+	Ext.apply(bbar[6], {
 		text : 'Search',
 		tooltip : 'Launch the search request'
 	});

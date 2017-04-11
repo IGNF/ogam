@@ -14,17 +14,17 @@ class PredefinedRequestColumnRepository extends \Doctrine\ORM\EntityRepository {
 	/**
 	 * Get the columns of a predefined request.
 	 *
-	 * @param String $requestName
-	 *        	the name of the request
+	 * @param String $requestId
+	 *        	the id of the request
 	 * @return Array[PredefinedField] The list of request columns
 	 */
-	public function getPredefinedRequestColumns($requestName, $locale) {
+	public function getPredefinedRequestColumns($requestId, $locale) {
 		$qb = $this->_em->createQueryBuilder();
 		$qb->select('prc')
 			->from('OGAMBundle:Website\PredefinedRequestColumn', 'prc')
-			->where('prc.requestName = :request_name')
+			->where('prc.requestId = :request_id')
 			->setParameters([
-			'request_name' => $requestName
+			'request_id' => $requestId
 		]);
 		
 		$columns = $qb->getQuery()->getResult();

@@ -16,15 +16,15 @@ class PredefinedRequestColumn {
 	 *
 	 * @var PredefinedRequest @ORM\Id
 	 *      @ORM\ManyToOne(targetEntity="PredefinedRequest")
-	 *      @ORM\JoinColumn(name="request_name", referencedColumnName="name")
+	 *      @ORM\JoinColumn(name="request_id", referencedColumnName="request_id")
 	 */
-	private $requestName;
+	private $requestId;
 
 	/**
 	 *
 	 * @var Format @ORM\Id
 	 *      @ORM\ManyToOne(targetEntity="Ign\Bundle\OGAMBundle\Entity\Metadata\Format")
-	 *      @ORM\JoinColumns({@ORM\JoinColumn(name="format", referencedColumnName="format")})
+	 *      @ORM\JoinColumn(name="format", referencedColumnName="format")
 	 */
 	private $format;
 
@@ -32,7 +32,7 @@ class PredefinedRequestColumn {
 	 *
 	 * @var Data @ORM\Id
 	 *      @ORM\ManyToOne(targetEntity="Ign\Bundle\OGAMBundle\Entity\Metadata\Data")
-	 *      @ORM\JoinColumns({@ORM\JoinColumn(name="data", referencedColumnName="data")})
+	 *      @ORM\JoinColumn(name="data", referencedColumnName="data")
 	 */
 	private $data;
 
@@ -54,25 +54,25 @@ class PredefinedRequestColumn {
 	}
 
 	/**
-	 * Set requestName
+	 * Set requestId
 	 *
-	 * @param string $requestName
+	 * @param integer $requestId
 	 *
 	 * @return PredefinedRequestColumn
 	 */
-	public function setRequestName($requestName) {
-		$this->requestName = $requestName;
+	public function setRequestId($requestId) {
+		$this->requestId = $requestId;
 
 		return $this;
 	}
 
 	/**
-	 * Get requestName
+	 * Get requestId
 	 *
-	 * @return string
+	 * @return integer
 	 */
-	public function getRequestName() {
-		return $this->requestName;
+	public function getRequestId() {
+		return $this->requestId;
 	}
 
 	/**

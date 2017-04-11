@@ -15,17 +15,17 @@ class PredefinedRequestCriterionRepository extends \Doctrine\ORM\EntityRepositor
 	/**
 	 * Get the criteria of a predefined request.
 	 *
-	 * @param String $requestName
-	 *        	the name of the request
+	 * @param String $requestId
+	 *        	the id of the request
 	 * @return Array[PredefinedField] The list of request criterias
 	 */
-	public function getPredefinedRequestCriteria($requestName, $locale) {
+	public function getPredefinedRequestCriteria($requestId, $locale) {
 		$qb = $this->_em->createQueryBuilder();
 		$qb->select('prc')
 			->from('OGAMBundle:Website\PredefinedRequestCriterion', 'prc')
-			->where('prc.requestName = :request_name')
+			->where('prc.requestId = :request_id')
 			->setParameters([
-			'request_name' => $requestName
+			'request_id' => $requestId
 		]);
 		
 		$criteria = $qb->getQuery()->getResult();

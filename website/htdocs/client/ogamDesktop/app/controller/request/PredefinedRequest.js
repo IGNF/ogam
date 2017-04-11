@@ -9,11 +9,17 @@ Ext.define('OgamDesktop.controller.request.PredefinedRequest', {
         refs: {
             mainView:'app-main',
             predefReqView: 'predefined-request',
-            advReqView: 'advanced-request'
+            advReqView: 'advanced-request',
+            predefinedRequestGridPanel: '#predefinedRequestGridPanel',
+            advancedRequestSelector: '#advancedRequestSelector'
         },
         control: {
             'predefined-request button#launchRequest': {//#launchRequest
                 click: 'onLaunchRequest'
+            },
+            'predefined-request': {
+                predefinedRequestEdition: 'onPredefinedRequestEdition',
+                predefinedRequestDeletion: 'onPredefinedRequestDeletion'
             }
          }
     },
@@ -21,6 +27,12 @@ Ext.define('OgamDesktop.controller.request.PredefinedRequest', {
     routes:{
         'predefined_request':'onPredefinedRequest'
     },
+
+    /**
+      * @cfg {String} loadingMsg
+      * The loading message (defaults to <tt>'Loading...'</tt>)
+      */
+    loadingMsg: 'Loading...',
 
     /**
      * Open the predefined request tab
@@ -68,13 +80,85 @@ Ext.define('OgamDesktop.controller.request.PredefinedRequest', {
                     'fieldsets':records
                 });
                 this.getAdvReqView().getViewModel().notify();
-                this.getAdvReqView().lookupReference('advancedRequestSelector').reloadForm();
-                this.getAdvReqView().down('#SubmitButton').click(e);
+                this.getAdvancedRequestSelector().reloadForm();
+                this.getAdvReqView().down('#SubmitButton').click(e); // submitButton.click(); doesn't work because the event is required (Bug Ext 6.0.1).
             },
             scope:this
         });
         
         this.getMainView().getLayout().setActiveItem('consultationTab');
         this.getAdvReqView().collapse();
+    },
+
+    /**
+     * Manages the predefined request edit button click event:
+
+     * @param Object record The record corresponding to the button's row
+     * @private
+     */
+    onPredefinedRequestEdition:function(record){
+        // record.criteria() return a 'Ext.data.Store' of 'OgamDesktop.model.request.predefined.Criterion'
+        this.getPredefReqView().mask(this.loadingMsg);
+        record.criteria().load({
+            type:'ajax',
+            url:Ext.manifest.OgamDesktop.requestServiceUrl +'ajaxgetpredefinedrequestcriteria',
+            params:{
+                request_id:record.get('request_id')
+            },
+            noCache:false,
+            callback: function(records, operation, success) {
+                this.getPredefReqView().unmask();
+                this.getAdvReqView().mask(this.loadingMsg);
+                this.getAdvReqView().lookupReference('processComboBox').setValue(record.get('dataset_id'));
+                record.reqfieldsets({
+                    success:function(records){
+
+                        var selectedCodes = {};
+                        record._criteria.each(function(criterion) { // OgamDesktop.model.request.predefined.Criterion
+                            selectedCodes[criterion.getCriteriaField().name] = new OgamDesktop.model.request.object.field.Code({
+                                code: criterion.get('default_value'),
+                                label: criterion.get('default_label')
+                            });
+                        }, this);
+                        this.getAdvReqView().getViewModel().set({
+                            'userchoices' : selectedCodes,
+                            'fieldsets': records,
+                            'requestId': record.get('request_id')
+                        });
+                        this.getAdvReqView().getViewModel().notify();
+                        this.getAdvancedRequestSelector().reloadForm();
+                        this.getAdvReqView().unmask();
+                    },
+                    scope:this
+                });
+                
+                this.getMainView().getLayout().setActiveItem('consultationTab');
+            },
+            scope: this
+        });
+    },
+
+    /**
+     * Manages the predefined request delete button click event:
+
+     * @param Object record The record corresponding to the button's row
+     * @private
+     */
+    onPredefinedRequestDeletion:function(record){
+        // Asks the request deletion to the server
+        this.getPredefinedRequestGridPanel().mask(this.loadingMsg);
+        Ext.Ajax.request({
+            url: Ext.manifest.OgamDesktop.requestServiceUrl + 'predefinedrequest/' + record.get('request_id'),
+            method: 'DELETE',
+            success: function(response, opts) {
+                Ext.getStore('PredefinedRequestTabRequestStore').remove(record);
+                this.getPredefinedRequestGridPanel().unmask();
+            },
+            failure: function(response, opts) {
+                console.log('server-side failure with status code ' + response.status);
+                this.getPredefinedRequestGridPanel().unmask();
+            },
+            scope :this
+        });
     }
 });

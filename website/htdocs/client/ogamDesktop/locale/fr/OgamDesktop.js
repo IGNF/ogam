@@ -234,8 +234,13 @@ Ext.define("OgamDesktop.locale.fr.view.request.AdvancedRequest", {
 		text : 'Réinitialiser',
 		tooltip : 'Réinitialiser le formulaire'
 	});
-	// Submit button
+	// Save button
 	Ext.apply(bbar[4], {
+		text : 'Enregistrer',
+		tooltip : 'Enregistrer la requête'
+	});
+	// Submit button
+	Ext.apply(bbar[6], {
 		text : 'Rechercher',
 		tooltip : 'Lancer la requête'
 	});

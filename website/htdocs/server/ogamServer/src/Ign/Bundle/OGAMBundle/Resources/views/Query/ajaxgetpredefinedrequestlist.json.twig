@@ -2,16 +2,18 @@
 
 {%- block predefined_request -%}{% autoescape false %}
 [
-    {{ datum.name|json_encode }},
+    {{ datum.requestId|json_encode }},
     {{ datum.label|json_encode }},
     {{ datum.definition|json_encode }},
     {{ datum.date.format('Y-m-d')|json_encode }},
+    {{ datum.isPublic|json_encode }},
     {# We assume that there is only one group per request #}
     {{ datum.groups[0].position|json_encode }},
-    {{ datum.groups[0].groupName.name|json_encode }},
-    {{ datum.groups[0].groupName.label|json_encode }},
-    {{ datum.groups[0].groupName.position|json_encode }},
-    {{ datum.datasetId.id|json_encode }}
+    {{ datum.groups[0].groupId.groupId|json_encode }},
+    {{ datum.groups[0].groupId.label|json_encode }},
+    {{ datum.groups[0].groupId.position|json_encode }},
+    {{ datum.datasetId.id|json_encode }},
+    {{ datum.datasetId.label|json_encode }}
 ]
 {% endautoescape %}{%- endblock -%}
 

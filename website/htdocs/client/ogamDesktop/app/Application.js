@@ -39,6 +39,7 @@ Ext.define('OgamDesktop.Application', {
 		'request.AdvancedRequest',
 		'request.AdvancedRequestController',
 		'request.AdvancedRequestModel',
+		'request.SaveRequestWindow',
 		'request.MainWin',
 		'result.MainWin',
 		'result.GridTab',

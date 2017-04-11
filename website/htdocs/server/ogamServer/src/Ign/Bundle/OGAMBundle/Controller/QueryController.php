@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Ign\Bundle\OGAMBundle\Entity\Mapping\ResultLocation;
 use Ign\Bundle\OGAMBundle\Entity\Generic\QueryForm;
 use Ign\Bundle\OGAMBundle\Entity\Website\PredefinedRequest;
+use Ign\Bundle\OGAMBundle\Entity\Website\PredefinedRequestGroup;
 use Ign\Bundle\OGAMBundle\Entity\Website\PredefinedRequestCriterion;
 use Ign\Bundle\OGAMBundle\Entity\Metadata\Dynamode;
 use Ign\Bundle\OGAMBundle\Entity\Metadata\Unit;
@@ -17,6 +18,17 @@ use Ign\Bundle\OGAMBundle\Entity\Generic\GenericField;
 use Ign\Bundle\OGAMBundle\Entity\Metadata\TableField;
 use Ign\Bundle\OGAMBundle\Entity\Metadata\TableFormat;
 use Ign\Bundle\OGAMBundle\Entity\Metadata\TableTree;
+use Ign\Bundle\OGAMBundle\Repository\Website\PredefinedRequestRepository;
+use Ign\Bundle\OGAMBundle\Entity\Website\PredefinedRequestColumn;
+use Ign\Bundle\OGAMBundle\Entity\Metadata\Dataset;
+use Ign\Bundle\OGAMBundle\Repository\Metadata\DatasetRepository;
+use Ign\Bundle\OGAMBundle\Entity\Website\PredefinedRequestGroupAsso;
+use Ign\Bundle\OGAMBundle\Entity\Metadata\Format;
+use Ign\Bundle\OGAMBundle\Entity\Metadata\Data;
+use Ign\Bundle\OGAMBundle\Entity\Metadata\FormFormat;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Doctrine\DBAL\Driver\PDOException;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 
 /**
  * @Route("/query")
@@ -97,7 +109,7 @@ class QueryController extends Controller {
 		$filters = json_decode($request->query->get('filter'));
 
 		$datasetId = null;
-		$requestName = null;
+		$requestId = null;
 
 		if (is_array($filters)) {
 			foreach ($filters as $aFilter) {
@@ -105,8 +117,8 @@ class QueryController extends Controller {
 					case 'processId':
 						$datasetId = $aFilter->value;
 						break;
-					case 'requestName':
-						$requestName = $aFilter->value;
+					case 'request_id':
+						$requestId = $aFilter->value;
 						break;
 					default:
 						$logger->debug('filter unattended : ' . $aFilter->property);
@@ -114,14 +126,14 @@ class QueryController extends Controller {
 			}
 		} else {
 			$datasetId = json_decode($request->query->get('datasetId'));
-			$requestName = $request->request->get('requestName');
+			$requestId = $request->request->get('request_id');
 		}
 
 		$response = new Response();
 		$response->headers->set('Content-Type', 'application/json');
 		return $this->render('OGAMBundle:Query:ajaxgetqueryform.json.twig', array(
 			'forms' => $this->get('ogam.manager.query')
-				->getQueryForms($datasetId, $requestName)
+				->getQueryForms($datasetId, $requestId)
 		), $response);
 	}
 
@@ -408,21 +420,271 @@ class QueryController extends Controller {
 	}
 
 	/**
+	 * @Route("/ajaxgetpredefinedgrouplist")
+	 */
+	public function ajaxgetpredefinedgrouplistAction(Request $request) {
+		$logger = $this->get('logger');
+		$logger->debug('ajaxgetpredefinedgrouplist');
+
+		// Get the predefined values for the forms
+		$schema = $this->get('ogam.schema_listener')->getSchema();
+		$locale = $this->get('ogam.locale_listener')->getLocale();
+		$predefinedRequestGroupRepository = $this->get('doctrine')->getRepository(PredefinedRequestGroup::class);
+		$predefinedRequestGroupList = $predefinedRequestGroupRepository->getPredefinedRequestGroupList();
+
+		$response = new Response();
+		$response->headers->set('Content-Type', 'application/json');
+		return $this->render('OGAMBundle:Query:ajaxgetpredefinedrequestgrouplist.json.twig', array(
+			'data' => $predefinedRequestGroupList
+		), $response);
+	}
+
+
+	/**
 	 * @Route("/ajaxgetpredefinedrequestcriteria")
 	 */
 	public function ajaxgetpredefinedrequestcriteriaAction(Request $request) {
 		$logger = $this->get('logger');
 		$logger->debug('ajaxgetpredefinedrequestcriteria');
 
-		$requestName = $request->query->get('request_name');
+		$requestId = $request->query->get('request_id');
 		$predefinedRequestCriterionRepository = $this->get('doctrine')->getRepository(PredefinedRequestCriterion::class);
 		$locale = $this->get('ogam.locale_listener')->getLocale();
 
 		$response = new Response();
 		$response->headers->set('Content-Type', 'application/json');
 		return $this->render('OGAMBundle:Query:ajaxgetpredefinedrequestcriteria.html.twig', array(
-			'data' => $predefinedRequestCriterionRepository->getPredefinedRequestCriteria($requestName, $locale)
+			'data' => $predefinedRequestCriterionRepository->getPredefinedRequestCriteria($requestId, $locale)
 		), $response);
+	}
+
+
+	/**
+	 * @Route("/predefinedrequest")
+	 * @Method("POST")
+	 */
+	public function createPredefinedrequestAction(Request $request) {
+	    $logger = $this->get('logger');
+	    $logger->debug('createPredefinedrequestAction');
+	    
+	    try{
+    	    // Set the function variables
+    	    $r = $request->request;
+    	    $em = $this->getDoctrine()->getManager();
+    	    
+    	    // Create the predefined request
+    	    $pr = new PredefinedRequest();
+    	    
+    	    // Edit and add the new data
+    	    $this->updatePredefinedRequest ($pr, $r->get('datasetId'), $r->get('label'), $r->get('definition'), $r->get('isPublic'));
+    	    $this->createPRGroupAssociation($pr, $r->get('groupId'));
+    	    $this->createPRCriteriaAndCriterion($pr, $r);
+    	    $em->flush();
+            
+    		return new JsonResponse([
+    		    'success' => true,
+    		    'requestId' => $pr->getRequestId()
+    		]);
+	    } catch (UniqueConstraintViolationException $e){
+    	    $logger->error('Error while creating predefined request : ' . $e);
+    	    return new JsonResponse([
+    	        'success' => false,
+    	        'errorMessage' => 'The request\'s name already exists. Please indicate another one.'
+    	    ]);
+	    } catch (\Exception $e){ dump($e);
+	        $logger->error('Error while creating predefined request : ' . $e);
+	        return new JsonResponse([
+	            'success' => false,
+	            'errorMessage' => $e->getMessage()
+	        ]);
+	    }
+	}
+
+	/**
+	 * @Route("/predefinedrequest/{id}", requirements={"id" = "\d+"}, defaults={"id" = null})
+	 * @Method("PUT")
+	 */
+	public function editPredefinedrequestAction(Request $request) {
+	    $logger = $this->get('logger');
+	    $logger->debug('editPredefinedrequestAction');
+	    
+	    try{
+    	    // Set the function variables
+    	    $requestId = $request->attributes->get('id');
+    	    $r = $request->request;
+    	    $em = $this->getDoctrine()->getManager();
+    	    
+    	    // Get the predefined request
+    	    $predefinedRequestRepo = $em->getRepository(PredefinedRequest::class);
+    	    $pr = $predefinedRequestRepo->find($requestId);
+    	    
+    	    // Delete the old data
+    	    $this->deletePRGroupAssociations($pr);
+    	    $this->deletePRCriteria($pr);
+    	    $this->deletePRColumns($pr);
+    	    $em->flush();
+    	    
+    	    // Edit and add the new data
+    	    $this->updatePredefinedRequest ($pr, $r->get('datasetId'), $r->get('label'), $r->get('definition'), $r->get('isPublic'));
+    	    $this->createPRGroupAssociation($pr, $r->get('groupId'));
+    	    $this->createPRCriteriaAndCriterion($pr, $r);
+    	    $em->flush();
+    	    
+    	    return new JsonResponse([
+    	        'success' => true,
+    	        'requestId' => $pr->getRequestId()
+    	    ]);
+	    } catch (UniqueConstraintViolationException $e){
+    	    $logger->error('Error while creating predefined request : ' . $e);
+    	    return new JsonResponse([
+    	        'success' => false,
+    	        'errorMessage' => 'The request\'s name already exists. Please indicate another one.'
+    	    ]);
+	    } catch (\Exception $e){
+	        $logger->error('Error while updating predefined request : ' . $e);
+	        return new JsonResponse([
+	            'success' => false,
+	            'errorMessage' => $e->getMessage()
+	        ]);
+	    }
+	}
+	
+	/**
+	 * @Route("/predefinedrequest/{id}", requirements={"id" = "\d+"}, defaults={"id" = null})
+	 * @Method("DELETE")
+	 */
+	public function deletePredefinedrequestAction(Request $request) {
+	    $logger = $this->get('logger');
+	    $logger->debug('deletePredefinedrequestAction');
+	    
+	    try {
+    	    // Set the function variables
+    	    $requestId = $request->attributes->get('id');
+    	    $em = $this->getDoctrine()->getManager();
+    	    
+    	    // Get the predefined request
+    	    $predefinedRequestRepo = $em->getRepository(PredefinedRequest::class);
+    	    $pr = $predefinedRequestRepo->find($requestId);
+    	    
+    	    // Delete the old data
+    	    $this->deletePRGroupAssociations($pr);
+    	    $this->deletePRCriteria($pr);
+    	    $this->deletePRColumns($pr);
+    	    $em->remove($pr);
+    	    $em->flush();
+    	    
+    	    return new JsonResponse([
+    	        'success' => true
+    	    ]);
+    	} catch (\Exception $e){
+    	    $logger->error('Error while deleting predefined request : ' . $e);
+    	    return new JsonResponse([
+    	        'success' => false,
+    	        'errorMessage' => $e->getMessage()
+    	    ]);
+    	}
+	}
+	
+	private function updatePredefinedRequest (PredefinedRequest $pr, $datasetId, $label, $definition, $isPublic) {
+	    $em = $this->getDoctrine()->getManager();
+	    $datasetRepository = $em->getRepository(Dataset::class);
+	    $dataset = $datasetRepository->find($datasetId);
+	    $pr->setDatasetId($dataset);
+	    $pr->setSchemaCode($this->get('ogam.schema_listener')->getSchema());
+	    $pr->setLabel($label);
+	    $pr->setDefinition($definition);
+	    $pr->setIsPublic($isPublic);
+	    $pr->setDate(new \DateTime());
+	    $pr->setUserLogin($this->getUser());
+	    $em->persist($pr);
+	}
+	
+	private function deletePRGroupAssociations (PredefinedRequest $pr) {
+	    $em = $this->getDoctrine()->getManager();
+	    $groupAssoRepo = $em->getRepository(PredefinedRequestGroupAsso::class);
+	    $groupAssos = $groupAssoRepo->findBy(["requestId" => $pr->getRequestId()]);
+	    foreach ($groupAssos as $index => $groupAsso) {
+	        $em->remove($groupAsso);
+	    }
+	}
+	
+	private function createPRGroupAssociation (PredefinedRequest $pr, $groupId) {
+	    $em = $this->getDoctrine()->getManager();
+	    $ga = new PredefinedRequestGroupAsso();
+	    $ga->setRequestId($pr);
+	    $groupRepository = $em->getRepository(PredefinedRequestGroup::class);
+	    $group = $groupRepository->find($groupId);
+	    $ga->setGroupId($group);
+	    $ga->setPosition(1);
+	    $em->persist($ga);
+	}
+
+	private function deletePRCriteria (PredefinedRequest $pr) {
+	    $em = $this->getDoctrine()->getManager();
+	    $prCriterionRepo = $em->getRepository(PredefinedRequestCriterion::class);
+	    $criteria = $prCriterionRepo->findBy(["requestId" => $pr->getRequestId()]);
+	    foreach ($criteria as $index => $criterion) {
+	        $em->remove($criterion);
+	    }
+	}
+	
+	private function deletePRColumns (PredefinedRequest $pr) {
+	    $em = $this->getDoctrine()->getManager();
+	    $prColumnRepo = $em->getRepository(PredefinedRequestColumn::class);
+	    $columns = $prColumnRepo->findBy(["requestId" => $pr->getRequestId()]);
+	    foreach ($columns as $index => $column) {
+	        $em->remove($column);
+	    }
+	}
+	
+	private function createPRCriteriaAndCriterion (PredefinedRequest $pr, $r) {
+	    foreach ($r->all() as $inputName => $inputValue) {
+	        // Create the criterion entities and add its
+	        if (strpos($inputName, "criteria__") === 0 && !$this->isEmptyCriteria($inputValue)) {
+	            $criteriaName = substr($inputName, strlen("criteria__"));
+	            $split = explode("__", $criteriaName);
+	            $this->createPRCriteria($pr, $split[0], $split[1], $inputValue[0]);
+	        }
+	        // Create the column entities and add its
+	        if (strpos($inputName, "column__") === 0) {
+	            $columnName = substr($inputName, strlen("column__"));
+	            $split = explode("__", $columnName);
+	            $this->createPRColumns($pr, $split[0], $split[1]);
+	        }
+	    }
+	}
+	
+	private function createPRCriteria (PredefinedRequest $pr, $format, $data, $value) {
+	    $em = $this->getDoctrine()->getManager();
+	    $formatRepository = $em->getRepository(Format::class);
+	    $dataRepository = $em->getRepository(Data::class);
+	    $formFieldRepository = $em->getRepository(FormField::class);
+	    $criterion = new PredefinedRequestCriterion();
+	    $criterion->setRequestId($pr);
+	    $format = $formatRepository->find($format);
+	    $data = $dataRepository->find($data);
+	    $formField = $formFieldRepository->find(['format' => $format, 'data' => $data]);
+	    $criterion->setFormat($format);
+	    $criterion->setData($data);
+	    $criterion->setFormField($formField);
+	    $criterion->setValue($value);
+	    $em->persist($criterion);
+	}
+	
+	private function createPRColumns (PredefinedRequest $pr, $format, $data) {
+	    $em = $this->getDoctrine()->getManager();
+	    $formatRepository = $em->getRepository(Format::class);
+	    $dataRepository = $em->getRepository(Data::class);
+	    $formFieldRepository = $em->getRepository(FormField::class);
+	    $column = new PredefinedRequestColumn();
+	    $column->setRequestId($pr);
+	    $format = $formatRepository->find($format);
+	    $data = $dataRepository->find($data);
+	    $formField = $formFieldRepository->find(['format' => $format, 'data' => $data]);
+	    $column->setFormat($format);
+	    $column->setData($data);
+	    $column->setFormField($formField);
+	    $em->persist($column);
 	}
 
 	/**
