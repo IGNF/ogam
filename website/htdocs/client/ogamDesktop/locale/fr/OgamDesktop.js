@@ -274,7 +274,14 @@ Ext.define('OgamDesktop.locale.fr.view.request.PredefinedRequest', {
 	loadingText:"Chargement...",
 	defaultErrorCardPanelText:"Désolé, le chargement a échoué...",
 	criteriaPanelTitle:"Indiquez votre choix :",
-	groupTextTpl:"{name} ({children.length:plural('Requete')})"
+	groupTextTpl:"{name} ({children.length:plural('Requete')})",
+    editRequestButtonTitle:"Editer la requête",
+    editRequestButtonTip:"Ouvre la page de consultation avec la requête préchargée.",
+    removeRequestButtonTitle:"Supprimer la requête",
+    removeRequestButtonTip:"Supprime la requête de manière permanente.",
+    datasetColumnTitle:"Type de données",
+    groupColumnTitle:"Groupe",
+    defaultGroupName:'Non groupée{[values.rows.length > 1 ? "s" : ""]}'
 });
 
 Ext.define('OgamDesktop.locale.fr.view.request.PredefinedRequestSelector', {

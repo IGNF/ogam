@@ -64,6 +64,41 @@ Ext.define('OgamDesktop.view.request.PredefinedRequest', {
      * The group Text Tpl (defaults to <tt>'{name} ({children.length:plural("Request")})'</tt>)
      */
     groupTextTpl:"{name} ({children.length:plural('Request')})",
+    /**
+     * @cfg {String} editRequestButtonTitle
+     * The edit request button title (defaults to <tt>'Edit the request'</tt>)
+     */
+    editRequestButtonTitle:"Edit the request",
+    /**
+     * @cfg {String} editRequestButtonTip
+     * The edit request button tip (defaults to <tt>'Open the consultation page with the request loaded.'</tt>)
+     */
+    editRequestButtonTip:"Open the consultation page with the request loaded.",
+    /**
+     * @cfg {String} removeRequestButtonTitle
+     * The remove request button title (defaults to <tt>'Delete the request'</tt>)
+     */
+    removeRequestButtonTitle:"Delete the request",
+    /**
+     * @cfg {String} removeRequestButtonTip
+     * The remove request button tip (defaults to <tt>'Remove the request permanently.'</tt>)
+     */
+    removeRequestButtonTip:"Remove the request permanently.",
+    /**
+     * @cfg {String} datasetColumnTitle
+     * The dataset column title (defaults to <tt>'Dataset'</tt>)
+     */
+    datasetColumnTitle:"Dataset",
+    /**
+     * @cfg {String} groupColumnTitle
+     * The group column title (defaults to <tt>'Group'</tt>)
+     */
+    groupColumnTitle:"Group",
+    /**
+     * @cfg {String} defaultGroupName
+     * The default group name (defaults to <tt>'Not grouped'</tt>)
+     */
+    defaultGroupName:"Not grouped", //'Non groupée{[values.rows.length > 1 ? "s" : ""]}',
 //</locale>
 
     /**
@@ -108,11 +143,11 @@ Ext.define('OgamDesktop.view.request.PredefinedRequest', {
                 }
             }
         },{
-            text: 'Type de données',
+            text: this.datasetColumnTitle,
             flex: 1,
             dataIndex: 'dataset_label'
         },{
-            text: 'Groupe',
+            text: this.groupColumnTitle,
             flex: 1,
             dataIndex: 'group_label'
         },{
@@ -147,7 +182,7 @@ Ext.define('OgamDesktop.view.request.PredefinedRequest', {
                 '<tpl if="name !== \'\'">',
                     '{name}',
                 '<tpl else>',
-                    'Non groupée{[values.rows.length > 1 ? "s" : ""]}',
+                    this.defaultGroupName,
                 '</tpl>',
                 ' ({children.length:plural(\'Request\')})'
             ),
@@ -174,7 +209,6 @@ Ext.define('OgamDesktop.view.request.PredefinedRequest', {
         },{
             title: this.criteriaPanelTitle,
             hideMode: 'display',
-            itemId:'myfieldset',
             xtype:'predefined-request-selector',
             bind:{
                 criteria :{

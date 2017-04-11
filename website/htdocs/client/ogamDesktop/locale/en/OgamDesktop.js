@@ -274,7 +274,14 @@ Ext.define('OgamDesktop.locale.en.view.request.PredefinedRequest', {
 	loadingText:"Loading...",
 	defaultErrorCardPanelText:"Sorry, the search request failed...",
 	criteriaPanelTitle:"Your choice:",
-	groupTextTpl:"{name} ({children.length:plural('Requete')})"
+	groupTextTpl:"{name} ({children.length:plural('Requete')})",
+    editRequestButtonTitle:"Edit the request",
+    editRequestButtonTip:"Open the consultation page with the request loaded.",
+    removeRequestButtonTitle:"Delete the request",
+    removeRequestButtonTip:"Remove the request permanently.",
+    datasetColumnTitle:"Dataset",
+    groupColumnTitle:"Group",
+    defaultGroupName:"Not grouped"
 });
 
 Ext.define('OgamDesktop.locale.en.view.request.PredefinedRequestSelector', {
