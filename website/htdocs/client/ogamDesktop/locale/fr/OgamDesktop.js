@@ -24,6 +24,12 @@ Ext.define("OgamDesktop.locale.fr.controller.map.Main", {
 	requestLoadingMessage: 'Veuillez patienter, pendant le chargement de la carte...',
 	getresultsbboxErrorTitle: "Chargement de l'emprise échoué :"
 });
+Ext.define("OgamDesktop.locale.fr.controller.request.PredefinedRequest", {
+    override: "OgamDesktop.controller.request.PredefinedRequest",
+    loadingMsg: 'Chargement...',
+    deletionConfirmTitle: 'Suppression de la requête :',
+    deletionConfirmMessage: 'Êtes-vous sûr de vouloir supprimer la requête?'
+});
 Ext.define("OgamDesktop.locale.fr.ux.request.RequestFieldSet", {
     override: "OgamDesktop.ux.request.RequestFieldSet",
 	criteriaComboEmptyText : "Sélectionner...",

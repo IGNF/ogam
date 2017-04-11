@@ -24,6 +24,12 @@ Ext.define("OgamDesktop.locale.fr.controller.map.Main", {
 	requestLoadingMessage: 'Please wait, while loading the map...',
 	getresultsbboxErrorTitle: 'Loading of bounding box failed:'
 });
+Ext.define("OgamDesktop.locale.fr.controller.request.PredefinedRequest", {
+    override: "OgamDesktop.controller.request.PredefinedRequest",
+    loadingMsg: 'Loading...',
+    deletionConfirmTitle: 'Deletion of the request :',
+    deletionConfirmMessage: 'Are you sure you want to delete the request?'
+});
 Ext.define("OgamDesktop.locale.fr.ux.request.RequestFieldSet", {
     override: "OgamDesktop.ux.request.RequestFieldSet",
 	criteriaComboEmptyText : "Select...",

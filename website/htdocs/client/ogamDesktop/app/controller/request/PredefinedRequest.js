@@ -33,6 +33,18 @@ Ext.define('OgamDesktop.controller.request.PredefinedRequest', {
       * The loading message (defaults to <tt>'Loading...'</tt>)
       */
     loadingMsg: 'Loading...',
+    
+    /**
+     * @cfg {String} deletionConfirmTitle
+     * The deletion confirm title (defaults to <tt>'Deletion of the request :'</tt>)
+     */
+    deletionConfirmTitle: 'Deletion of the request :',
+    
+    /**
+     * @cfg {String} deletionConfirmMessage
+     * The deletion confirm message (defaults to <tt>'Are you sure you want to delete the request?'</tt>)
+     */
+    deletionConfirmMessage: 'Are you sure you want to delete the request?', 
 
     /**
      * Open the predefined request tab
@@ -139,26 +151,34 @@ Ext.define('OgamDesktop.controller.request.PredefinedRequest', {
     },
 
     /**
-     * Manages the predefined request delete button click event:
-
+     * Manages the predefined request delete button click event
      * @param Object record The record corresponding to the button's row
      * @private
      */
     onPredefinedRequestDeletion:function(record){
-        // Asks the request deletion to the server
-        this.getPredefinedRequestGridPanel().mask(this.loadingMsg);
-        Ext.Ajax.request({
-            url: Ext.manifest.OgamDesktop.requestServiceUrl + 'predefinedrequest/' + record.get('request_id'),
-            method: 'DELETE',
-            success: function(response, opts) {
-                Ext.getStore('PredefinedRequestTabRequestStore').remove(record);
-                this.getPredefinedRequestGridPanel().unmask();
-            },
-            failure: function(response, opts) {
-                console.log('server-side failure with status code ' + response.status);
-                this.getPredefinedRequestGridPanel().unmask();
-            },
-            scope :this
-        });
+    	Ext.Msg.confirm(
+    		this.deletionConfirmTitle,
+    		this.deletionConfirmMessage,
+    		function(buttonId, value, opt){
+    			if(buttonId === 'yes'){
+    		        // Asks the request deletion to the server
+    		        this.getPredefinedRequestGridPanel().mask(this.loadingMsg);
+    		        Ext.Ajax.request({
+    		            url: Ext.manifest.OgamDesktop.requestServiceUrl + 'predefinedrequest/' + record.get('request_id'),
+    		            method: 'DELETE',
+    		            success: function(response, opts) {
+    		                Ext.getStore('PredefinedRequestTabRequestStore').remove(record);
+    		                this.getPredefinedRequestGridPanel().unmask();
+    		            },
+    		            failure: function(response, opts) {
+    		                console.log('server-side failure with status code ' + response.status);
+    		                this.getPredefinedRequestGridPanel().unmask();
+    		            },
+    		            scope :this
+    		        });
+    			}
+    		}, 
+    		this
+    	);
     }
 });
