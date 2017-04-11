@@ -168,7 +168,7 @@ INSERT INTO predefined_request_column (request_id, format, data) VALUES (1, 'PLO
 INSERT INTO predefined_request_column (request_id, format, data) VALUES (1, 'PLOT_FORM', 'IS_FOREST_PLOT');
 INSERT INTO predefined_request_column (request_id, format, data) VALUES (1, 'TREE_FORM', 'SPECIES_CODE');
 
-INSERT INTO predefined_request_criterion (request_id, format, data, value) VALUES (2, 'TAXREF', 'SPECIES_FORM', 'ID_TAXON', '196709');
+INSERT INTO predefined_request_criterion (request_id, format, data, value) VALUES (2, 'SPECIES_FORM', 'ID_TAXON', '196709');
 INSERT INTO predefined_request_column (request_id, format, data) VALUES (2, 'PLOT_FORM', 'PLOT_CODE');
 INSERT INTO predefined_request_column (request_id, format, data) VALUES (2, 'PLOT_FORM', 'CYCLE');
 INSERT INTO predefined_request_column (request_id, format, data) VALUES (2, 'PLOT_FORM', 'INV_DATE');
@@ -176,7 +176,7 @@ INSERT INTO predefined_request_column (request_id, format, data) VALUES (2, 'PLO
 INSERT INTO predefined_request_column (request_id, format, data) VALUES (2, 'SPECIES_FORM', 'ID_TAXON');
 INSERT INTO predefined_request_column (request_id, format, data) VALUES (2, 'SPECIES_FORM', 'BASAL_AREA');
 
-INSERT INTO predefined_request_criterion (request_id, format, data, value) VALUES (3, 'DEP', 'LOCATION_FORM', 'DEPARTEMENT', '45');
+INSERT INTO predefined_request_criterion (request_id, format, data, value) VALUES (3, 'LOCATION_FORM', 'DEPARTEMENT', '45');
 INSERT INTO predefined_request_column (request_id, format, data) VALUES (3, 'PLOT_FORM', 'PLOT_CODE');
 INSERT INTO predefined_request_column (request_id, format, data) VALUES (3, 'PLOT_FORM', 'CYCLE');
 INSERT INTO predefined_request_column (request_id, format, data) VALUES (3, 'PLOT_FORM', 'INV_DATE');
