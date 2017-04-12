@@ -227,7 +227,7 @@ class QueryController extends Controller {
 			$queryForm = new QueryForm();
 			$queryForm->setDatasetId($datasetId);
 			foreach ($request->request->all() as $inputName => $inputValue) {
-				if (strpos($inputName, "criteria__") === 0 && !$this->isEmptyCriteria($inputValue)) {
+			    if (strpos($inputName, "criteria__") === 0 && !$this->get('ogam.query_service')->isEmptyCriteria($inputValue)) {
 					$logger->debug('POST var added');
 					$criteriaName = substr($inputName, strlen("criteria__"));
 					$split = explode("__", $criteriaName);
@@ -264,27 +264,6 @@ class QueryController extends Controller {
 				'success' => false,
 				'errorMessage' => $e->getMessage()
 			]);
-		}
-	}
-
-	/**
-	 * Check if a criteria is empty.
-	 * (not private as this function is extended in custom directory of derivated applications)
-	 *
-	 * @param Undef $criteria
-	 * @return true if empty
-	 */
-	protected function isEmptyCriteria($criteria) {
-		if (is_array($criteria)) {
-			$emptyArray = true;
-			foreach ($criteria as $value) {
-				if ($value != "") {
-					$emptyArray = false;
-				}
-			}
-			return $emptyArray;
-		} else {
-			return ($criteria == "");
 		}
 	}
 
@@ -476,9 +455,9 @@ class QueryController extends Controller {
     	    $pr = new PredefinedRequest();
     	    
     	    // Edit and add the new data
-    	    $this->updatePredefinedRequest ($pr, $r->get('datasetId'), $r->get('label'), $r->get('definition'), $r->get('isPublic'));
-    	    $this->createPRGroupAssociation($pr, $r->get('groupId'));
-    	    $this->createPRCriteriaAndCriterion($pr, $r);
+    	    $this->get('ogam.query_service')->updatePredefinedRequest ($pr, $r->get('datasetId'), $r->get('label'), $r->get('definition'), $r->get('isPublic'));
+    	    $this->get('ogam.query_service')->createPRGroupAssociation($pr, $r->get('groupId'));
+    	    $this->get('ogam.query_service')->createPRCriteriaAndColumns($pr, $r);
     	    $em->flush();
             
     		return new JsonResponse([
@@ -519,15 +498,15 @@ class QueryController extends Controller {
     	    $pr = $predefinedRequestRepo->find($requestId);
     	    
     	    // Delete the old data
-    	    $this->deletePRGroupAssociations($pr);
-    	    $this->deletePRCriteria($pr);
-    	    $this->deletePRColumns($pr);
+    	    $this->get('ogam.query_service')->deletePRGroupAssociations($pr);
+    	    $this->get('ogam.query_service')->deletePRCriteria($pr);
+    	    $this->get('ogam.query_service')->deletePRColumns($pr);
     	    $em->flush();
     	    
     	    // Edit and add the new data
-    	    $this->updatePredefinedRequest ($pr, $r->get('datasetId'), $r->get('label'), $r->get('definition'), $r->get('isPublic'));
-    	    $this->createPRGroupAssociation($pr, $r->get('groupId'));
-    	    $this->createPRCriteriaAndCriterion($pr, $r);
+    	    $this->get('ogam.query_service')->updatePredefinedRequest ($pr, $r->get('datasetId'), $r->get('label'), $r->get('definition'), $r->get('isPublic'));
+    	    $this->get('ogam.query_service')->createPRGroupAssociation($pr, $r->get('groupId'));
+    	    $this->get('ogam.query_service')->createPRCriteriaAndColumns($pr, $r);
     	    $em->flush();
     	    
     	    return new JsonResponse([
@@ -567,9 +546,9 @@ class QueryController extends Controller {
     	    $pr = $predefinedRequestRepo->find($requestId);
     	    
     	    // Delete the old data
-    	    $this->deletePRGroupAssociations($pr);
-    	    $this->deletePRCriteria($pr);
-    	    $this->deletePRColumns($pr);
+    	    $this->get('ogam.query_service')->deletePRGroupAssociations($pr);
+    	    $this->get('ogam.query_service')->deletePRCriteria($pr);
+    	    $this->get('ogam.query_service')->deletePRColumns($pr);
     	    $em->remove($pr);
     	    $em->flush();
     	    
@@ -585,108 +564,6 @@ class QueryController extends Controller {
     	}
 	}
 	
-	private function updatePredefinedRequest (PredefinedRequest $pr, $datasetId, $label, $definition, $isPublic) {
-	    $em = $this->getDoctrine()->getManager();
-	    $datasetRepository = $em->getRepository(Dataset::class);
-	    $dataset = $datasetRepository->find($datasetId);
-	    $pr->setDatasetId($dataset);
-	    $pr->setSchemaCode($this->get('ogam.schema_listener')->getSchema());
-	    $pr->setLabel($label);
-	    $pr->setDefinition($definition);
-	    $pr->setIsPublic($isPublic);
-	    $pr->setDate(new \DateTime());
-	    $pr->setUserLogin($this->getUser());
-	    $em->persist($pr);
-	}
-	
-	private function deletePRGroupAssociations (PredefinedRequest $pr) {
-	    $em = $this->getDoctrine()->getManager();
-	    $groupAssoRepo = $em->getRepository(PredefinedRequestGroupAsso::class);
-	    $groupAssos = $groupAssoRepo->findBy(["requestId" => $pr->getRequestId()]);
-	    foreach ($groupAssos as $index => $groupAsso) {
-	        $em->remove($groupAsso);
-	    }
-	}
-	
-	private function createPRGroupAssociation (PredefinedRequest $pr, $groupId) {
-	    $em = $this->getDoctrine()->getManager();
-	    $ga = new PredefinedRequestGroupAsso();
-	    $ga->setRequestId($pr);
-	    $groupRepository = $em->getRepository(PredefinedRequestGroup::class);
-	    $group = $groupRepository->find($groupId);
-	    $ga->setGroupId($group);
-	    $ga->setPosition(1);
-	    $em->persist($ga);
-	}
-
-	private function deletePRCriteria (PredefinedRequest $pr) {
-	    $em = $this->getDoctrine()->getManager();
-	    $prCriterionRepo = $em->getRepository(PredefinedRequestCriterion::class);
-	    $criteria = $prCriterionRepo->findBy(["requestId" => $pr->getRequestId()]);
-	    foreach ($criteria as $index => $criterion) {
-	        $em->remove($criterion);
-	    }
-	}
-	
-	private function deletePRColumns (PredefinedRequest $pr) {
-	    $em = $this->getDoctrine()->getManager();
-	    $prColumnRepo = $em->getRepository(PredefinedRequestColumn::class);
-	    $columns = $prColumnRepo->findBy(["requestId" => $pr->getRequestId()]);
-	    foreach ($columns as $index => $column) {
-	        $em->remove($column);
-	    }
-	}
-	
-	private function createPRCriteriaAndCriterion (PredefinedRequest $pr, $r) {
-	    foreach ($r->all() as $inputName => $inputValue) {
-	        // Create the criterion entities and add its
-	        if (strpos($inputName, "criteria__") === 0 && !$this->isEmptyCriteria($inputValue)) {
-	            $criteriaName = substr($inputName, strlen("criteria__"));
-	            $split = explode("__", $criteriaName);
-	            $this->createPRCriteria($pr, $split[0], $split[1], $inputValue[0]);
-	        }
-	        // Create the column entities and add its
-	        if (strpos($inputName, "column__") === 0) {
-	            $columnName = substr($inputName, strlen("column__"));
-	            $split = explode("__", $columnName);
-	            $this->createPRColumns($pr, $split[0], $split[1]);
-	        }
-	    }
-	}
-	
-	private function createPRCriteria (PredefinedRequest $pr, $format, $data, $value) {
-	    $em = $this->getDoctrine()->getManager();
-	    $formatRepository = $em->getRepository(Format::class);
-	    $dataRepository = $em->getRepository(Data::class);
-	    $formFieldRepository = $em->getRepository(FormField::class);
-	    $criterion = new PredefinedRequestCriterion();
-	    $criterion->setRequestId($pr);
-	    $format = $formatRepository->find($format);
-	    $data = $dataRepository->find($data);
-	    $formField = $formFieldRepository->find(['format' => $format, 'data' => $data]);
-	    $criterion->setFormat($format);
-	    $criterion->setData($data);
-	    $criterion->setFormField($formField);
-	    $criterion->setValue($value);
-	    $em->persist($criterion);
-	}
-	
-	private function createPRColumns (PredefinedRequest $pr, $format, $data) {
-	    $em = $this->getDoctrine()->getManager();
-	    $formatRepository = $em->getRepository(Format::class);
-	    $dataRepository = $em->getRepository(Data::class);
-	    $formFieldRepository = $em->getRepository(FormField::class);
-	    $column = new PredefinedRequestColumn();
-	    $column->setRequestId($pr);
-	    $format = $formatRepository->find($format);
-	    $data = $dataRepository->find($data);
-	    $formField = $formFieldRepository->find(['format' => $format, 'data' => $data]);
-	    $column->setFormat($format);
-	    $column->setData($data);
-	    $column->setFormField($formField);
-	    $em->persist($column);
-	}
-
 	/**
 	 * Get the parameters used to initialise the result grid.
 	 * @Route("/getgridparameters")

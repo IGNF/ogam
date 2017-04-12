@@ -75,7 +75,6 @@ Ext.define('OgamDesktop.view.request.SaveRequestWindow',{
      * The public radio field label (defaults to <tt>'Public'</tt>)
      */
     publicRadioFieldLabel:'Public',
-    
     /**
      * @cfg {String} cancelButtonText
      * The cancel button text (defaults to <tt>'Cancel'</tt>)
