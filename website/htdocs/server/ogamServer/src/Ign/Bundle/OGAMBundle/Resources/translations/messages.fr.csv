@@ -342,6 +342,7 @@ Error inserting data duplicate key;Erreur lors de l'insertion - la donnée exist
 ##########################
 Data Export;Export des données
 Request Criterias;Critères de requête
+That request's label already exists. Please indicate another one.;Ce libellé de requête est déjà utilisé. Veuillez en choisir un autre.
 
 ################################
 #  Fil d'ariane (Breadcrumb)   #

@@ -468,7 +468,7 @@ class QueryController extends Controller {
     	    $logger->error('Error while creating predefined request : ' . $e);
     	    return new JsonResponse([
     	        'success' => false,
-    	        'errorMessage' => 'The request\'s name already exists. Please indicate another one.'
+    	        'errorMessage' => $this->get('translator')->trans("That request's label already exists. Please indicate another one.")
     	    ]);
 	    } catch (\Exception $e){ dump($e);
 	        $logger->error('Error while creating predefined request : ' . $e);
@@ -517,7 +517,7 @@ class QueryController extends Controller {
     	    $logger->error('Error while creating predefined request : ' . $e);
     	    return new JsonResponse([
     	        'success' => false,
-    	        'errorMessage' => 'The request\'s name already exists. Please indicate another one.'
+    	        'errorMessage' => $this->get('translator')->trans("That request's label already exists. Please indicate another one.")
     	    ]);
 	    } catch (\Exception $e){
 	        $logger->error('Error while updating predefined request : ' . $e);
