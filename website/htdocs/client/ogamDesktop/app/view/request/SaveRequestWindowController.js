@@ -197,7 +197,7 @@ Ext.define('OgamDesktop.view.request.SaveRequestWindowController', {
      * @private
      * @param boolean display True to display the predefined request after the saving.
      */
-    saveRequest: function(display = false) {
+    saveRequest: function(display) {
         var formComponent = this.getView().queryById('SaveForm');
         var form = formComponent.getForm();
 

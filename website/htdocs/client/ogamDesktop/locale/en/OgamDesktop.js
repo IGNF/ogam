@@ -288,6 +288,30 @@ Ext.define('OgamDesktop.locale.en.view.request.PredefinedRequestSelector', {
 	override:'OgamDesktop.view.request.PredefinedRequestSelector',
 	defaultCardPanelText : 'Please select a request...'
 });
+Ext.define('OgamDesktop.locale.en.view.request.SaveRequestWindow', {
+	override:'OgamDesktop.view.request.SaveRequestWindow',
+	config:{
+		title : 'Save the request'
+	},
+    selectionFieldsetTitle:'Select the request',
+    createRadioFieldLabel:'Create a new request',
+    editRadioFieldLabel:'Edit an existing request',
+    resquestComboLabel:'Request',
+    comboEmptyText:'Select...',
+    formFieldsetTitle:'Request information',
+    groupComboLabel:'Group *',
+    labelTextFieldLabel:'Label *',
+    definitionTextFieldLabel:'Description',
+    radioFieldContainerLabel:'Privacy',
+    privateRadioFieldLabel:'Private',
+    publicRadioFieldLabel:'Public',
+	cancelButtonText:'Cancel',
+	cancelButtonTooltip:'Cancel the request',
+	saveButtonText:'Save',
+	saveButtonTooltip:'Save the request',
+	saveAndDisplayButtonText:'Save and Display',
+	saveAndDisplayButtonTooltip:'Save and open the predefined requests page'
+});
 
 /*
  * view map

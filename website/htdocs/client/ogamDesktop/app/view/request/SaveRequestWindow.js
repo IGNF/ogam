@@ -11,29 +11,103 @@ Ext.define('OgamDesktop.view.request.SaveRequestWindow',{
     ],
 	controller: 'saverequestwindow',
 	resizable: true,
-	title: 'Sauvegarder la requête',
-	dockedItems: [{
-	    xtype: 'toolbar',
-	    dock: 'bottom',
-	    items: [{
-			itemId: 'CancelButton',
-			xtype: 'button',
-			text: 'Cancel',
-			tooltip : 'Cancel the request'
-		},'->',{
-			itemId: 'SaveButton',
-			xtype: 'button',
-			text: 'Save',
-			tooltip : 'Save the request'
-		},{
-			itemId: 'SaveAndDisplayButton',
-			xtype: 'button',
-			text: 'Save and Display',
-			tooltip : 'Save and Display the request'
-		}]
-	}],
+	title: 'Save the request',
 	requestId : null,
 
+//<locale>
+    /**
+     * @cfg {String} selectionFieldsetTitle
+     * The selection fieldset title (defaults to <tt>'Select the request'</tt>)
+     */
+    selectionFieldsetTitle: "Select the request",
+    /**
+     * @cfg {String} createRadioFieldLabel
+     * The create radio field label (defaults to <tt>'Create a new request'</tt>)
+     */
+    createRadioFieldLabel:'Create a new request',
+    /**
+     * @cfg {String} editRadioFieldLabel
+     * The edit radio field label (defaults to <tt>'Edit an existing request'</tt>)
+     */
+    editRadioFieldLabel:'Edit an existing request',
+    /**
+     * @cfg {String} resquestComboLabel
+     * The resquest combo label (defaults to <tt>'Request'</tt>)
+     */
+    resquestComboLabel:'Request',
+    /**
+     * @cfg {String} comboEmptyText
+     * The combo empty text (defaults to <tt>'Select...'</tt>)
+     */
+    comboEmptyText:'Select...',
+    /**
+     * @cfg {String} formFieldsetTitle
+     * The form fieldset title (defaults to <tt>'Request information'</tt>)
+     */
+    formFieldsetTitle:'Request information',
+    /**
+     * @cfg {String} groupComboLabel
+     * The group combo label (defaults to <tt>'Group *'</tt>)
+     */
+    groupComboLabel:'Group *',
+    /**
+     * @cfg {String} labelTextFieldLabel
+     * The label text field label (defaults to <tt>'Label *'</tt>)
+     */
+    labelTextFieldLabel:'Label *',
+    /**
+     * @cfg {String} definitionTextFieldLabel
+     * The definition text field label (defaults to <tt>'Description'</tt>)
+     */
+    definitionTextFieldLabel:'Description',
+    /**
+     * @cfg {String} radioFieldContainerLabel
+     * The radio field container label (defaults to <tt>'Privacy'</tt>)
+     */
+    radioFieldContainerLabel:'Privacy',
+    /**
+     * @cfg {String} privateRadioFieldLabel
+     * The private radio field label (defaults to <tt>'Private'</tt>)
+     */
+    privateRadioFieldLabel:'Private',
+    /**
+     * @cfg {String} publicRadioFieldLabel
+     * The public radio field label (defaults to <tt>'Public'</tt>)
+     */
+    publicRadioFieldLabel:'Public',
+    
+    /**
+     * @cfg {String} cancelButtonText
+     * The cancel button text (defaults to <tt>'Cancel'</tt>)
+     */
+	cancelButtonText:'Cancel',
+    /**
+     * @cfg {String} cancelButtonTooltip
+     * The cancel button tooltip (defaults to <tt>'Cancel the request'</tt>)
+     */
+	cancelButtonTooltip:'Cancel the request',
+    /**
+     * @cfg {String} saveButtonText
+     * The save button text (defaults to <tt>'Save'</tt>)
+     */
+	saveButtonText:'Save',
+    /**
+     * @cfg {String} saveButtonTooltip
+     * The save button tooltip (defaults to <tt>'Save the request'</tt>)
+     */
+	saveButtonTooltip:'Save the request',
+    /**
+     * @cfg {String} saveAndDisplayButtonText
+     * The save and display button text (defaults to <tt>'Save and Display'</tt>)
+     */
+	saveAndDisplayButtonText:'Save and Display',
+    /**
+     * @cfg {String} saveAndDisplayButtonTooltip
+     * The save and display button tooltip (defaults to <tt>'Save and open the predefined requests page'</tt>)
+     */
+	saveAndDisplayButtonTooltip:'Save and open the predefined requests page',
+//</locale>
+    
 	/**
 	 * Initializes the items.
 	 */
@@ -47,7 +121,7 @@ Ext.define('OgamDesktop.view.request.SaveRequestWindow',{
 			},
 			items: [{
 				xtype: 'fieldset',
-				title: 'Sélection de la requête',
+				title: this.selectionFieldsetTitle,
 				items: [{
 		            xtype      : 'fieldcontainer',
 		            defaultType: 'radiofield',
@@ -57,14 +131,14 @@ Ext.define('OgamDesktop.view.request.SaveRequestWindow',{
 		            layout: 'vbox',
 		            items: [{
 		            	itemId    : 'createRadioField',
-	                    boxLabel  : 'Créer une nouvelle requête',
+	                    boxLabel  : this.createRadioFieldLabel,
 	                    name      : 'savingType',
 	                    inputValue: 'CREATION',
 	                    margin: '0 20px 0 0',
 	                    checked   : true
 	                },{
 	                    itemId    : 'editRadioField',
-	                    boxLabel  : 'Modifier une requête existante',
+	                    boxLabel  : this.editRadioFieldLabel,
 	                    name      : 'savingType',
 	                    inputValue: 'EDITION'
 	                },{
@@ -72,13 +146,13 @@ Ext.define('OgamDesktop.view.request.SaveRequestWindow',{
 	                	disabled: true,
 						xtype: 'combo',
 						name: 'requestId',
-						fieldLabel: 'Requête',
+						fieldLabel: this.resquestComboLabel,
 						allowBlank: false,
 						width: 500,
 			    		store: new OgamDesktop.store.request.predefined.PredefinedRequest({
 			    			storeId: 'SaveRequestWindowRequestComboStore'
     					}),
-			    		emptyText: 'Sélectionner...',
+			    		emptyText: this.comboEmptyText,
 			    		queryMode: 'local',
 			    		displayField: 'label',
 			    		valueField: 'request_id'
@@ -86,7 +160,7 @@ Ext.define('OgamDesktop.view.request.SaveRequestWindow',{
 		        }]
 		    },{
 				xtype: 'fieldset',
-				title: 'Informations sur la requête',
+				title: this.formFieldsetTitle,
 				defaults: {
 	                width: 500
 	            },
@@ -94,9 +168,9 @@ Ext.define('OgamDesktop.view.request.SaveRequestWindow',{
 					itemId: 'groupCombo',
 					xtype: 'combo',
 					name      : 'groupId',
-					fieldLabel: 'Groupe *',
+					fieldLabel: this.groupComboLabel,
 					allowBlank: false,
-					emptyText: 'Sélectionner...',
+					emptyText: this.comboEmptyText,
 		    		store: new OgamDesktop.store.request.predefined.Group(),
 		    		queryMode: 'local',
 		    		displayField: 'label',
@@ -105,16 +179,16 @@ Ext.define('OgamDesktop.view.request.SaveRequestWindow',{
 		    		itemId: 'labelTextField',
 					xtype: 'textfield',
 					name      : 'label',
-					fieldLabel: 'Libellé *',
+					fieldLabel: this.labelTextFieldLabel,
 					allowBlank: false
 				},{
 					itemId: 'definitionTextField',
 			        xtype     : 'textareafield',
 			        name      : 'definition',
-			        fieldLabel: 'Description'
+			        fieldLabel: this.definitionTextFieldLabel
 			    },{
 		            xtype      : 'fieldcontainer',
-		            fieldLabel : 'Portée',
+		            fieldLabel : this.radioFieldContainerLabel,
 		            defaultType: 'radiofield',
 		            width: 300,
 		            defaults: {
@@ -124,13 +198,13 @@ Ext.define('OgamDesktop.view.request.SaveRequestWindow',{
 		            items: [
 		                {
 		                    itemId: 'privateRadioField',
-		                    boxLabel  : 'Privée',
+		                    boxLabel  : this.privateRadioFieldLabel,
 		                    name      : 'isPublic',
 		                    inputValue: false,
 		                    checked   : true
 		                },{
 		                	itemId: 'publicRadioField',
-		                    boxLabel  : 'Publique',
+		                    boxLabel  : this.publicRadioFieldLabel,
 		                    name      : 'isPublic',
 		                    inputValue: true
 		                }
@@ -138,6 +212,27 @@ Ext.define('OgamDesktop.view.request.SaveRequestWindow',{
 		        }]
 			}]
 		});
+		
+		this.dockedItems = [{
+		    xtype: 'toolbar',
+		    dock: 'bottom',
+		    items: [{
+				itemId: 'CancelButton',
+				xtype: 'button',
+				text: this.cancelButtonText,
+				tooltip : this.cancelButtonTooltip
+			},'->',{
+				itemId: 'SaveButton',
+				xtype: 'button',
+				text: this.saveButtonText,
+				tooltip : this.saveButtonTooltip
+			},{
+				itemId: 'SaveAndDisplayButton',
+				xtype: 'button',
+				text: this.saveAndDisplayButtonText,
+				tooltip : this.saveAndDisplayButtonTooltip
+			}]
+		}],
 		
 		this.callParent(arguments);
 	}

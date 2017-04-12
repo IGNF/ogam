@@ -288,6 +288,30 @@ Ext.define('OgamDesktop.locale.fr.view.request.PredefinedRequestSelector', {
 	override:'OgamDesktop.view.request.PredefinedRequestSelector',
 	defaultCardPanelText : 'Veuillez sélectionner une requête...'
 });
+Ext.define('OgamDesktop.locale.fr.view.request.SaveRequestWindow', {
+	override:'OgamDesktop.view.request.SaveRequestWindow',
+	config:{
+		title : 'Sauvegarder la requête'
+	},
+    selectionFieldsetTitle:'Sélection de la requête',
+    createRadioFieldLabel:'Créer une nouvelle requête',
+    editRadioFieldLabel:'Modifier une requête existante',
+    resquestComboLabel:'Requête',
+    comboEmptyText:'Sélectionner...',
+    formFieldsetTitle:'Informations sur la requête',
+    groupComboLabel:'Groupe *',
+    labelTextFieldLabel:'Libellé *',
+    definitionTextFieldLabel:'Description',
+    radioFieldContainerLabel:'Portée',
+    privateRadioFieldLabel:'Privée',
+    publicRadioFieldLabel:'Publique',
+	cancelButtonText:'Annuler',
+	cancelButtonTooltip:'Annuler la requête',
+	saveButtonText:'Enregistrer',
+	saveButtonTooltip:'Enregistrer la requête',
+	saveAndDisplayButtonText:'Enregistrer et visualiser',
+	saveAndDisplayButtonTooltip:'Enregistrer et ouvrir la page des requêtes prédéfinies'
+});
 
 /*
  * view map
