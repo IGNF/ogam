@@ -312,6 +312,16 @@ Ext.define('OgamDesktop.locale.en.view.request.SaveRequestWindow', {
 	saveAndDisplayButtonText:'Save and Display',
 	saveAndDisplayButtonTooltip:'Save and open the predefined requests page'
 });
+Ext.define('OgamDesktop.locale.en.view.request.SaveRequestWindowController', {
+	override:'OgamDesktop.view.request.SaveRequestWindowController',
+    loadingText: 'Loading...',
+	toastTitle_invalidForm: 'Form submission:',
+	toastHtml_invalidForm: 'The form is not valid. Please correct the error(s).',
+	invalidValueSubmittedErrorTitle: 'Form submission:',
+	invalidValueSubmittedErrorMessage: 'A field appears to contain an error. Please check your filter criteria.',
+	toastTitle_formSaved: 'Form submission:',
+	toastHtml_formSaved: 'Your request has been saved.'
+});
 
 /*
  * view map

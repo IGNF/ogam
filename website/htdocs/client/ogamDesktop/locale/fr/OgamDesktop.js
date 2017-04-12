@@ -312,6 +312,16 @@ Ext.define('OgamDesktop.locale.fr.view.request.SaveRequestWindow', {
 	saveAndDisplayButtonText:'Enregistrer et visualiser',
 	saveAndDisplayButtonTooltip:'Enregistrer et ouvrir la page des requêtes prédéfinies'
 });
+Ext.define('OgamDesktop.locale.fr.view.request.SaveRequestWindowController', {
+	override:'OgamDesktop.view.request.SaveRequestWindowController',
+    loadingText: 'Chargement...',
+	toastTitle_invalidForm: 'Soumission du formulaire:',
+	toastHtml_invalidForm: 'Le formulaire n\'est pas valide. Veuillez corriger l\'erreur(s).',
+	invalidValueSubmittedErrorTitle: 'Soumission du formulaire:',
+	invalidValueSubmittedErrorMessage: 'Un champ est en erreur. Veuillez vérifier vos critères de filtrage.',
+	toastTitle_formSaved: 'Soumission du formulaire:',
+	toastHtml_formSaved: 'Votre requête a été sauvegardée.'
+});
 
 /*
  * view map
