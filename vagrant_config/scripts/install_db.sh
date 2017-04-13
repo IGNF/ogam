@@ -66,6 +66,9 @@ sudo -n -u $USERNAME psql -f 1-Create_website_schema.sql -d $DATABASE 2>> $logfi
 echo "****** Import ModTaxRef v8.0 ******"
 sudo -n -u $USERNAME psql -f 2-Import_ModTaxRef-v8.0.sql -d $DATABASE 2>> $logfileError >> $logfile
 
+echo "****** Import ModTaxRef TEST ******"
+sudo -n -u $USERNAME psql -f 2-Import_ModTaxRef-Test.sql -d $DATABASE 2>> $logfileError >> $logfile
+
 #echo "****** Populate mapping schema ******"
 sudo -n -u $USERNAME psql -f 2-Populate_mapping_schema.sql  -d $DATABASE 2>> $logfileError >> $logfile
 
