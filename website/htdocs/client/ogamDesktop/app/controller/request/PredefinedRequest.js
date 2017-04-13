@@ -167,6 +167,11 @@ Ext.define('OgamDesktop.controller.request.PredefinedRequest', {
     		            url: Ext.manifest.OgamDesktop.requestServiceUrl + 'predefinedrequest/' + record.get('request_id'),
     		            method: 'DELETE',
     		            success: function(response, opts) {
+    		            	// Remove the request from the model if necessary
+                            var modelRequestId = this.getAdvReqView().getViewModel().get('requestId');
+                            if (record.get('request_id') === modelRequestId) {
+                            	this.getAdvReqView().getViewModel().set('requestId', null);
+                            }
     		                Ext.getStore('PredefinedRequestTabRequestStore').remove(record);
     		                this.getPredefinedRequestGridPanel().unmask();
     		            },
