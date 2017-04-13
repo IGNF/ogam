@@ -244,4 +244,20 @@ class UserController extends Controller {
 		// Nothing to do, the security module redirects automatically to the homepage (cf security.yml)
 		return new Response();
 	}
+	
+	/**
+	 * Return the current logged user
+	 *
+	 * @Route("/currentuser")
+	 */
+	public function getCurrentUserAction() {
+	    $logger = $this->get('logger');
+	    $logger->debug('getCurrentUserAction');
+	    
+	    $response = new Response();
+	    $response->headers->set('Content-Type', 'application/json');
+	    return $this->render('OGAMBundle:User:get_current_user.json.twig', array(
+	        'data' => $this->getUser()
+	    ), $response);
+	}
 }

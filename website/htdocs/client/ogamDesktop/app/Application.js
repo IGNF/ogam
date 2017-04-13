@@ -19,7 +19,8 @@ Ext.define('OgamDesktop.Application', {
 	],
 	stores: [
 		'map.LayerTreeNode',
-		'result.Grid'
+		'result.Grid',
+		'CurrentUser'
 	],
 	controllers: [
 		'map.Drawing',
@@ -162,5 +163,12 @@ Ext.define('OgamDesktop.Application', {
 	launch: function () {
 		// Loads the grid parameters
 		Ext.Loader.loadScript(Ext.manifest.OgamDesktop.requestServiceUrl +'getgridparameters');
+	},
+	
+    /**
+     * Return the current user
+     */
+	getCurrentUser: function(){
+		return Ext.getStore('CurrentUser').getAt(0);
 	}
 });
