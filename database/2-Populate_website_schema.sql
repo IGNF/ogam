@@ -113,6 +113,9 @@ INSERT INTO permission(permission_code, permission_label) VALUES ('DATA_EDITION_
 INSERT INTO permission(permission_code, permission_label) VALUES ('CHECK_CONF', 'Check the configuration');
 INSERT INTO permission(permission_code, permission_label) VALUES ('CANCEL_VALIDATED_SUBMISSION', 'Cancel validated submission');
 INSERT INTO permission(permission_code, permission_label) VALUES ('CANCEL_OTHER_PROVIDER_SUBMISSION', 'Cancel other provider submission');
+INSERT INTO permission(permission_code, permission_label) VALUES ('MANAGE_OWNED_PRIVATE_REQUEST', 'Manage its own private requests');
+INSERT INTO permission(permission_code, permission_label) VALUES ('MANAGE_PUBLIC_REQUEST', 'Manage all the public requests');
+INSERT INTO permission(permission_code, permission_label) VALUES ('MANAGE_REQUEST_GROUP', 'Manage all the request group');
 
 -- Add the permissions per role
 INSERT INTO permission_per_role(role_code, permission_code) VALUES ('ADMIN', 'MANAGE_USERS');
@@ -126,6 +129,9 @@ INSERT INTO permission_per_role(role_code, permission_code) VALUES ('ADMIN', 'DA
 INSERT INTO permission_per_role(role_code, permission_code) VALUES ('ADMIN', 'CHECK_CONF');
 INSERT INTO permission_per_role(role_code, permission_code) VALUES ('ADMIN', 'CANCEL_VALIDATED_SUBMISSION');
 INSERT INTO permission_per_role(role_code, permission_code) VALUES ('ADMIN', 'CANCEL_OTHER_PROVIDER_SUBMISSION');
+INSERT INTO permission_per_role(role_code, permission_code) VALUES ('ADMIN', 'MANAGE_OWNED_PRIVATE_REQUEST');
+INSERT INTO permission_per_role(role_code, permission_code) VALUES ('ADMIN', 'MANAGE_PUBLIC_REQUEST');
+INSERT INTO permission_per_role(role_code, permission_code) VALUES ('ADMIN', 'MANAGE_REQUEST_GROUP');
 INSERT INTO permission_per_role(role_code, permission_code) VALUES ('VISITOR', 'DATA_QUERY');
 INSERT INTO permission_per_role(role_code, permission_code) VALUES ('VISITOR', 'DATA_QUERY_OTHER_PROVIDER');
 

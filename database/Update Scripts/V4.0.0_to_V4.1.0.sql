@@ -221,7 +221,7 @@ ALTER TABLE website.predefined_request_group DROP COLUMN name;
 
 -----------------------------------------------------
 --                                                 --
---     		      Ajout des droits                 --
+--     		 Ajout des droits postgres             --
 --                                                 --
 -----------------------------------------------------
 
@@ -230,3 +230,16 @@ GRANT ALL ON SEQUENCE website.predefined_request_request_id_seq TO ogam;
 GRANT ALL ON SEQUENCE website.predefined_request_group_group_id_seq TO postgres;
 GRANT ALL ON SEQUENCE website.predefined_request_group_group_id_seq TO ogam;
 
+
+-----------------------------------------------------
+--                                                 --
+--     		    Ajout des permissions              --
+--                                                 --
+-----------------------------------------------------
+
+INSERT INTO website.permission(permission_code, permission_label) VALUES ('MANAGE_OWNED_PRIVATE_REQUEST', 'Manage its own private requests');
+INSERT INTO website.permission(permission_code, permission_label) VALUES ('MANAGE_PUBLIC_REQUEST', 'Manage all the public requests');
+INSERT INTO website.permission(permission_code, permission_label) VALUES ('MANAGE_REQUEST_GROUP', 'Manage all the request group');
+INSERT INTO website.permission_per_role(role_code, permission_code) VALUES ('ADMIN', 'MANAGE_OWNED_PRIVATE_REQUEST');
+INSERT INTO website.permission_per_role(role_code, permission_code) VALUES ('ADMIN', 'MANAGE_PUBLIC_REQUEST');
+INSERT INTO website.permission_per_role(role_code, permission_code) VALUES ('ADMIN', 'MANAGE_REQUEST_GROUP');
