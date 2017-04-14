@@ -8,10 +8,14 @@
     {{ datum.date.format('Y-m-d')|json_encode }},
     {{ datum.isPublic|json_encode }},
     {# We assume that there is only one group per request #}
-    {{ datum.groups[0].position|json_encode }},
-    {{ datum.groups[0].groupId.groupId|json_encode }},
-    {{ datum.groups[0].groupId.label|json_encode }},
-    {{ datum.groups[0].groupId.position|json_encode }},
+    {%- if datum.groups.containsKey(0) -%}
+       {{ datum.groups.first().position|json_encode }},
+       {{ datum.groups.first().groupId.groupId|json_encode }},
+       {{ datum.groups.first().groupId.label|json_encode }},
+       {{ datum.groups.first().groupId.position|json_encode }},
+    {%- else -%}
+        null, null, null, null,
+    {%- endif -%}
     {{ datum.datasetId.id|json_encode }},
     {{ datum.datasetId.label|json_encode }}
 ]

@@ -3,6 +3,7 @@ namespace Ign\Bundle\OGAMBundle\Repository\Website;
 
 use Ign\Bundle\OGAMBundle\Entity\Website\PredefinedRequestCriterion;
 use Ign\Bundle\OGAMBundle\Entity\Website\PredefinedRequestColumn;
+use Ign\Bundle\OGAMBundle\Entity\Website\User;
 
 /**
  * PredefinedRequestRepository
@@ -23,9 +24,11 @@ class PredefinedRequestRepository extends \Doctrine\ORM\EntityRepository {
 	 *        	the sort column
 	 * @param String $locale
 	 *        	the locale
+	 * @param User $user
+	 *        	the user
 	 * @return Array[PredefinedRequest] the list of requests
 	 */
-	public function getPredefinedRequestList($schema = 'RAW_DATA', $dir, $sort, $locale) {
+	public function getPredefinedRequestList($schema = 'RAW_DATA', $dir, $sort, $locale, $user) {
 		
 		// Translate the columns names
 		$columnNames = array(
@@ -58,14 +61,22 @@ class PredefinedRequestRepository extends \Doctrine\ORM\EntityRepository {
 		$qb->select('pr, ds, prga, prg')
 			->from('OGAMBundle:Website\PredefinedRequest', 'pr')
 			->join('pr.datasetId', 'ds')
-			->join('pr.groups', 'prga')
-			->join('prga.groupId', 'prg')
+			->leftJoin('pr.groups', 'prga')
+			->leftJoin('prga.groupId', 'prg')
 			->where('pr.schemaCode = :schema')
 			->orderBy($sort, $dir)
 			->setParameters([
-			'schema' => $schema
+			    'schema' => $schema,
+			    'userLogin' => $user->getLogin()
 		]);
-		
+
+		$or = $qb->expr()->orx();
+		$or->add("pr.isPublic = TRUE");
+		if($user->isAllowed('MANAGE_OWNED_PRIVATE_REQUEST')){
+		    $or->add("pr.userLogin = :userLogin AND pr.isPublic = FALSE");
+		}
+		$qb->andWhere($or);
+
 		return $qb->getQuery()->getResult();
 	}
 

@@ -389,7 +389,7 @@ class QueryController extends Controller {
 		$schema = $this->get('ogam.schema_listener')->getSchema();
 		$locale = $this->get('ogam.locale_listener')->getLocale();
 		$predefinedRequestRepository = $this->get('doctrine')->getRepository(PredefinedRequest::class);
-		$predefinedRequestList = $predefinedRequestRepository->getPredefinedRequestList($schema, $dir, $sort, $locale);
+		$predefinedRequestList = $predefinedRequestRepository->getPredefinedRequestList($schema, $dir, $sort, $locale, $this->getUser());
 
 		$response = new Response();
 		$response->headers->set('Content-Type', 'application/json');
