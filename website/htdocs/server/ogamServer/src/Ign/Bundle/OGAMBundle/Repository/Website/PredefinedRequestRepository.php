@@ -30,6 +30,8 @@ class PredefinedRequestRepository extends \Doctrine\ORM\EntityRepository {
 	 */
 	public function getPredefinedRequestList($schema = 'RAW_DATA', $dir, $sort, $locale, $user) {
 		
+	    $params = [];
+		
 		// Translate the columns names
 		$columnNames = array(
 			'request_id' => 'pr.requestId',
@@ -64,18 +66,17 @@ class PredefinedRequestRepository extends \Doctrine\ORM\EntityRepository {
 			->leftJoin('pr.groups', 'prga')
 			->leftJoin('prga.groupId', 'prg')
 			->where('pr.schemaCode = :schema')
-			->orderBy($sort, $dir)
-			->setParameters([
-			    'schema' => $schema,
-			    'userLogin' => $user->getLogin()
-		]);
+			->orderBy($sort, $dir);
+		
+		$params['schema'] = $schema;
 
 		$or = $qb->expr()->orx();
 		$or->add("pr.isPublic = TRUE");
 		if($user->isAllowed('MANAGE_OWNED_PRIVATE_REQUEST')){
 		    $or->add("pr.userLogin = :userLogin AND pr.isPublic = FALSE");
+		    $params['userLogin'] = $user->getLogin();
 		}
-		$qb->andWhere($or);
+		$qb->andWhere($or)->setParameters($params);
 
 		return $qb->getQuery()->getResult();
 	}

@@ -58,7 +58,7 @@ class PredefinedRequest {
 
 	/**
 	 *
-	 * @var string
+	 * @var boolean
 	 * @ORM\Column(name="is_public", type="boolean", nullable=false)
 	 */
 	private $isPublic;

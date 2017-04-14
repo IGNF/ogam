@@ -29,6 +29,7 @@ use Ign\Bundle\OGAMBundle\Entity\Metadata\FormFormat;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Doctrine\DBAL\Driver\PDOException;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
+use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 
 /**
  * @Route("/query")
@@ -451,12 +452,25 @@ class QueryController extends Controller {
     	    $r = $request->request;
     	    $em = $this->getDoctrine()->getManager();
     	    
+    	    // Check the right
+    	    if($r->getBoolean('isPublic') === true) {
+        	    if(!$this->getUser()->isAllowed('MANAGE_PUBLIC_REQUEST')){
+        	        throw new BadCredentialsException('Invalid credentials.');
+        	    }
+    	    } elseif ($r->getBoolean('isPublic') === false) {
+    	        if(!$this->getUser()->isAllowed('MANAGE_OWNED_PRIVATE_REQUEST')){
+    	            throw new BadCredentialsException('Invalid credentials.');
+    	        }
+    	    } else {
+    	        throw new \InvalidArgumentException('Invalid arguments.');
+    	    }
+    	    
     	    // Create the predefined request
     	    $pr = new PredefinedRequest();
     	    
     	    // Edit and add the new data
-    	    $this->get('ogam.query_service')->updatePredefinedRequest ($pr, $r->get('datasetId'), $r->get('label'), $r->get('definition'), $r->get('isPublic'));
-    	    $this->get('ogam.query_service')->createPRGroupAssociation($pr, $r->get('groupId'));
+    	    $this->get('ogam.query_service')->updatePredefinedRequest ($pr, $r->get('datasetId'), $r->get('label'), $r->get('definition'), $r->getBoolean('isPublic'));
+    	    $this->get('ogam.query_service')->createPRGroupAssociation($pr, $r->getInt('groupId'));
     	    $this->get('ogam.query_service')->createPRCriteriaAndColumns($pr, $r);
     	    $em->flush();
             
@@ -489,13 +503,27 @@ class QueryController extends Controller {
 	    
 	    try{
     	    // Set the function variables
-    	    $requestId = $request->attributes->get('id');
+    	    $requestId = $request->attributes->getInt('id');
     	    $r = $request->request;
     	    $em = $this->getDoctrine()->getManager();
     	    
     	    // Get the predefined request
     	    $predefinedRequestRepo = $em->getRepository(PredefinedRequest::class);
     	    $pr = $predefinedRequestRepo->find($requestId);
+    	    
+    	    // Check the right
+    	    if($pr->getIsPublic() === true) {
+    	        if(!$this->getUser()->isAllowed('MANAGE_PUBLIC_REQUEST')){
+    	            throw new BadCredentialsException('Invalid credentials.');
+    	        }
+    	    } elseif ($pr->getIsPublic() === false) {
+    	        if(!$this->getUser()->isAllowed('MANAGE_OWNED_PRIVATE_REQUEST')){
+    	            throw new BadCredentialsException('Invalid credentials.');
+    	        }
+    	        if($this->getUser()->getLogin() !== $pr->getUserLogin()->getLogin()) {
+    	            throw new BadCredentialsException('Invalid credentials.');
+    	        }
+    	    }
     	    
     	    // Delete the old data
     	    $this->get('ogam.query_service')->deletePRGroupAssociations($pr);
@@ -504,8 +532,8 @@ class QueryController extends Controller {
     	    $em->flush();
     	    
     	    // Edit and add the new data
-    	    $this->get('ogam.query_service')->updatePredefinedRequest ($pr, $r->get('datasetId'), $r->get('label'), $r->get('definition'), $r->get('isPublic'));
-    	    $this->get('ogam.query_service')->createPRGroupAssociation($pr, $r->get('groupId'));
+    	    $this->get('ogam.query_service')->updatePredefinedRequest ($pr, $r->get('datasetId'), $r->get('label'), $r->get('definition'), $r->getBoolean('isPublic'));
+    	    $this->get('ogam.query_service')->createPRGroupAssociation($pr, $r->getInt('groupId'));
     	    $this->get('ogam.query_service')->createPRCriteriaAndColumns($pr, $r);
     	    $em->flush();
     	    
@@ -538,12 +566,26 @@ class QueryController extends Controller {
 	    
 	    try {
     	    // Set the function variables
-    	    $requestId = $request->attributes->get('id');
+    	    $requestId = $request->attributes->getInt('id');
     	    $em = $this->getDoctrine()->getManager();
     	    
     	    // Get the predefined request
     	    $predefinedRequestRepo = $em->getRepository(PredefinedRequest::class);
     	    $pr = $predefinedRequestRepo->find($requestId);
+    	    
+    	    // Check the right
+    	    if($pr->getIsPublic() === true) {
+    	        if(!$this->getUser()->isAllowed('MANAGE_PUBLIC_REQUEST')){
+    	            throw new BadCredentialsException('Invalid credentials.');
+    	        }
+    	    } elseif ($pr->getIsPublic() === false) {
+    	        if(!$this->getUser()->isAllowed('MANAGE_OWNED_PRIVATE_REQUEST')){
+    	            throw new BadCredentialsException('Invalid credentials.');
+    	        }
+    	        if($this->getUser()->getLogin() !== $pr->getUserLogin()->getLogin()) {
+    	            throw new BadCredentialsException('Invalid credentials.');
+    	        }
+    	    }
     	    
     	    // Delete the old data
     	    $this->get('ogam.query_service')->deletePRGroupAssociations($pr);
