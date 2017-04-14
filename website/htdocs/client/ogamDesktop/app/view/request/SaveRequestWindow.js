@@ -189,6 +189,7 @@ Ext.define('OgamDesktop.view.request.SaveRequestWindow',{
 		            xtype      : 'fieldcontainer',
 		            fieldLabel : this.radioFieldContainerLabel,
 		            defaultType: 'radiofield',
+		            hidden: !OgamDesktop.getApplication().getCurrentUser().isAllowed('MANAGE_PUBLIC_REQUEST'),
 		            width: 300,
 		            defaults: {
 		                flex: 1

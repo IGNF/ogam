@@ -164,6 +164,10 @@ Ext.define('OgamDesktop.view.request.PredefinedRequest', {
                     // Action managed into the advanced request panel
                     this.fireEvent('predefinedRequestEdition', record);
                 },
+                isDisabled: function(view, rowIndex, colIndex, item, record) {
+                    // OgamDesktop.getApplication().getCurrentUser() can not be used here because it is not yet ready...
+                    return record.get('is_read_only');
+                },
                 scope:this
             },{
                 iconCls: 'o-predefined-request-grid-panel-tools-edit-bin',
@@ -171,6 +175,10 @@ Ext.define('OgamDesktop.view.request.PredefinedRequest', {
                 handler: function(grid, rowIndex, colIndex, item, e, record, row) {
                     // Action managed into the advanced request panel
                     this.fireEvent('predefinedRequestDeletion', record);
+                },
+                isDisabled: function(view, rowIndex, colIndex, item, record) {
+                    // OgamDesktop.getApplication().getCurrentUser() can not be used here because it is not yet ready...
+                    return record.get('is_read_only');
                 },
                 scope:this
             }]

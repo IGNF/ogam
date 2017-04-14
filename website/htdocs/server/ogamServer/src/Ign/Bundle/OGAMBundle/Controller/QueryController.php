@@ -395,7 +395,8 @@ class QueryController extends Controller {
 		$response = new Response();
 		$response->headers->set('Content-Type', 'application/json');
 		return $this->render('OGAMBundle:Query:ajaxgetpredefinedrequestlist.json.twig', array(
-			'data' => $predefinedRequestList
+			'data' => $predefinedRequestList,
+		    'user' => $this->getUser()
 		), $response);
 	}
 

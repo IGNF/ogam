@@ -17,7 +17,8 @@ Ext.define('OgamDesktop.model.request.predefined.PredefinedRequest',{
         {name: 'group_label', type: 'string', mapping: 7},
         {name: 'group_position', type: 'int', mapping: 8},
         {name: 'dataset_id', reference: {type:'Process', role:'processus', unique:true}, mapping: 9},
-        {name: 'dataset_label', type: 'string', mapping: 10}
+        {name: 'dataset_label', type: 'string', mapping: 10},
+        {name: 'is_read_only', type: 'boolean', mapping: 11}
     ],
             
     hasMany: [{// See Ext.data.reader.Reader documentation for example

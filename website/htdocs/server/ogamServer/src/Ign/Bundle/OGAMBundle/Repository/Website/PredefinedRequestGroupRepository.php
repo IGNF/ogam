@@ -18,7 +18,7 @@ class PredefinedRequestGroupRepository extends \Doctrine\ORM\EntityRepository {
 		$qb = $this->_em->createQueryBuilder();
 		$qb->select('prg')
 			->from('OGAMBundle:Website\PredefinedRequestGroup', 'prg')
-			->orderBy('prg.position', 'ASC');
+			->orderBy('prg.position, prg.label', 'ASC');
 		return $qb->getQuery()->getResult();
 	}
 }

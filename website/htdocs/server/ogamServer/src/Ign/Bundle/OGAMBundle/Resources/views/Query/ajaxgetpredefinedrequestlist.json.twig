@@ -17,7 +17,12 @@
         null, null, null, null,
     {%- endif -%}
     {{ datum.datasetId.id|json_encode }},
-    {{ datum.datasetId.label|json_encode }}
+    {{ datum.datasetId.label|json_encode }},
+    {%- if (datum.isPublic and user.isAllowed('MANAGE_PUBLIC_REQUEST')) or not datum.isPublic -%}
+        false
+    {%- else -%}
+        true
+    {%- endif -%}
 ]
 {% endautoescape %}{%- endblock -%}
 
