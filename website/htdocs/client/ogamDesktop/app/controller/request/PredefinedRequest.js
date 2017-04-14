@@ -44,7 +44,13 @@ Ext.define('OgamDesktop.controller.request.PredefinedRequest', {
      * @cfg {String} deletionConfirmMessage
      * The deletion confirm message (defaults to <tt>'Are you sure you want to delete the request?'</tt>)
      */
-    deletionConfirmMessage: 'Are you sure you want to delete the request?', 
+    deletionConfirmMessage: 'Are you sure you want to delete the request?',
+    
+    /**
+     * @cfg {String} predefinedRequestDeletionErrorTitle
+     * The error title when the predefined request deletion fails (defaults to <tt>'Request deletion failed:'</tt>)
+     */
+    predefinedRequestDeletionErrorTitle: 'Request deletion failed:',
 
     /**
      * Open the predefined request tab
@@ -167,12 +173,17 @@ Ext.define('OgamDesktop.controller.request.PredefinedRequest', {
     		            url: Ext.manifest.OgamDesktop.requestServiceUrl + 'predefinedrequest/' + record.get('request_id'),
     		            method: 'DELETE',
     		            success: function(response, opts) {
-    		            	// Remove the request from the model if necessary
-                            var modelRequestId = this.getAdvReqView().getViewModel().get('requestId');
-                            if (record.get('request_id') === modelRequestId) {
-                            	this.getAdvReqView().getViewModel().set('requestId', null);
-                            }
-    		                Ext.getStore('PredefinedRequestTabRequestStore').remove(record);
+    		                var result = Ext.decode(response.responseText);
+    		                if (result.success) {
+	    		            	// Remove the request from the model if necessary
+	                            var modelRequestId = this.getAdvReqView().getViewModel().get('requestId');
+	                            if (record.get('request_id') === modelRequestId) {
+	                            	this.getAdvReqView().getViewModel().set('requestId', null);
+	                            }
+	    		                Ext.getStore('PredefinedRequestTabRequestStore').remove(record);
+    		                } else {
+    		                	OgamDesktop.toast(result.errorMessage, this.predefinedRequestDeletionErrorTitle);
+    		                }
     		                this.getPredefinedRequestGridPanel().unmask();
     		            },
     		            failure: function(response, opts) {

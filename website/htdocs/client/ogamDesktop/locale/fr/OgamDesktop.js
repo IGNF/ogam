@@ -28,7 +28,8 @@ Ext.define("OgamDesktop.locale.fr.controller.request.PredefinedRequest", {
     override: "OgamDesktop.controller.request.PredefinedRequest",
     loadingMsg: 'Chargement...',
     deletionConfirmTitle: 'Suppression de la requête :',
-    deletionConfirmMessage: 'Êtes-vous sûr de vouloir supprimer la requête?'
+    deletionConfirmMessage: 'Êtes-vous sûr de vouloir supprimer la requête?',
+    predefinedRequestDeletionErrorTitle: 'Suppression de la requête échouée:'
 });
 Ext.define("OgamDesktop.locale.fr.ux.request.RequestFieldSet", {
     override: "OgamDesktop.ux.request.RequestFieldSet",
