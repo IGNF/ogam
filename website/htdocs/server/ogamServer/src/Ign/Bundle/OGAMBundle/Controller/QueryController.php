@@ -401,6 +401,30 @@ class QueryController extends Controller {
 	}
 
 	/**
+	 * @Route("/ajaxgeteditablepredefinedrequestlist")
+	 */
+	public function ajaxgeteditablepredefinedrequestlistAction(Request $request) {
+	    $logger = $this->get('logger');
+	    $logger->debug('ajaxgeteditablepredefinedrequestlist');
+	    
+	    $sort = $request->query->get('sort');
+	    $dir = $request->query->getAlpha('dir');
+	    
+	    // Get the predefined values for the forms
+	    $schema = $this->get('ogam.schema_listener')->getSchema();
+	    $locale = $this->get('ogam.locale_listener')->getLocale();
+	    $predefinedRequestRepository = $this->get('doctrine')->getRepository(PredefinedRequest::class);
+	    $predefinedRequestList = $predefinedRequestRepository->getEditablePredefinedRequestList($schema, $dir, $sort, $locale, $this->getUser());
+	    
+	    $response = new Response();
+	    $response->headers->set('Content-Type', 'application/json');
+	    return $this->render('OGAMBundle:Query:ajaxgetpredefinedrequestlist.json.twig', array(
+	        'data' => $predefinedRequestList,
+	        'user' => $this->getUser()
+	    ), $response);
+	}
+	
+	/**
 	 * @Route("/ajaxgetpredefinedgrouplist")
 	 */
 	public function ajaxgetpredefinedgrouplistAction(Request $request) {

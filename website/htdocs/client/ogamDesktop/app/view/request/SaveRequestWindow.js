@@ -149,7 +149,12 @@ Ext.define('OgamDesktop.view.request.SaveRequestWindow',{
 						allowBlank: false,
 						width: 500,
 			    		store: new OgamDesktop.store.request.predefined.PredefinedRequest({
-			    			storeId: 'SaveRequestWindowRequestComboStore'
+			    			storeId: 'SaveRequestWindowRequestComboStore',
+			    			proxy:{
+			    				type:'ajax',
+			    				url:Ext.manifest.OgamDesktop.requestServiceUrl +'ajaxgeteditablepredefinedrequestlist',
+			    				reader:{type:'array', rootProperty:'data'}
+			    			}
     					}),
 			    		emptyText: this.comboEmptyText,
 			    		queryMode: 'local',

@@ -4,6 +4,7 @@ namespace Ign\Bundle\OGAMBundle\Repository\Website;
 use Ign\Bundle\OGAMBundle\Entity\Website\PredefinedRequestCriterion;
 use Ign\Bundle\OGAMBundle\Entity\Website\PredefinedRequestColumn;
 use Ign\Bundle\OGAMBundle\Entity\Website\User;
+use Doctrine\ORM\QueryBuilder;
 
 /**
  * PredefinedRequestRepository
@@ -30,46 +31,11 @@ class PredefinedRequestRepository extends \Doctrine\ORM\EntityRepository {
 	 */
 	public function getPredefinedRequestList($schema = 'RAW_DATA', $dir, $sort, $locale, $user) {
 		
-	    $params = [];
+	    $qb = $this->buildPredefinedRequestListRequest($dir, $sort);
 		
-		// Translate the columns names
-		$columnNames = array(
-			'request_id' => 'pr.requestId',
-			'label' => 'pr.label',
-			'definition' => 'pr.definition',
-			'date' => 'pr.date',
-			'position' => 'prga.position',
-			'is_public' => 'pr.isPublic',
-			'group_id' => 'prg.groupId',
-			'group_label' => 'prg.label',
-			'group_position' => 'prg.position',
-			'dataset_id' => 'ds.datasetId',
-			'dataset_label' => 'ds.label'
-		);
-		if (in_array($sort, $columnNames, true)) {
-			$sort = $columnNames[$sort];
-		} else {
-			$sort = $columnNames['label'];
-		}
-		$dirs = array(
-			'ASC',
-			'DESC'
-		);
-		if (!in_array($dir, $dirs, true)) {
-			$dir = $dirs[0];
-		}
-		
-		$qb = $this->_em->createQueryBuilder();
-		$qb->select('pr, ds, prga, prg')
-			->from('OGAMBundle:Website\PredefinedRequest', 'pr')
-			->join('pr.datasetId', 'ds')
-			->leftJoin('pr.groups', 'prga')
-			->leftJoin('prga.groupId', 'prg')
-			->where('pr.schemaCode = :schema')
-			->orderBy($sort, $dir);
-		
+		$params = [];
 		$params['schema'] = $schema;
-
+		
 		$or = $qb->expr()->orx();
 		$or->add("pr.isPublic = TRUE");
 		if($user->isAllowed('MANAGE_OWNED_PRIVATE_REQUEST')){
@@ -77,10 +43,105 @@ class PredefinedRequestRepository extends \Doctrine\ORM\EntityRepository {
 		    $params['userLogin'] = $user->getLogin();
 		}
 		$qb->andWhere($or)->setParameters($params);
-
+		
 		return $qb->getQuery()->getResult();
 	}
 
+	
+	/**
+	 * Get the list of editable predefined request (only the description, not the detailed fields and criteria).
+	 *
+	 * @param String $schema
+	 *        	the database schema
+	 * @param String $dir
+	 *        	the direction of sorting (ASC or DESC)
+	 * @param String $sort
+	 *        	the sort column
+	 * @param String $locale
+	 *        	the locale
+	 * @param User $user
+	 *        	the user
+	 * @return Array[PredefinedRequest] the list of requests
+	 */
+	public function getEditablePredefinedRequestList($schema = 'RAW_DATA', $dir, $sort, $locale, $user) {
+        
+	    $qb = $this->buildPredefinedRequestListRequest($dir, $sort);
+	    
+	    $params = [];
+	    $params['schema'] = $schema;
+	    
+	    if(!$user->isAllowed('MANAGE_PUBLIC_REQUEST') && !$user->isAllowed('MANAGE_OWNED_PRIVATE_REQUEST')){
+	        return [];
+	    }
+	    if($user->isAllowed('MANAGE_PUBLIC_REQUEST') && !$user->isAllowed('MANAGE_OWNED_PRIVATE_REQUEST')){
+	        $qb->andWhere("pr.isPublic = TRUE");
+	    }
+	    if(!$user->isAllowed('MANAGE_PUBLIC_REQUEST') && $user->isAllowed('MANAGE_OWNED_PRIVATE_REQUEST')){
+	        $qb->andWhere("pr.userLogin = :userLogin AND pr.isPublic = FALSE");
+	        $params['userLogin'] = $user->getLogin();
+	    }
+	    if($user->isAllowed('MANAGE_PUBLIC_REQUEST') && $user->isAllowed('MANAGE_OWNED_PRIVATE_REQUEST')){
+	        $or = $qb->expr()->orx();
+	        $or->add("pr.isPublic = TRUE");
+	        $or->add("pr.userLogin = :userLogin AND pr.isPublic = FALSE");
+	        $params['userLogin'] = $user->getLogin();
+	        $qb->andWhere($or);
+	    }
+	    $qb->setParameters($params);
+	    
+	    return $qb->getQuery()->getResult();
+	}
+	
+	/**
+	 * Get the query builder for the list of predefined request.
+	 *
+	 * @param String $dir
+	 *        	the direction of sorting (ASC or DESC)
+	 * @param String $sort
+	 *        	the sort column
+	 * @return QueryBuilder the query builder
+	 */
+	private function buildPredefinedRequestListRequest($dir, $sort) {
+	    
+	    // Translate the columns names
+	    $columnNames = array(
+	        'request_id' => 'pr.requestId',
+	        'label' => 'pr.label',
+	        'definition' => 'pr.definition',
+	        'date' => 'pr.date',
+	        'position' => 'prga.position',
+	        'is_public' => 'pr.isPublic',
+	        'group_id' => 'prg.groupId',
+	        'group_label' => 'prg.label',
+	        'group_position' => 'prg.position',
+	        'dataset_id' => 'ds.datasetId',
+	        'dataset_label' => 'ds.label'
+	    );
+	    if (in_array($sort, $columnNames, true)) {
+	        $sort = $columnNames[$sort];
+	    } else {
+	        $sort = $columnNames['label'];
+	    }
+	    $dirs = array(
+	        'ASC',
+	        'DESC'
+	    );
+	    if (!in_array($dir, $dirs, true)) {
+	        $dir = $dirs[0];
+	    }
+	    
+	    $qb = $this->_em->createQueryBuilder();
+	    $qb->select('pr, ds, prga, prg')
+	    ->from('OGAMBundle:Website\PredefinedRequest', 'pr')
+	    ->join('pr.datasetId', 'ds')
+	    ->leftJoin('pr.groups', 'prga')
+	    ->leftJoin('prga.groupId', 'prg')
+	    ->where('pr.schemaCode = :schema')
+	    ->orderBy($sort, $dir);
+
+	    return $qb;
+	}
+	
 	/**
 	 * Get a predefined request.
 	 *
