@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Ign\Bundle\OGAMBundle\Entity\Mapping\ResultLocation;
 use Ign\Bundle\OGAMBundle\Entity\Generic\QueryForm;
 use Ign\Bundle\OGAMBundle\Entity\Website\PredefinedRequest;
+use Ign\Bundle\OGAMBundle\Entity\Website\PredefinedRequestGroup;
 use Ign\Bundle\OGAMBundle\Entity\Website\PredefinedRequestCriterion;
 use Ign\Bundle\OGAMBundle\Entity\Metadata\Dynamode;
 use Ign\Bundle\OGAMBundle\Entity\Metadata\Unit;
@@ -17,6 +18,18 @@ use Ign\Bundle\OGAMBundle\Entity\Generic\GenericField;
 use Ign\Bundle\OGAMBundle\Entity\Metadata\TableField;
 use Ign\Bundle\OGAMBundle\Entity\Metadata\TableFormat;
 use Ign\Bundle\OGAMBundle\Entity\Metadata\TableTree;
+use Ign\Bundle\OGAMBundle\Repository\Website\PredefinedRequestRepository;
+use Ign\Bundle\OGAMBundle\Entity\Website\PredefinedRequestColumn;
+use Ign\Bundle\OGAMBundle\Entity\Metadata\Dataset;
+use Ign\Bundle\OGAMBundle\Repository\Metadata\DatasetRepository;
+use Ign\Bundle\OGAMBundle\Entity\Website\PredefinedRequestGroupAsso;
+use Ign\Bundle\OGAMBundle\Entity\Metadata\Format;
+use Ign\Bundle\OGAMBundle\Entity\Metadata\Data;
+use Ign\Bundle\OGAMBundle\Entity\Metadata\FormFormat;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Doctrine\DBAL\Driver\PDOException;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
+use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 
 /**
  * @Route("/query")
@@ -97,7 +110,7 @@ class QueryController extends Controller {
 		$filters = json_decode($request->query->get('filter'));
 
 		$datasetId = null;
-		$requestName = null;
+		$requestId = null;
 
 		if (is_array($filters)) {
 			foreach ($filters as $aFilter) {
@@ -105,8 +118,8 @@ class QueryController extends Controller {
 					case 'processId':
 						$datasetId = $aFilter->value;
 						break;
-					case 'requestName':
-						$requestName = $aFilter->value;
+					case 'request_id':
+						$requestId = $aFilter->value;
 						break;
 					default:
 						$logger->debug('filter unattended : ' . $aFilter->property);
@@ -114,14 +127,14 @@ class QueryController extends Controller {
 			}
 		} else {
 			$datasetId = json_decode($request->query->get('datasetId'));
-			$requestName = $request->request->get('requestName');
+			$requestId = $request->request->get('request_id');
 		}
 
 		$response = new Response();
 		$response->headers->set('Content-Type', 'application/json');
 		return $this->render('OGAMBundle:Query:ajaxgetqueryform.json.twig', array(
 			'forms' => $this->get('ogam.manager.query')
-				->getQueryForms($datasetId, $requestName)
+				->getQueryForms($datasetId, $requestId)
 		), $response);
 	}
 
@@ -215,7 +228,7 @@ class QueryController extends Controller {
 			$queryForm = new QueryForm();
 			$queryForm->setDatasetId($datasetId);
 			foreach ($request->request->all() as $inputName => $inputValue) {
-				if (strpos($inputName, "criteria__") === 0 && !$this->isEmptyCriteria($inputValue)) {
+			    if (strpos($inputName, "criteria__") === 0 && !$this->get('ogam.query_service')->isEmptyCriteria($inputValue)) {
 					$logger->debug('POST var added');
 					$criteriaName = substr($inputName, strlen("criteria__"));
 					$split = explode("__", $criteriaName);
@@ -252,27 +265,6 @@ class QueryController extends Controller {
 				'success' => false,
 				'errorMessage' => $e->getMessage()
 			]);
-		}
-	}
-
-	/**
-	 * Check if a criteria is empty.
-	 * (not private as this function is extended in custom directory of derivated applications)
-	 *
-	 * @param Undef $criteria
-	 * @return true if empty
-	 */
-	protected function isEmptyCriteria($criteria) {
-		if (is_array($criteria)) {
-			$emptyArray = true;
-			foreach ($criteria as $value) {
-				if ($value != "") {
-					$emptyArray = false;
-				}
-			}
-			return $emptyArray;
-		} else {
-			return ($criteria == "");
 		}
 	}
 
@@ -398,14 +390,60 @@ class QueryController extends Controller {
 		$schema = $this->get('ogam.schema_listener')->getSchema();
 		$locale = $this->get('ogam.locale_listener')->getLocale();
 		$predefinedRequestRepository = $this->get('doctrine')->getRepository(PredefinedRequest::class);
-		$predefinedRequestList = $predefinedRequestRepository->getPredefinedRequestList($schema, $dir, $sort, $locale);
+		$predefinedRequestList = $predefinedRequestRepository->getPredefinedRequestList($schema, $dir, $sort, $locale, $this->getUser());
 
 		$response = new Response();
 		$response->headers->set('Content-Type', 'application/json');
 		return $this->render('OGAMBundle:Query:ajaxgetpredefinedrequestlist.json.twig', array(
-			'data' => $predefinedRequestList
+			'data' => $predefinedRequestList,
+		    'user' => $this->getUser()
 		), $response);
 	}
+
+	/**
+	 * @Route("/ajaxgeteditablepredefinedrequestlist")
+	 */
+	public function ajaxgeteditablepredefinedrequestlistAction(Request $request) {
+	    $logger = $this->get('logger');
+	    $logger->debug('ajaxgeteditablepredefinedrequestlist');
+	    
+	    $sort = $request->query->get('sort');
+	    $dir = $request->query->getAlpha('dir');
+	    
+	    // Get the predefined values for the forms
+	    $schema = $this->get('ogam.schema_listener')->getSchema();
+	    $locale = $this->get('ogam.locale_listener')->getLocale();
+	    $predefinedRequestRepository = $this->get('doctrine')->getRepository(PredefinedRequest::class);
+	    $predefinedRequestList = $predefinedRequestRepository->getEditablePredefinedRequestList($schema, $dir, $sort, $locale, $this->getUser());
+	    
+	    $response = new Response();
+	    $response->headers->set('Content-Type', 'application/json');
+	    return $this->render('OGAMBundle:Query:ajaxgetpredefinedrequestlist.json.twig', array(
+	        'data' => $predefinedRequestList,
+	        'user' => $this->getUser()
+	    ), $response);
+	}
+	
+	/**
+	 * @Route("/ajaxgetpredefinedgrouplist")
+	 */
+	public function ajaxgetpredefinedgrouplistAction(Request $request) {
+		$logger = $this->get('logger');
+		$logger->debug('ajaxgetpredefinedgrouplist');
+
+		// Get the predefined values for the forms
+		$schema = $this->get('ogam.schema_listener')->getSchema();
+		$locale = $this->get('ogam.locale_listener')->getLocale();
+		$predefinedRequestGroupRepository = $this->get('doctrine')->getRepository(PredefinedRequestGroup::class);
+		$predefinedRequestGroupList = $predefinedRequestGroupRepository->getPredefinedRequestGroupList();
+
+		$response = new Response();
+		$response->headers->set('Content-Type', 'application/json');
+		return $this->render('OGAMBundle:Query:ajaxgetpredefinedrequestgrouplist.json.twig', array(
+			'data' => $predefinedRequestGroupList
+		), $response);
+	}
+
 
 	/**
 	 * @Route("/ajaxgetpredefinedrequestcriteria")
@@ -414,17 +452,185 @@ class QueryController extends Controller {
 		$logger = $this->get('logger');
 		$logger->debug('ajaxgetpredefinedrequestcriteria');
 
-		$requestName = $request->query->get('request_name');
+		$requestId = $request->query->get('request_id');
 		$predefinedRequestCriterionRepository = $this->get('doctrine')->getRepository(PredefinedRequestCriterion::class);
 		$locale = $this->get('ogam.locale_listener')->getLocale();
 
 		$response = new Response();
 		$response->headers->set('Content-Type', 'application/json');
 		return $this->render('OGAMBundle:Query:ajaxgetpredefinedrequestcriteria.html.twig', array(
-			'data' => $predefinedRequestCriterionRepository->getPredefinedRequestCriteria($requestName, $locale)
+			'data' => $predefinedRequestCriterionRepository->getPredefinedRequestCriteria($requestId, $locale)
 		), $response);
 	}
 
+
+	/**
+	 * @Route("/predefinedrequest")
+	 * @Method("POST")
+	 */
+	public function createPredefinedrequestAction(Request $request) {
+	    $logger = $this->get('logger');
+	    $logger->debug('createPredefinedrequestAction');
+	    
+	    try{
+    	    // Set the function variables
+    	    $r = $request->request;
+    	    $em = $this->getDoctrine()->getManager();
+    	    
+    	    // Check the right
+    	    if($r->getBoolean('isPublic') === true) {
+        	    if(!$this->getUser()->isAllowed('MANAGE_PUBLIC_REQUEST')){
+        	        throw new BadCredentialsException('Invalid credentials.');
+        	    }
+    	    } elseif ($r->getBoolean('isPublic') === false) {
+    	        if(!$this->getUser()->isAllowed('MANAGE_OWNED_PRIVATE_REQUEST')){
+    	            throw new BadCredentialsException('Invalid credentials.');
+    	        }
+    	    } else {
+    	        throw new \InvalidArgumentException('Invalid arguments.');
+    	    }
+    	    
+    	    // Create the predefined request
+    	    $pr = new PredefinedRequest();
+    	    
+    	    // Edit and add the new data
+    	    $this->get('ogam.query_service')->updatePredefinedRequest ($pr, $r->get('datasetId'), $r->get('label'), $r->get('definition'), $r->getBoolean('isPublic'));
+    	    $this->get('ogam.query_service')->createPRGroupAssociation($pr, $r->getInt('groupId'));
+    	    $this->get('ogam.query_service')->createPRCriteriaAndColumns($pr, $r);
+    	    $em->flush();
+            
+    		return new JsonResponse([
+    		    'success' => true,
+    		    'requestId' => $pr->getRequestId()
+    		]);
+	    } catch (UniqueConstraintViolationException $e){
+    	    $logger->error('Error while creating predefined request : ' . $e);
+    	    return new JsonResponse([
+    	        'success' => false,
+    	        'errorMessage' => $this->get('translator')->trans("That request's label already exists. Please indicate another one.")
+    	    ]);
+	    } catch (\Exception $e){ dump($e);
+	        $logger->error('Error while creating predefined request : ' . $e);
+	        return new JsonResponse([
+	            'success' => false,
+	            'errorMessage' => $e->getMessage()
+	        ]);
+	    }
+	}
+
+	/**
+	 * @Route("/predefinedrequest/{id}", requirements={"id" = "\d+"}, defaults={"id" = null})
+	 * @Method("PUT")
+	 */
+	public function editPredefinedrequestAction(Request $request) {
+	    $logger = $this->get('logger');
+	    $logger->debug('editPredefinedrequestAction');
+	    
+	    try{
+    	    // Set the function variables
+    	    $requestId = $request->attributes->getInt('id');
+    	    $r = $request->request;
+    	    $em = $this->getDoctrine()->getManager();
+    	    
+    	    // Get the predefined request
+    	    $predefinedRequestRepo = $em->getRepository(PredefinedRequest::class);
+    	    $pr = $predefinedRequestRepo->find($requestId);
+    	    
+    	    // Check the right
+    	    if($pr->getIsPublic() === true) {
+    	        if(!$this->getUser()->isAllowed('MANAGE_PUBLIC_REQUEST')){
+    	            throw new BadCredentialsException('Invalid credentials.');
+    	        }
+    	    } elseif ($pr->getIsPublic() === false) {
+    	        if(!$this->getUser()->isAllowed('MANAGE_OWNED_PRIVATE_REQUEST')){
+    	            throw new BadCredentialsException('Invalid credentials.');
+    	        }
+    	        if($this->getUser()->getLogin() !== $pr->getUserLogin()->getLogin()) {
+    	            throw new BadCredentialsException('Invalid credentials.');
+    	        }
+    	    }
+    	    
+    	    // Delete the old data
+    	    $this->get('ogam.query_service')->deletePRGroupAssociations($pr);
+    	    $this->get('ogam.query_service')->deletePRCriteria($pr);
+    	    $this->get('ogam.query_service')->deletePRColumns($pr);
+    	    $em->flush();
+    	    
+    	    // Edit and add the new data
+    	    $this->get('ogam.query_service')->updatePredefinedRequest ($pr, $r->get('datasetId'), $r->get('label'), $r->get('definition'), $r->getBoolean('isPublic'));
+    	    $this->get('ogam.query_service')->createPRGroupAssociation($pr, $r->getInt('groupId'));
+    	    $this->get('ogam.query_service')->createPRCriteriaAndColumns($pr, $r);
+    	    $em->flush();
+    	    
+    	    return new JsonResponse([
+    	        'success' => true,
+    	        'requestId' => $pr->getRequestId()
+    	    ]);
+	    } catch (UniqueConstraintViolationException $e){
+    	    $logger->error('Error while creating predefined request : ' . $e);
+    	    return new JsonResponse([
+    	        'success' => false,
+    	        'errorMessage' => $this->get('translator')->trans("That request's label already exists. Please indicate another one.")
+    	    ]);
+	    } catch (\Exception $e){
+	        $logger->error('Error while updating predefined request : ' . $e);
+	        return new JsonResponse([
+	            'success' => false,
+	            'errorMessage' => $e->getMessage()
+	        ]);
+	    }
+	}
+	
+	/**
+	 * @Route("/predefinedrequest/{id}", requirements={"id" = "\d+"}, defaults={"id" = null})
+	 * @Method("DELETE")
+	 */
+	public function deletePredefinedrequestAction(Request $request) {
+	    $logger = $this->get('logger');
+	    $logger->debug('deletePredefinedrequestAction');
+	    
+	    try {
+    	    // Set the function variables
+    	    $requestId = $request->attributes->getInt('id');
+    	    $em = $this->getDoctrine()->getManager();
+    	    
+    	    // Get the predefined request
+    	    $predefinedRequestRepo = $em->getRepository(PredefinedRequest::class);
+    	    $pr = $predefinedRequestRepo->find($requestId);
+    	    
+    	    // Check the right
+    	    if($pr->getIsPublic() === true) {
+    	        if(!$this->getUser()->isAllowed('MANAGE_PUBLIC_REQUEST')){
+    	            throw new BadCredentialsException('Invalid credentials.');
+    	        }
+    	    } elseif ($pr->getIsPublic() === false) {
+    	        if(!$this->getUser()->isAllowed('MANAGE_OWNED_PRIVATE_REQUEST')){
+    	            throw new BadCredentialsException('Invalid credentials.');
+    	        }
+    	        if($this->getUser()->getLogin() !== $pr->getUserLogin()->getLogin()) {
+    	            throw new BadCredentialsException('Invalid credentials.');
+    	        }
+    	    }
+    	    
+    	    // Delete the old data
+    	    $this->get('ogam.query_service')->deletePRGroupAssociations($pr);
+    	    $this->get('ogam.query_service')->deletePRCriteria($pr);
+    	    $this->get('ogam.query_service')->deletePRColumns($pr);
+    	    $em->remove($pr);
+    	    $em->flush();
+    	    
+    	    return new JsonResponse([
+    	        'success' => true
+    	    ]);
+    	} catch (\Exception $e){
+    	    $logger->error('Error while deleting predefined request : ' . $e);
+    	    return new JsonResponse([
+    	        'success' => false,
+    	        'errorMessage' => $e->getMessage()
+    	    ]);
+    	}
+	}
+	
 	/**
 	 * Get the parameters used to initialise the result grid.
 	 * @Route("/getgridparameters")

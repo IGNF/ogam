@@ -5,8 +5,7 @@
 Ext.define('OgamDesktop.model.request.predefined.Criterion', {
     extend: 'OgamDesktop.model.request.fieldset.Criterion',
     fields: [
-        { name: 'requestName', type: 'string' },
-        { name: 'fixed', type: 'boolean' }
+        { name: 'request_id', type: 'string' }
     ],
     proxy: {
         reader:{

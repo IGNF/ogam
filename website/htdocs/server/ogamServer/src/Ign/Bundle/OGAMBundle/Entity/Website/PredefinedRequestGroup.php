@@ -7,16 +7,18 @@ use Doctrine\ORM\Mapping as ORM;
  * PredefinedRequestGroup
  *
  * @ORM\Table(name="website.predefined_request_group")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="Ign\Bundle\OGAMBundle\Repository\Website\PredefinedRequestGroupRepository")
  */
 class PredefinedRequestGroup {
 
 	/**
 	 *
-	 * @var string @ORM\Id
-	 *      @ORM\Column(name="name", type="string", length=50, unique=true)
+	 * @var integer
+	 * @ORM\Id
+	 * @ORM\Column(name="group_id", type="integer", unique=true)
+	 * @ORM\GeneratedValue
 	 */
-	private $name;
+	private $groupId;
 
 	/**
 	 *
@@ -37,7 +39,7 @@ class PredefinedRequestGroup {
 	private $position;
 
 	/**
-	 * @ORM\OneToMany(targetEntity="PredefinedRequestGroupAsso", mappedBy="groupName")
+	 * @ORM\OneToMany(targetEntity="PredefinedRequestGroupAsso", mappedBy="groupId")
 	 */
 	private $requests;
 
@@ -46,25 +48,25 @@ class PredefinedRequestGroup {
 	}
 
 	/**
-	 * Set name
+	 * Set groupId
 	 *
-	 * @param string $name
+	 * @param integer $groupId
 	 *
 	 * @return PredefinedRequestGroup
 	 */
-	public function setName($name) {
-		$this->name = $name;
+	public function setGroupId($groupId) {
+		$this->groupId = $groupId;
 
 		return $this;
 	}
 
 	/**
-	 * Get name
+	 * Get groupId
 	 *
-	 * @return string
+	 * @return integer
 	 */
-	public function getName() {
-		return $this->name;
+	public function getGroupId() {
+		return $this->groupId;
 	}
 
 	/**

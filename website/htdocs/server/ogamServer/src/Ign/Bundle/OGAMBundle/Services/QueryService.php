@@ -20,6 +20,12 @@ use Ign\Bundle\OGAMBundle\Entity\Mapping\Layer;
 use Ign\Bundle\OGAMBundle\Entity\Generic\BoundingBox;
 use Ign\Bundle\OGAMBundle\Entity\Website\PredefinedRequest;
 use Ign\Bundle\OGAMBundle\Entity\Metadata\Format;
+use Ign\Bundle\OGAMBundle\Entity\Website\PredefinedRequestGroupAsso;
+use Ign\Bundle\OGAMBundle\Entity\Website\PredefinedRequestGroup;
+use Ign\Bundle\OGAMBundle\Entity\Website\PredefinedRequestCriterion;
+use Ign\Bundle\OGAMBundle\Entity\Website\PredefinedRequestColumn;
+use Symfony\Component\HttpFoundation\ParameterBag;
+use Ign\Bundle\OGAMBundle\Entity\Metadata\Data;
 
 /**
  * The Query Service.
@@ -126,15 +132,15 @@ class QueryService {
 	 *
 	 * @param String $datasetId
 	 *        	the identifier of the selected dataset
-	 * @param String $requestName
-	 *        	the name of the predefined request if available
+	 * @param String $requestId
+	 *        	the id of the predefined request if available
 	 * @return FormFormat[]
 	 */
-	public function getQueryForms($datasetId, $requestName) {
-		if (!empty($requestName)) {
+	public function getQueryForms($datasetId, $requestId) {
+		if (!empty($requestId)) {
 			// If request name is filled then we are coming from the predefined request screen
 			// and we build the form corresponding to the request
-			return $this->_getPredefinedRequest($requestName);
+			return $this->_getPredefinedRequest($requestId);
 		} else {
 			// Otherwise we get all the fields available with their default value
 			return $this->metadataModel->getRepository(FormFormat::class)->getFormFormats($datasetId, $this->schema, $this->locale);
@@ -144,15 +150,15 @@ class QueryService {
 	/**
 	 * Get the predefined request.
 	 *
-	 * @param String $requestName
-	 *        	The request name
+	 * @param String $requestId
+	 *        	The request id
 	 * @return Forms
 	 */
-	private function _getPredefinedRequest($requestName) {
+	private function _getPredefinedRequest($requestId) {
 		$this->logger->debug('_getPredefinedRequest');
 
 		// Get the predefined request
-		$predefinedRequest = $this->doctrine->getRepository(PredefinedRequest::class)->getPredefinedRequest($requestName, $this->locale);
+		$predefinedRequest = $this->doctrine->getRepository(PredefinedRequest::class)->getPredefinedRequest($requestId, $this->locale);
 
 		// Get the default values for the forms
 		$forms = $this->metadataModel->getRepository(FormFormat::class)->getFormFormats($predefinedRequest->getDatasetId()
@@ -187,6 +193,180 @@ class QueryService {
 
 		// return the forms
 		return $forms;
+	}
+	
+	/**
+	 * Check if a criteria is empty.
+	 * (not private as this function is extended in custom directory of derivated applications)
+	 *
+	 * @param Undef $criteria
+	 * @return true if empty
+	 */
+	public function isEmptyCriteria($criteria) {
+	    if (is_array($criteria)) {
+	        $emptyArray = true;
+	        foreach ($criteria as $value) {
+	            if ($value != "") {
+	                $emptyArray = false;
+	            }
+	        }
+	        return $emptyArray;
+	    } else {
+	        return ($criteria == "");
+	    }
+	}
+	
+	/**
+	 * Update and persist a predefined request object.
+	 *
+	 * @param PredefinedRequest $pr The predefined request
+	 * @param string $datasetId The dataset id
+	 * @param string $label The request label
+	 * @param string $definition The request definition
+	 * @param string $isPublic The request privacy
+	 */
+	public function updatePredefinedRequest (PredefinedRequest $pr, $datasetId, $label, $definition, $isPublic) {
+	    $em = $this->doctrine->getManager();
+	    $datasetRepository = $em->getRepository(Dataset::class);
+	    $dataset = $datasetRepository->find($datasetId);
+	    $pr->setDatasetId($dataset);
+	    $pr->setSchemaCode($this->schema);
+	    $pr->setLabel($label);
+	    $pr->setDefinition($definition);
+	    $pr->setIsPublic($isPublic);
+	    $pr->setDate(new \DateTime());
+	    $pr->setUserLogin($this->user);
+	    $em->persist($pr);
+	}
+	
+	/**
+	 * Delete the predefined request group association.
+	 *
+	 * @param PredefinedRequest $pr The predefined request
+	 */
+	public function deletePRGroupAssociations (PredefinedRequest $pr) {
+	    $em = $this->doctrine->getManager();
+	    $groupAssoRepo = $em->getRepository(PredefinedRequestGroupAsso::class);
+	    $groupAssos = $groupAssoRepo->findBy(["requestId" => $pr->getRequestId()]);
+	    foreach ($groupAssos as $index => $groupAsso) {
+	        $em->remove($groupAsso);
+	    }
+	}
+	
+	/**
+	 * Create and persist the predefined request group association.
+	 *
+	 * @param PredefinedRequest $pr The predefined request
+	 * @param string $groupId The group id
+	 */
+	public function createPRGroupAssociation (PredefinedRequest $pr, $groupId) {
+	    $em = $this->doctrine->getManager();
+	    $ga = new PredefinedRequestGroupAsso();
+	    $ga->setRequestId($pr);
+	    $groupRepository = $em->getRepository(PredefinedRequestGroup::class);
+	    $group = $groupRepository->find($groupId);
+	    $ga->setGroupId($group);
+	    $ga->setPosition(1);
+	    $em->persist($ga);
+	}
+	
+	/**
+	 * Delete the predefined request criteria.
+	 *
+	 * @param PredefinedRequest $pr The predefined request
+	 */
+	public function deletePRCriteria (PredefinedRequest $pr) {
+	    $em = $this->doctrine->getManager();
+	    $prCriterionRepo = $em->getRepository(PredefinedRequestCriterion::class);
+	    $criteria = $prCriterionRepo->findBy(["requestId" => $pr->getRequestId()]);
+	    foreach ($criteria as $index => $criterion) {
+	        $em->remove($criterion);
+	    }
+	}
+	
+	/**
+	 * Delete the predefined request columns.
+	 *
+	 * @param PredefinedRequest $pr The predefined request
+	 */
+	public function deletePRColumns (PredefinedRequest $pr) {
+	    $em = $this->doctrine->getManager();
+	    $prColumnRepo = $em->getRepository(PredefinedRequestColumn::class);
+	    $columns = $prColumnRepo->findBy(["requestId" => $pr->getRequestId()]);
+	    foreach ($columns as $index => $column) {
+	        $em->remove($column);
+	    }
+	}
+	
+	/**
+	 * Create and persist the predefined request criteria and columns.
+	 *
+	 * @param PredefinedRequest $pr The predefined request
+	 * @param ParameterBag $r The request parameter bag
+	 */
+	public function createPRCriteriaAndColumns (PredefinedRequest $pr, ParameterBag $r) {
+	    foreach ($r->all() as $inputName => $inputValue) {
+	        // Create the criterion entities and add its
+	        if (strpos($inputName, "criteria__") === 0 && !$this->isEmptyCriteria($inputValue)) {
+	            $criteriaName = substr($inputName, strlen("criteria__"));
+	            $split = explode("__", $criteriaName);
+	            $this->createPRCriterion($pr, $split[0], $split[1], $inputValue[0]);
+	        }
+	        // Create the column entities and add its
+	        if (strpos($inputName, "column__") === 0) {
+	            $columnName = substr($inputName, strlen("column__"));
+	            $split = explode("__", $columnName);
+	            $this->createPRColumns($pr, $split[0], $split[1]);
+	        }
+	    }
+	}
+	
+	/**
+	 * Create and persist the predefined request criteria.
+	 *
+	 * @param PredefinedRequest $pr The predefined request
+	 * @param string $format The criterion format
+	 * @param string $data The criterion data
+	 * @param string $value The criterion value
+	 */
+	public function createPRCriterion (PredefinedRequest $pr, $format, $data, $value) {
+	    $em = $this->doctrine->getManager();
+	    $formatRepository = $em->getRepository(Format::class);
+	    $dataRepository = $em->getRepository(Data::class);
+	    $formFieldRepository = $em->getRepository(FormField::class);
+	    $criterion = new PredefinedRequestCriterion();
+	    $criterion->setRequestId($pr);
+	    $format = $formatRepository->find($format);
+	    $data = $dataRepository->find($data);
+	    $formField = $formFieldRepository->find(['format' => $format, 'data' => $data]);
+	    $criterion->setFormat($format);
+	    $criterion->setData($data);
+	    $criterion->setFormField($formField);
+	    $criterion->setValue($value);
+	    $em->persist($criterion);
+	}
+	
+	/**
+	 * Create and persist the predefined request columns.
+	 *
+	 * @param PredefinedRequest $pr The predefined request
+	 * @param string $format The column format
+	 * @param string $data The column data
+	 */
+	public function createPRColumns (PredefinedRequest $pr, $format, $data) {
+	    $em = $this->doctrine->getManager();
+	    $formatRepository = $em->getRepository(Format::class);
+	    $dataRepository = $em->getRepository(Data::class);
+	    $formFieldRepository = $em->getRepository(FormField::class);
+	    $column = new PredefinedRequestColumn();
+	    $column->setRequestId($pr);
+	    $format = $formatRepository->find($format);
+	    $data = $dataRepository->find($data);
+	    $formField = $formFieldRepository->find(['format' => $format, 'data' => $data]);
+	    $column->setFormat($format);
+	    $column->setData($data);
+	    $column->setFormField($formField);
+	    $em->persist($column);
 	}
 
 	/**

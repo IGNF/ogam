@@ -71,8 +71,8 @@ class QueryManager {
 		);
 	}
 
-	public function getQueryForms($datasetId, $requestName) {
-		return $this->queryService->getQueryForms($datasetId, $requestName);
+	public function getQueryForms($datasetId, $requestId) {
+		return $this->queryService->getQueryForms($datasetId, $requestId);
 	}
 
 	public function prepareResultLocations($formQuery, $userInfos) {

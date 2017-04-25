@@ -113,6 +113,9 @@ INSERT INTO permission(permission_code, permission_label) VALUES ('DATA_EDITION_
 INSERT INTO permission(permission_code, permission_label) VALUES ('CHECK_CONF', 'Check the configuration');
 INSERT INTO permission(permission_code, permission_label) VALUES ('CANCEL_VALIDATED_SUBMISSION', 'Cancel validated submission');
 INSERT INTO permission(permission_code, permission_label) VALUES ('CANCEL_OTHER_PROVIDER_SUBMISSION', 'Cancel other provider submission');
+INSERT INTO permission(permission_code, permission_label) VALUES ('MANAGE_OWNED_PRIVATE_REQUEST', 'Manage its own private requests');
+INSERT INTO permission(permission_code, permission_label) VALUES ('MANAGE_PUBLIC_REQUEST', 'Manage all the public requests');
+INSERT INTO permission(permission_code, permission_label) VALUES ('MANAGE_REQUEST_GROUP', 'Manage all the request group');
 
 -- Add the permissions per role
 INSERT INTO permission_per_role(role_code, permission_code) VALUES ('ADMIN', 'MANAGE_USERS');
@@ -126,6 +129,9 @@ INSERT INTO permission_per_role(role_code, permission_code) VALUES ('ADMIN', 'DA
 INSERT INTO permission_per_role(role_code, permission_code) VALUES ('ADMIN', 'CHECK_CONF');
 INSERT INTO permission_per_role(role_code, permission_code) VALUES ('ADMIN', 'CANCEL_VALIDATED_SUBMISSION');
 INSERT INTO permission_per_role(role_code, permission_code) VALUES ('ADMIN', 'CANCEL_OTHER_PROVIDER_SUBMISSION');
+INSERT INTO permission_per_role(role_code, permission_code) VALUES ('ADMIN', 'MANAGE_OWNED_PRIVATE_REQUEST');
+INSERT INTO permission_per_role(role_code, permission_code) VALUES ('ADMIN', 'MANAGE_PUBLIC_REQUEST');
+INSERT INTO permission_per_role(role_code, permission_code) VALUES ('ADMIN', 'MANAGE_REQUEST_GROUP');
 INSERT INTO permission_per_role(role_code, permission_code) VALUES ('VISITOR', 'DATA_QUERY');
 INSERT INTO permission_per_role(role_code, permission_code) VALUES ('VISITOR', 'DATA_QUERY_OTHER_PROVIDER');
 
@@ -152,39 +158,39 @@ DELETE FROM predefined_request_column;
 DELETE FROM predefined_request;
 
 -- Création d'un thème (groupe de requêtes)
-INSERT INTO predefined_request_group(name, label, definition, position) VALUES ('SPECIES', 'Distribution par espèce', 'Distribution par espèce', 1);
+INSERT INTO predefined_request_group(label, definition, position) VALUES ('Distribution par espèce', 'Distribution par espèce', 1); -- group_id = 1
 
 -- Création d'une requête prédéfinie
-INSERT INTO predefined_request (name, schema_code, dataset_id, label, definition, date) VALUES ('SPECIES', 'RAW_DATA', 'TREES', 'Distribution par espèce', 'Distribution par espèce en forêt', now());
-INSERT INTO predefined_request (name, schema_code, dataset_id, label, definition, date) VALUES ('TAXREF', 'RAW_DATA', 'SPECIES', 'Recherche par taxon', 'Recherche par taxon', now());
-INSERT INTO predefined_request (name, schema_code, dataset_id, label, definition, date) VALUES ('DEP', 'RAW_DATA', 'SPECIES', 'Espèces par département', 'Espèces par département', now());
+INSERT INTO predefined_request (schema_code, dataset_id, label, definition, date, user_login, is_public) VALUES ('RAW_DATA', 'TREES', 'Distribution par espèce', 'Distribution par espèce en forêt', now(), null, true);  -- request_id = 1
+INSERT INTO predefined_request (schema_code, dataset_id, label, definition, date, user_login, is_public) VALUES ('RAW_DATA', 'SPECIES', 'Recherche par taxon', 'Recherche par taxon', now(), null, true); -- request_id = 2
+INSERT INTO predefined_request (schema_code, dataset_id, label, definition, date, user_login, is_public) VALUES ('RAW_DATA', 'SPECIES', 'Espèces par département', 'Espèces par département', now(), null, true); -- request_id = 3
 
 
 -- Configuration des requêtes prédéfinies
-INSERT INTO predefined_request_criterion (request_name, format, data, value, fixed) VALUES ('SPECIES', 'TREE_FORM', 'SPECIES_CODE', '026.001.006', FALSE);
-INSERT INTO predefined_request_column (request_name, format, data) VALUES ('SPECIES', 'PLOT_FORM', 'PLOT_CODE');
-INSERT INTO predefined_request_column (request_name, format, data) VALUES ('SPECIES', 'PLOT_FORM', 'CYCLE');
-INSERT INTO predefined_request_column (request_name, format, data) VALUES ('SPECIES', 'PLOT_FORM', 'INV_DATE');
-INSERT INTO predefined_request_column (request_name, format, data) VALUES ('SPECIES', 'PLOT_FORM', 'IS_FOREST_PLOT');
-INSERT INTO predefined_request_column (request_name, format, data) VALUES ('SPECIES', 'TREE_FORM', 'SPECIES_CODE');
+INSERT INTO predefined_request_criterion (request_id, format, data, value) VALUES (1, 'TREE_FORM', 'SPECIES_CODE', '026.001.006');
+INSERT INTO predefined_request_column (request_id, format, data) VALUES (1, 'PLOT_FORM', 'PLOT_CODE');
+INSERT INTO predefined_request_column (request_id, format, data) VALUES (1, 'PLOT_FORM', 'CYCLE');
+INSERT INTO predefined_request_column (request_id, format, data) VALUES (1, 'PLOT_FORM', 'INV_DATE');
+INSERT INTO predefined_request_column (request_id, format, data) VALUES (1, 'PLOT_FORM', 'IS_FOREST_PLOT');
+INSERT INTO predefined_request_column (request_id, format, data) VALUES (1, 'TREE_FORM', 'SPECIES_CODE');
 
-INSERT INTO predefined_request_criterion (request_name, format, data, value, fixed) VALUES ('DEP', 'LOCATION_FORM', 'DEPARTEMENT', '45', FALSE);
-INSERT INTO predefined_request_column (request_name, format, data) VALUES ('DEP', 'PLOT_FORM', 'PLOT_CODE');
-INSERT INTO predefined_request_column (request_name, format, data) VALUES ('DEP', 'PLOT_FORM', 'CYCLE');
-INSERT INTO predefined_request_column (request_name, format, data) VALUES ('DEP', 'PLOT_FORM', 'INV_DATE');
-INSERT INTO predefined_request_column (request_name, format, data) VALUES ('DEP', 'PLOT_FORM', 'IS_FOREST_PLOT');
-INSERT INTO predefined_request_column (request_name, format, data) VALUES ('DEP', 'SPECIES_FORM', 'BASAL_AREA');
+INSERT INTO predefined_request_criterion (request_id, format, data, value) VALUES (2, 'SPECIES_FORM', 'ID_TAXON', '196709');
+INSERT INTO predefined_request_column (request_id, format, data) VALUES (2, 'PLOT_FORM', 'PLOT_CODE');
+INSERT INTO predefined_request_column (request_id, format, data) VALUES (2, 'PLOT_FORM', 'CYCLE');
+INSERT INTO predefined_request_column (request_id, format, data) VALUES (2, 'PLOT_FORM', 'INV_DATE');
+INSERT INTO predefined_request_column (request_id, format, data) VALUES (2, 'PLOT_FORM', 'IS_FOREST_PLOT');
+INSERT INTO predefined_request_column (request_id, format, data) VALUES (2, 'SPECIES_FORM', 'ID_TAXON');
+INSERT INTO predefined_request_column (request_id, format, data) VALUES (2, 'SPECIES_FORM', 'BASAL_AREA');
 
-INSERT INTO predefined_request_criterion (request_name, format, data, value, fixed) VALUES ('TAXREF', 'SPECIES_FORM', 'ID_TAXON', '196709', FALSE);
-INSERT INTO predefined_request_column (request_name, format, data) VALUES ('TAXREF', 'PLOT_FORM', 'PLOT_CODE');
-INSERT INTO predefined_request_column (request_name, format, data) VALUES ('TAXREF', 'PLOT_FORM', 'CYCLE');
-INSERT INTO predefined_request_column (request_name, format, data) VALUES ('TAXREF', 'PLOT_FORM', 'INV_DATE');
-INSERT INTO predefined_request_column (request_name, format, data) VALUES ('TAXREF', 'PLOT_FORM', 'IS_FOREST_PLOT');
-INSERT INTO predefined_request_column (request_name, format, data) VALUES ('TAXREF', 'SPECIES_FORM', 'ID_TAXON');
-INSERT INTO predefined_request_column (request_name, format, data) VALUES ('TAXREF', 'SPECIES_FORM', 'BASAL_AREA');
+INSERT INTO predefined_request_criterion (request_id, format, data, value) VALUES (3, 'LOCATION_FORM', 'DEPARTEMENT', '45');
+INSERT INTO predefined_request_column (request_id, format, data) VALUES (3, 'PLOT_FORM', 'PLOT_CODE');
+INSERT INTO predefined_request_column (request_id, format, data) VALUES (3, 'PLOT_FORM', 'CYCLE');
+INSERT INTO predefined_request_column (request_id, format, data) VALUES (3, 'PLOT_FORM', 'INV_DATE');
+INSERT INTO predefined_request_column (request_id, format, data) VALUES (3, 'PLOT_FORM', 'IS_FOREST_PLOT');
+INSERT INTO predefined_request_column (request_id, format, data) VALUES (3, 'SPECIES_FORM', 'BASAL_AREA');
 
 
 -- Rattachement de la requête prédéfinies au thème
-INSERT INTO website.predefined_request_group_asso(group_name, request_name, position) VALUES ('SPECIES', 'SPECIES', 1);
-INSERT INTO website.predefined_request_group_asso(group_name, request_name, position) VALUES ('SPECIES', 'DEP', 2);
-INSERT INTO website.predefined_request_group_asso(group_name, request_name, position) VALUES ('SPECIES', 'TAXREF', 3);
+INSERT INTO website.predefined_request_group_asso(group_id, request_id, position) VALUES (1, 1, 1);
+INSERT INTO website.predefined_request_group_asso(group_id, request_id, position) VALUES (1, 2, 2);
+INSERT INTO website.predefined_request_group_asso(group_id, request_id, position) VALUES (1, 3, 3);

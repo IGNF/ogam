@@ -2,7 +2,6 @@
 namespace Ign\Bundle\OGAMBundle\Entity\Website;
 
 use Doctrine\ORM\Mapping as ORM;
-use Ign\Bundle\OGAMBundle\Entity\Metadata\Translation;
 
 /**
  * PredefinedRequest
@@ -14,11 +13,12 @@ class PredefinedRequest {
 
 	/**
 	 *
-	 * @var string
+	 * @var integer
 	 * @ORM\Id
-	 * @ORM\Column(name="name", type="string", length=50, unique=true)
+	 * @ORM\Column(name="request_id", type="integer", unique=true)
+	 * @ORM\GeneratedValue
 	 */
-	private $name;
+	private $requestId;
 
 	/**
 	 *
@@ -57,17 +57,24 @@ class PredefinedRequest {
 	private $date;
 
 	/**
-	 * @ORM\OneToMany(targetEntity="PredefinedRequestGroupAsso", mappedBy="requestName")
+	 *
+	 * @var boolean
+	 * @ORM\Column(name="is_public", type="boolean", nullable=false)
 	 */
-	private $groups;
+	private $isPublic;
 
 	/**
 	 *
-	 * @var Translation
-	 * @ORM\ManyToOne(targetEntity="Ign\Bundle\OGAMBundle\Entity\Metadata\Translation")
-	 * @ORM\JoinColumns({@ORM\JoinColumn(name="name", referencedColumnName="row_pk")})
+	 * @var User
+	 *      @ORM\ManyToOne(targetEntity="User")
+	 *      @ORM\JoinColumns({@ORM\JoinColumn(name="user_login", referencedColumnName="user_login")})
 	 */
-	private $translation;
+	protected $userLogin;
+
+	/**
+	 * @ORM\OneToMany(targetEntity="PredefinedRequestGroupAsso", mappedBy="requestId")
+	 */
+	private $groups;
 
 	/**
 	 * The columns of the request
@@ -88,25 +95,25 @@ class PredefinedRequest {
 	}
 
 	/**
-	 * Set name
+	 * Set request id
 	 *
-	 * @param string $name
+	 * @param integer $requestId
 	 *
 	 * @return PredefinedRequest
 	 */
-	public function setName($name) {
-		$this->name = $name;
+	public function setRequestId($requestId) {
+		$this->requestId = $requestId;
 
 		return $this;
 	}
 
 	/**
-	 * Get name
+	 * Get request id
 	 *
-	 * @return string
+	 * @return integer
 	 */
-	public function getName() {
-		return $this->name;
+	public function getRequestId() {
+		return $this->requestId;
 	}
 
 	/**
@@ -172,9 +179,6 @@ class PredefinedRequest {
 	 * @return string
 	 */
 	public function getDefinition() {
-		if ($this->translation != null) {
-			return $this->translation->getDefinition();
-		}
 		return $this->definition;
 	}
 
@@ -197,9 +201,6 @@ class PredefinedRequest {
 	 * @return string
 	 */
 	public function getLabel() {
-		if ($this->translation != null) {
-			return $this->translation->getLabel();
-		}
 		return $this->label;
 	}
 
@@ -226,6 +227,50 @@ class PredefinedRequest {
 	}
 
 	/**
+	 * Set isPublic
+	 *
+	 * @param boolean $isPublic
+	 *
+	 * @return PredefinedRequest
+	 */
+	public function setIsPublic($isPublic) {
+		$this->isPublic = $isPublic;
+
+		return $this;
+	}
+
+	/**
+	 * Get isPublic
+	 *
+	 * @return boolean
+	 */
+	public function getIsPublic() {
+		return $this->isPublic;
+	}
+
+	/**
+	 * Set userLogin
+	 *
+	 * @param User $userLogin
+	 *
+	 * @return PredefinedRequest
+	 */
+	public function setUserLogin($userLogin) {
+		$this->userLogin = $userLogin;
+
+		return $this;
+	}
+
+	/**
+	 * Get userLogin
+	 *
+	 * @return User
+	 */
+	public function getUserLogin() {
+		return $this->userLogin;
+	}
+
+	/**
 	 * Get the groups
 	 *
 	 * @return PredefinedRequestGroup[]
@@ -241,25 +286,6 @@ class PredefinedRequest {
 	 */
 	public function setGroups($groups) {
 		$this->groups = $groups;
-		return $this;
-	}
-
-	/**
-	 * Get the translation
-	 *
-	 * @return Translation
-	 */
-	public function getTranslation() {
-		return $this->translation;
-	}
-
-	/**
-	 * Set the translation
-	 *
-	 * @param Translation $translation
-	 */
-	public function setTranslation(Translation $translation) {
-		$this->translation = $translation;
 		return $this;
 	}
 

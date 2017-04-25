@@ -14,7 +14,8 @@ Ext.define('OgamDesktop.view.request.AdvancedRequestModel', {
          */
         currentProcess:null,
         fieldsets:null,
-        userchoices:[]
+        userchoices:[],
+        requestId:null
     },
     stores: {
         /**
