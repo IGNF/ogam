@@ -126,15 +126,34 @@ Ext.define('OgamDesktop.view.request.PredefinedRequest', {
      * Initializes the items.
      */
     initItems: function() {
+    	var groupers = [{
+            property: 'group_label',
+            sorterFn: function(item1, item2) {
+            	// Something to keep in mind would be capitals. "a" < "b" === true "a" < "B" === false
+            	var sorterString1 = item1.data.group_position + item1.data.group_label.toUpperCase();
+            	var sorterString2 = item2.data.group_position + item2.data.group_label.toUpperCase();
+                return (sorterString1 > sorterString2) ? 1 : (sorterString1 === sorterString2 ? 0 : -1);
+            }
+    	},{
+            property: 'dataset_label',
+            sorterFn: function(item1, item2) {
+            	// Something to keep in mind would be capitals. "a" < "b" === true "a" < "B" === false
+            	var sorterString1 = item1.data.dataset_label.toUpperCase();
+            	var sorterString2 = item2.data.dataset_label.toUpperCase();
+                return (sorterString1 > sorterString2) ? 1 : (sorterString1 === sorterString2 ? 0 : -1);
+            }
+        }];
+    	
         var store = new OgamDesktop.store.request.predefined.PredefinedRequest({
             storeId:'PredefinedRequestTabRequestStore',
-            groupField:'group_label'
+            grouper: groupers[0]
         });
 
         var columns = [{
             text: this.labelColumnHeader,
             flex: 1,
             dataIndex: 'label',
+            groupable: false,
             renderer: function (value, object, record) {
                 if (record.get('is_public')) {
                     return value;
@@ -155,6 +174,7 @@ Ext.define('OgamDesktop.view.request.PredefinedRequest', {
             width: 40,
             fixed : true,
             sortable: false,
+            groupable: false,
             menuDisabled: true,
             align : 'center',
             items:[{
@@ -195,7 +215,8 @@ Ext.define('OgamDesktop.view.request.PredefinedRequest', {
                 ' ({children.length:plural(\'Request\')})'
             ),
             hideGroupedHeader: true,
-            startCollapsed: false
+            startCollapsed: false,
+            groupers: groupers
         }];
         
         this.items = [{
