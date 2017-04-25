@@ -21,7 +21,14 @@ Ext.define('OgamDesktop.controller.request.PredefinedRequest', {
                 predefinedRequestEdition: 'onPredefinedRequestEdition',
                 predefinedRequestDeletion: 'onPredefinedRequestDeletion'
             }
-         }
+        },
+		listen: {
+		    store: {
+		        '#CurrentUser': {
+		            load: 'onCurrentUserStoreLoad'
+		        }
+		    }
+		}
     },
     
     routes:{
@@ -52,6 +59,18 @@ Ext.define('OgamDesktop.controller.request.PredefinedRequest', {
      */
     predefinedRequestDeletionErrorTitle: 'Request deletion failed:',
 
+    /**
+     * Show the save button into the advanced request view if the user has the rights.
+     * @private
+     */
+    onCurrentUserStoreLoad:function(){
+    	var user = OgamDesktop.getApplication().getCurrentUser();
+    	if(user.isAllowed('MANAGE_PUBLIC_REQUEST') || user.isAllowed('MANAGE_OWNED_PRIVATE_REQUEST')){
+	        this.getAdvReqView().queryById('SaveButtonSeparator').show();
+	        this.getAdvReqView().queryById('SaveButton').show();
+    	}
+    },
+    
     /**
      * Open the predefined request tab
      * @private
