@@ -111,6 +111,25 @@ Ext.define('OgamDesktop.view.request.SaveRequestWindow',{
 	 * Initializes the items.
 	 */
 	initItems: function(){
+		
+		// Rights management
+		var radioFieldContainerHidden = true;
+		var privateRadioFieldChecked = false;
+		var publicRadioFieldChecked = false;
+		var user = OgamDesktop.getApplication().getCurrentUser();
+		var isAllowedPublic = user.isAllowed('MANAGE_PUBLIC_REQUEST');
+		var isAllowedPrivate = user.isAllowed('MANAGE_OWNED_PRIVATE_REQUEST');
+		if(!isAllowedPublic && isAllowedPrivate){
+			var privateRadioFieldChecked = true;
+		}
+		if(isAllowedPublic && !isAllowedPrivate){
+			var publicRadioFieldChecked = true;
+		}
+		if(isAllowedPublic && isAllowedPrivate){
+			var radioFieldContainerHidden = false;
+			var privateRadioFieldChecked = true;
+		}
+		
 		this.items = new Ext.form.Panel({ // Can't be created with xtype='formpanel'...
 			xtype: 'formpanel',
 			itemId:'SaveForm',
@@ -194,7 +213,7 @@ Ext.define('OgamDesktop.view.request.SaveRequestWindow',{
 		            xtype      : 'fieldcontainer',
 		            fieldLabel : this.radioFieldContainerLabel,
 		            defaultType: 'radiofield',
-		            hidden: !OgamDesktop.getApplication().getCurrentUser().isAllowed('MANAGE_PUBLIC_REQUEST'),
+		            hidden: radioFieldContainerHidden,
 		            width: 300,
 		            defaults: {
 		                flex: 1
@@ -206,12 +225,13 @@ Ext.define('OgamDesktop.view.request.SaveRequestWindow',{
 		                    boxLabel  : this.privateRadioFieldLabel,
 		                    name      : 'isPublic',
 		                    inputValue: false,
-		                    checked   : true
+		                    checked   : privateRadioFieldChecked
 		                },{
 		                	itemId: 'publicRadioField',
 		                    boxLabel  : this.publicRadioFieldLabel,
 		                    name      : 'isPublic',
-		                    inputValue: true
+		                    inputValue: true,
+		                    checked   : publicRadioFieldChecked
 		                }
 		            ]
 		        }]
