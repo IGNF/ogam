@@ -185,7 +185,7 @@ INSERT INTO website.predefined_request_group(name, label, definition, "position"
 INSERT INTO website.predefined_request_group_asso(group_id, request_id, "position")
   SELECT group_id, request_id, prgao."position" FROM website.predefined_request_group_asso_old prgao
   LEFT JOIN website.predefined_request pr on prgao.request_name = pr.name
-  LEFT JOIN website.predefined_request_group prg on prgao.group_name = prg.name
+  LEFT JOIN website.predefined_request_group prg on prgao.group_name = prg.name;
 INSERT INTO website.predefined_request_criterion(request_id, format, data, value)
   SELECT request_id, format, data, value
   FROM website.predefined_request_criterion_old prco
