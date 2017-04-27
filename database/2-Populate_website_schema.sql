@@ -83,6 +83,14 @@ INSERT INTO application_parameters (name, value, description) VALUES ('image_upl
 INSERT INTO application_parameters (name, value, description) VALUES ('query_details_layers1', 'ortho_photos,countries,departements,communes,location_detail_zoom_in,tree_detail_zoom_in', 'The layers used for the details zoom in map image. Note: order is important');
 INSERT INTO application_parameters (name, value, description) VALUES ('query_details_layers2', 'ortho_photos,countries,departements,location_detail_zoom_out,tree_detail_zoom_out', 'The layers used for the details zoom out map image. Note: order is important');
 
+
+-- Config pour l'intégration
+--update website.application_parameters set value = '/var/www/html/server/ogamServer/upload/images/' where name = 'image_upload_dir';
+--update website.application_parameters set value = '/var/www/html/server/ogamServer/upload/' where name = 'uploadDir';
+--update website.application_parameters set value = '/var/tmp/ogam_upload/' where name = 'UploadDirectory';
+
+
+
 --
 -- Users
 --
