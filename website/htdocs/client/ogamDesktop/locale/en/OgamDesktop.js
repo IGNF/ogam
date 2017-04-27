@@ -265,7 +265,7 @@ Ext.define('OgamDesktop.locale.en.view.request.AdvancedRequestController', {
 Ext.define('OgamDesktop.locale.en.view.request.PredefinedRequest', {
 	override:'OgamDesktop.view.request.PredefinedRequest',
 	config:{
-		title: 'Predefined requests'
+		title: 'Recorded requests'
 	},
 	labelColumnHeader : "Label",
 	resetButtonText:"Cancel",
