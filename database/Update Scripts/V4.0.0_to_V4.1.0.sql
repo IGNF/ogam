@@ -74,6 +74,8 @@ COMMENT ON COLUMN website.predefined_request.label IS 'The label of the request'
 COMMENT ON COLUMN website.predefined_request.date IS 'Date of creation of the request';
 COMMENT ON COLUMN website.predefined_request.is_public IS 'True if the request is public';
 
+CREATE UNIQUE INDEX uk_predefined_request_2 ON website.predefined_request (label, dataset_id) WHERE is_public;
+
 -- Table: website.predefined_request_group
 ---------------------------------------------
 CREATE TABLE website.predefined_request_group
