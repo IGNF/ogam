@@ -156,8 +156,8 @@ class PredefinedRequestRepository extends \Doctrine\ORM\EntityRepository {
 		$qb->select('pr, ds, prga, prg')
 			->from('OGAMBundle:Website\PredefinedRequest', 'pr')
 			->join('pr.datasetId', 'ds')
-			->join('pr.groups', 'prga')
-			->join('prga.groupId', 'prg')
+			->leftjoin('pr.groups', 'prga')
+			->leftjoin('prga.groupId', 'prg')
 			->where('pr.requestId = :requestId')
 			->setParameters([
 			'requestId' => $requestId
