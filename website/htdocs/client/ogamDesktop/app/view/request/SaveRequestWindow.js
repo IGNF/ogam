@@ -166,6 +166,7 @@ Ext.define('OgamDesktop.view.request.SaveRequestWindow',{
 						name: 'requestId',
 						fieldLabel: this.resquestComboLabel,
 						allowBlank: false,
+						editable:false,
 						width: 500,
 			    		store: new OgamDesktop.store.request.predefined.PredefinedRequest({
 			    			storeId: 'SaveRequestWindowRequestComboStore',
@@ -194,6 +195,7 @@ Ext.define('OgamDesktop.view.request.SaveRequestWindow',{
 					fieldLabel: this.groupComboLabel,
 					allowBlank: false,
 					emptyText: this.comboEmptyText,
+					editable:false,
 		    		store: new OgamDesktop.store.request.predefined.Group(),
 		    		queryMode: 'local',
 		    		displayField: 'label',
@@ -202,12 +204,14 @@ Ext.define('OgamDesktop.view.request.SaveRequestWindow',{
 		    		itemId: 'labelTextField',
 					xtype: 'textfield',
 					name      : 'label',
+					maxLength : 50,
 					fieldLabel: this.labelTextFieldLabel,
 					allowBlank: false
 				},{
 					itemId: 'definitionTextField',
 			        xtype     : 'textareafield',
 			        name      : 'definition',
+					maxLength : 500,
 			        fieldLabel: this.definitionTextFieldLabel
 			    },{
 		            xtype      : 'fieldcontainer',

@@ -513,7 +513,7 @@ class QueryController extends Controller {
 	        $logger->error('Error while creating predefined request : ' . $e);
 	        return new JsonResponse([
 	            'success' => false,
-	            'errorMessage' => $e->getMessage()
+	            'errorMessage' => $this->get('translator')->trans("An unexpected error occurred.")
 	        ]);
 	    }
 	}
@@ -576,7 +576,7 @@ class QueryController extends Controller {
 	        $logger->error('Error while updating predefined request : ' . $e);
 	        return new JsonResponse([
 	            'success' => false,
-	            'errorMessage' => $e->getMessage()
+	            'errorMessage' => $this->get('translator')->trans("An unexpected error occurred.")
 	        ]);
 	    }
 	}
@@ -626,7 +626,7 @@ class QueryController extends Controller {
     	    $logger->error('Error while deleting predefined request : ' . $e);
     	    return new JsonResponse([
     	        'success' => false,
-    	        'errorMessage' => $e->getMessage()
+    	        'errorMessage' => $this->get('translator')->trans("An unexpected error occurred.")
     	    ]);
     	}
 	}
