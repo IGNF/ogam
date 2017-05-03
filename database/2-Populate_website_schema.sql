@@ -17,7 +17,6 @@ ALTER SEQUENCE website.predefined_request_request_id_seq RESTART WITH 1;
 ALTER SEQUENCE website.predefined_request_group_group_id_seq RESTART WITH 1;
 
 DELETE FROM dataset_role_restriction;
-DELETE FROM layer_role_restriction;
 DELETE FROM role_to_schema;
 DELETE FROM role_to_user;
 DELETE FROM permission_per_role;
@@ -151,15 +150,6 @@ INSERT INTO permission_per_role(role_code, permission_code) VALUES ('ADMIN', 'MA
 INSERT INTO permission_per_role(role_code, permission_code) VALUES ('ADMIN', 'MANAGE_REQUEST_GROUP');
 INSERT INTO permission_per_role(role_code, permission_code) VALUES ('VISITOR', 'DATA_QUERY');
 INSERT INTO permission_per_role(role_code, permission_code) VALUES ('VISITOR', 'DATA_QUERY_OTHER_PROVIDER');
-
-
---
--- Restriction d'accès aux dataset
---
---INSERT INTO dataset_role_restriction (ROLE_CODE, DATASET_ID) VALUES ('ADMIN', 'SPECIES');
-
---INSERT INTO layer_role_restriction (layer_name, role_code) VALUES ('all_harmonized_locations', 'ADMIN');
-
 
 
 --

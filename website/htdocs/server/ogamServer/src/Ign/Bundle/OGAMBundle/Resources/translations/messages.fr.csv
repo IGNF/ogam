@@ -305,8 +305,7 @@ Role Label;Libellé du rôle
 Role Definition;Définition du rôle 
 Permissions;Permissions
 Schemas Permissions;Permissions sur les schémas de base de données
-Dataset Restrictions;Restrictions sur les datasets 
-Layer Restrictions;Restrictions sur les couches carto
+Datasets Restrictions;Restrictions sur les datasets
 
 # User Rights
 Manage users;Administrer les utilisateurs

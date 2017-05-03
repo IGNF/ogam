@@ -245,3 +245,15 @@ INSERT INTO website.permission(permission_code, permission_label) VALUES ('MANAG
 INSERT INTO website.permission_per_role(role_code, permission_code) VALUES ('ADMIN', 'MANAGE_OWNED_PRIVATE_REQUEST');
 INSERT INTO website.permission_per_role(role_code, permission_code) VALUES ('ADMIN', 'MANAGE_PUBLIC_REQUEST');
 INSERT INTO website.permission_per_role(role_code, permission_code) VALUES ('ADMIN', 'MANAGE_REQUEST_GROUP');
+
+
+
+--------------------------------------------------------------
+--------------------------------------------------------------
+--                                                          --
+--                Modifications diverses                    --
+--                                                          --
+--------------------------------------------------------------
+--------------------------------------------------------------
+
+DROP TABLE website.layer_role_restriction;

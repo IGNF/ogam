@@ -64,6 +64,19 @@ class Role implements RoleInterface, \Serializable {
 	 *      )
 	 */
 	private $schemas;
+	
+	/**
+	 * The role datasets.
+	 *
+	 * A list of codes corresponding to authorised datasets.
+	 *
+	 * @var array[String] @ORM\ManyToMany(targetEntity="Ign\Bundle\OGAMBundle\Entity\Metadata\Dataset")
+	 *      @ORM\JoinTable(name="dataset_role_restriction",
+	 *      joinColumns={@ORM\JoinColumn(name="role_code", referencedColumnName="role_code")},
+	 *      inverseJoinColumns={@ORM\JoinColumn(name="dataset_id", referencedColumnName="dataset_id")}
+	 *      )
+	 */
+	private $datasets;
 
 	/**
 	 * Constructor
@@ -157,6 +170,15 @@ class Role implements RoleInterface, \Serializable {
 		return $this->schemas;
 	}
 
+	/**
+	 * Get the datasets.
+	 *
+	 * @return \Doctrine\Common\Collections\Collection
+	 */
+	public function getDatasets() {
+	    return $this->datasets;
+	}
+	
 	/**
 	 * Indicate if the role is allowed for a permission.
 	 *

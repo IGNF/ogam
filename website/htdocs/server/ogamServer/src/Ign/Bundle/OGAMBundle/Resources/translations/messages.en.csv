@@ -302,8 +302,7 @@ Role Label;Role Label
 Role Definition;Role Definition
 Permissions;Permissions
 Schemas Permissions;Schemas Permissions
-Dataset Restrictions;Dataset Restrictions
-Layer Restrictions;Layer Restrictions
+Datasets Restrictions;Dataset Restrictions
 
 # User Rights
 Manage users;Manage users
