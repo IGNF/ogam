@@ -102,27 +102,6 @@ Ext.define('OgamDesktop.view.request.PredefinedRequest', {
 //</locale>
 
     /**
-     * Initializes the component.
-     */
-    initComponent: function(){
-        this.fbar= [{
-            xtype: 'button',
-            margin: '5 5 5 5',
-            text: this.resetButtonText,
-            tooltip:this.resetButtonTooltip,
-            handler:'onResetRequest'
-        },{
-            xtype: 'button',
-            itemId:'launchRequest',
-            margin: '5 5 5 5',
-            text: this.launchRequestButtonText,
-            tooltip:this.launchRequestButtonTooltip
-        }];
-        
-        this.callParent();
-    },
-
-    /**
      * Initializes the items.
      */
     initItems: function() {
@@ -240,14 +219,29 @@ Ext.define('OgamDesktop.view.request.PredefinedRequest', {
             hideMode: 'display',
             xtype:'predefined-request-selector',
             bind:{
-                criteria :{
-                    bindTo:'{criteria}',
+                request :{
+                    bindTo:'{requete.selection}',
                     deep:true
                 }
             },
             flex: 1,
-            margin: '5 10 10 10'
-            
+            margin: '10 10 10 0',
+            height:'100%',
+            dockedItems: [{
+                xtype: 'toolbar',
+                dock: 'bottom',
+                items: [{
+	                xtype: 'button',
+	                text: this.resetButtonText,
+	                tooltip:this.resetButtonTooltip,
+	                handler:'onResetRequest'
+	            },'->',{
+	                xtype: 'button',
+	                itemId:'launchRequest',
+	                text: this.launchRequestButtonText,
+	                tooltip:this.launchRequestButtonTooltip
+	            }]
+            }]
         }];
 
         this.callParent();

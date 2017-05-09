@@ -446,21 +446,57 @@ class QueryController extends Controller {
 
 
 	/**
-	 * @Route("/ajaxgetpredefinedrequestcriteria")
+	 * @Route("/predefinedrequest/{id}", requirements={"id" = "\d+"}, defaults={"id" = null})
+	 * @Method("GET")
 	 */
-	public function ajaxgetpredefinedrequestcriteriaAction(Request $request) {
+	public function getPredefinedRequestAction(Request $request) {
 		$logger = $this->get('logger');
-		$logger->debug('ajaxgetpredefinedrequestcriteria');
+		$logger->debug('getPredefinedRequestAction');
+		
+		try{
+		    // Set the function variables
+		    $requestId = $request->attributes->getInt('id');
+		    $r = $request->request;
+		    $em = $this->getDoctrine()->getManager();
+		    
+		    // Get the predefined request information
+		    $predefinedRequestRepo = $em->getRepository(PredefinedRequest::class);
+		    $pr = $predefinedRequestRepo->find($requestId);
+		    $locale = $this->get('ogam.locale_listener')->getLocale();
+		    $predefinedRequestCriterionRepository = $this->get('doctrine')->getRepository(PredefinedRequestCriterion::class);
+		    $requestCriteria = $predefinedRequestCriterionRepository->getPredefinedRequestCriteria($requestId, $locale);
+		    $predefinedRequestColumnRepository = $this->get('doctrine')->getRepository(PredefinedRequestColumn::class);
+		    $requestColumns = $predefinedRequestColumnRepository->getPredefinedRequestColumns($requestId, $locale);
 
-		$requestId = $request->query->get('request_id');
-		$predefinedRequestCriterionRepository = $this->get('doctrine')->getRepository(PredefinedRequestCriterion::class);
-		$locale = $this->get('ogam.locale_listener')->getLocale();
-
-		$response = new Response();
-		$response->headers->set('Content-Type', 'application/json');
-		return $this->render('OGAMBundle:Query:ajaxgetpredefinedrequestcriteria.html.twig', array(
-			'data' => $predefinedRequestCriterionRepository->getPredefinedRequestCriteria($requestId, $locale)
-		), $response);
+		    // Check the right
+		    if($pr->getIsPublic() === true) {
+		        if(!$this->getUser()->isAllowed('MANAGE_PUBLIC_REQUEST')){
+		            throw new BadCredentialsException('Invalid credentials.');
+		        }
+		    } elseif ($pr->getIsPublic() === false) {
+		        if(!$this->getUser()->isAllowed('MANAGE_OWNED_PRIVATE_REQUEST')){
+		            throw new BadCredentialsException('Invalid credentials.');
+		        }
+		        if($this->getUser()->getLogin() !== $pr->getUserLogin()->getLogin()) {
+		            throw new BadCredentialsException('Invalid credentials.');
+		        }
+		    }
+		    
+		    $response = new Response();
+		    $response->headers->set('Content-Type', 'application/json');
+		    return $this->render('OGAMBundle:Query:getpredefinedrequest.html.twig', array(
+		        'request'=> $pr,
+		        'criteria' => $requestCriteria,
+		        'columns' => $requestColumns
+		    ), $response);
+		    
+		} catch (\Exception $e){
+		    $logger->error('Error while requesting predefined request : ' . $e);
+		    return new JsonResponse([
+		        'success' => false,
+		        'errorMessage' => $this->get('translator')->trans("An unexpected error occurred.")
+		    ]);
+		}
 	}
 
 

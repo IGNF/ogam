@@ -268,9 +268,9 @@ Ext.define('OgamDesktop.locale.en.view.request.PredefinedRequest', {
 		title: 'Recorded requests'
 	},
 	labelColumnHeader : "Label",
-	resetButtonText:"Cancel",
+	resetButtonText:"Reset",
 	resetButtonTooltip: "Reset the form with default values",
-	launchRequestButtonText:"OK",
+	launchRequestButtonText:"Search",
 	launchRequestButtonTooltip:"Launch the search request",
 	loadingText:"Loading...",
 	defaultErrorCardPanelText:"Sorry, the search request failed...",
@@ -287,7 +287,8 @@ Ext.define('OgamDesktop.locale.en.view.request.PredefinedRequest', {
 
 Ext.define('OgamDesktop.locale.en.view.request.PredefinedRequestSelector', {
 	override:'OgamDesktop.view.request.PredefinedRequestSelector',
-	defaultCardPanelText : 'Please select a request...'
+	defaultCardPanelText : 'Please select a request...',
+	loadingMsg: 'Loading...'
 });
 Ext.define('OgamDesktop.locale.en.view.request.SaveRequestWindow', {
 	override:'OgamDesktop.view.request.SaveRequestWindow',

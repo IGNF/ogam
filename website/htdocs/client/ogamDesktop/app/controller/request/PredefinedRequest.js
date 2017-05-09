@@ -94,7 +94,6 @@ Ext.define('OgamDesktop.controller.request.PredefinedRequest', {
         
         var prModel= this.getPredefReqView().lookupReference('requete');
        
-        //console.log(prModel.selection.reqfieldsets());
         adModel = this.getAdvReqView().getViewModel();
         this.getAdvReqView().lookupReference('processComboBox').setValue(prModel.selection.get('dataset_id'));
         //prModel.selection.getProcessus({success:function(record){adModel.set('currentProcess',record);},scope:adModel});
@@ -102,7 +101,7 @@ Ext.define('OgamDesktop.controller.request.PredefinedRequest', {
         prModel.selection.reqfieldsets({
             success:function(records){
                 var selectedCodes = {};
-                this.getPredefReqView().child('predefined-request-selector').items.each(function(item){
+                this.getPredefReqView().queryById('criteriaFieldset').items.each(function(item){
                     if(item instanceof Ext.form.field.Tag) {
                         selectedCodes[item.getName()] = item.getValueRecords();
                     } else {
@@ -129,50 +128,28 @@ Ext.define('OgamDesktop.controller.request.PredefinedRequest', {
 
     /**
      * Manages the predefined request edit button click event:
-
      * @param Object record The record corresponding to the button's row
      * @private
      */
     onPredefinedRequestEdition:function(record){
-        // record.criteria() return a 'Ext.data.Store' of 'OgamDesktop.model.request.predefined.Criterion'
-        this.getPredefReqView().mask(this.loadingMsg);
-        record.criteria().load({
-            type:'ajax',
-            url:Ext.manifest.OgamDesktop.requestServiceUrl +'ajaxgetpredefinedrequestcriteria',
-            params:{
-                request_id:record.get('request_id')
-            },
-            noCache:false,
-            callback: function(records, operation, success) {
-                this.getPredefReqView().unmask();
-                this.getAdvReqView().mask(this.loadingMsg);
-                this.getAdvReqView().lookupReference('processComboBox').setValue(record.get('dataset_id'));
-                record.reqfieldsets({
-                    success:function(records){
-
-                        var selectedCodes = {};
-                        record._criteria.each(function(criterion) { // OgamDesktop.model.request.predefined.Criterion
-                            selectedCodes[criterion.getCriteriaField().name] = new OgamDesktop.model.request.object.field.Code({
-                                code: criterion.get('default_value'),
-                                label: criterion.get('default_label')
-                            });
-                        }, this);
-                        this.getAdvReqView().getViewModel().set({
-                            'userchoices' : selectedCodes,
-                            'fieldsets': records,
-                            'requestId': record.get('request_id')
-                        });
-                        this.getAdvReqView().getViewModel().notify();
-                        this.getAdvancedRequestSelector().reloadForm();
-                        this.getAdvReqView().unmask();
-                    },
-                    scope:this
+    	this.getAdvReqView().expand();
+        this.getAdvReqView().mask(this.loadingMsg);
+        this.getAdvReqView().lookupReference('processComboBox').setValue(record.get('dataset_id'));
+        record.reqfieldsets({
+            success:function(records){
+                this.getAdvReqView().getViewModel().set({
+                    'userchoices' : [],
+                    'fieldsets': records,
+                    'requestId': record.get('request_id')
                 });
-                
-                this.getMainView().getLayout().setActiveItem('consultationTab');
+                this.getAdvReqView().getViewModel().notify();
+                this.getAdvancedRequestSelector().reloadForm();
+                this.getAdvReqView().unmask();
             },
-            scope: this
+            scope:this
         });
+        
+        this.getMainView().getLayout().setActiveItem('consultationTab');
     },
 
     /**

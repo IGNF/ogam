@@ -268,9 +268,9 @@ Ext.define('OgamDesktop.locale.fr.view.request.PredefinedRequest', {
 		title: 'Requêtes enregistrées'
 	},
 	labelColumnHeader : "Libellé",
-	resetButtonText:"Annuler",
+	resetButtonText:"Réinitialiser",
 	resetButtonTooltip: "Réinitialise le formulaire avec les valeurs par défaut",
-	launchRequestButtonText:"OK",
+	launchRequestButtonText:"Rechercher",
 	launchRequestButtonTooltip:"Lance la requête dans la page de consultation",
 	loadingText:"Chargement...",
 	defaultErrorCardPanelText:"Désolé, le chargement a échoué...",
@@ -287,7 +287,8 @@ Ext.define('OgamDesktop.locale.fr.view.request.PredefinedRequest', {
 
 Ext.define('OgamDesktop.locale.fr.view.request.PredefinedRequestSelector', {
 	override:'OgamDesktop.view.request.PredefinedRequestSelector',
-	defaultCardPanelText : 'Veuillez sélectionner une requête...'
+	defaultCardPanelText : 'Veuillez sélectionner une requête...',
+	loadingMsg: 'Chargement...'
 });
 Ext.define('OgamDesktop.locale.fr.view.request.SaveRequestWindow', {
 	override:'OgamDesktop.view.request.SaveRequestWindow',

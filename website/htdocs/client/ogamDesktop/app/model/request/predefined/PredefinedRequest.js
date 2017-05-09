@@ -19,24 +19,8 @@ Ext.define('OgamDesktop.model.request.predefined.PredefinedRequest',{
         {name: 'dataset_id', reference: {type:'Process', role:'processus', unique:true}, mapping: 9},
         {name: 'dataset_label', type: 'string', mapping: 10},
         {name: 'is_read_only', type: 'boolean', mapping: 11}
+        // See 'OgamDesktop.model.request.FieldSet' for the associationKey 'reqfieldsets'
     ],
-            
-    hasMany: [{// See Ext.data.reader.Reader documentation for example
-                model: 'OgamDesktop.model.request.predefined.Criterion',
-                name:'criteria',
-                associationKey: 'criteria',
-                proxy:{
-                    type:'ajax',
-                    url:Ext.manifest.OgamDesktop.requestServiceUrl +'ajaxgetpredefinedrequestcriteria'
-                }
-            }
-/*            {// See Ext.data.reader.Reader documentation for example
-                model: 'OgamDesktop.model.request.FieldSet', name:'reqfieldsets',  foreignKey: 'request_name',
-                associationKey: 'reqfieldsets'
-            }
-*/
-            ],
-
     proxy:{
         type:'ajax',
         url:Ext.manifest.OgamDesktop.requestServiceUrl +'ajaxgetpredefinedrequestlist',

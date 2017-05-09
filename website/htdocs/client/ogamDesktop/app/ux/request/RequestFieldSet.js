@@ -163,14 +163,6 @@ Ext.define('OgamDesktop.ux.request.RequestFieldSet', {
 		return items;
 	},
 
-
-	/**
-	 * Builds a column for the record.
-	 * @private
-	 * @param {Ext.data.Record} record The column combobox record to add
-	 */
-	getColumnConfig : Ext.emptyFn,
-
 	/**
 	 * Builds the default columns.
 	 * @return {Array} An array of the default columns config
@@ -494,6 +486,44 @@ Ext.define('OgamDesktop.ux.request.RequestFieldSet', {
 				};
 				return field;
 			}
+		},
+		
+		/**
+		 * Construct a column for the record.
+		 * @private
+		 * @param {Ext.data.Record} record The column combobox record to add
+		 * @return {Object} The column config object
+		 */
+		getColumnConfig : function(record) {
+			var field = {
+				xtype : 'container',
+				autoEl : 'div',
+				width : '100%',
+				cls : 'o-ux-adrfs-column-item',
+				items : [ {
+					xtype : 'box',
+					autoEl : {
+						tag : 'span',
+						cls : 'o-columnLabel columnLabelColor',
+						html : record.get('label')
+					},
+					listeners : {
+						'render' : function(cmp) {
+							Ext.QuickTips.register({
+								target : cmp.getEl(),
+								title : record.get('label'),
+								text : record.get('definition'),
+								width : 200
+							});
+						}
+					}
+				}, {
+					xtype : 'hidden',
+					name : 'column__' + record.get('name'),
+					value : '1'
+				} ]
+			};
+			return field;
 		}
 	}
 });
