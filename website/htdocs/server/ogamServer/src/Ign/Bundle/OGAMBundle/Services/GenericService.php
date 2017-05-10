@@ -19,6 +19,7 @@ use Ign\Bundle\OGAMBundle\Entity\Metadata\Unit;
 use Ign\Bundle\OGAMBundle\Entity\Generic\GenericTableFormat;
 use Ign\Bundle\OGAMBundle\Entity\Metadata\ModeTaxref;
 use Ign\Bundle\OGAMBundle\Entity\Generic\GenericGeomField;
+use Doctrine\ORM\Query;
 
 /**
  * The Generic Service.
@@ -447,16 +448,13 @@ class GenericService {
 							$sql .= " AND " . $column . " = ". $this->quote($value);
 						} else {
 							// Get all the children of a selected taxon
-							$nodeModes = $this->metadataModel->getRepository(ModeTaxref::class)->getTaxrefChildrenModes($unit, $value, 0, $this->locale);
-							
-							$nodeModesArray = [];
-							foreach ($nodeModes as $nodeMode) {
-								$nodeModesArray[] .= $nodeMode->getCode();
+							$nodeModes = $this->metadataModel->getRepository(ModeTaxref::class)->getChildrenCodesSqlQuery($unit, $value, 0);
+							$sql2 = $nodeModes->getSql();
+							foreach($nodeModes->getParameters() as $param) {
+								$sql2 = str_replace(":".$param->getName(), $this->quote($nodeModes->processParameterValue($param->getValue())), $sql2);
 							}
-							
-							// Case of a list of values
-							$stringValue = $this->_arrayToSQLString($nodeModesArray);
-							$sql .= " AND " . $column . " && " . $stringValue;
+
+							$sql .= " AND EXISTS ($sql2 WHERE code = ANY($column) ) ";
 						}
 					} else {
 						
@@ -513,15 +511,17 @@ class GenericService {
 						} else {
 							
 							// Get all the children of a selected taxon
-							$nodeModes = $this->metadataModel->getRepository(ModeTaxref::class)->getTaxrefChildrenModes($unit, $value, 0, $this->locale);
+							$nodeModes = $this->metadataModel->getRepository(ModeTaxref::class)->getChildrenCodesSqlQuery($unit, $value, 0);
 							
-							$sql2 = '';
-							foreach ($nodeModes as $nodeMode) {
-								$sql2 .= $this->quote($nodeMode->getCode()) . ", ";
+							$sql2 = $nodeModes->getSql();
+							foreach($nodeModes->getParameters() as $param) {
+								$sql2 = str_replace(":".$param->getName(), $this->quote($nodeModes->processParameterValue($param->getValue())), $sql2);
 							}
-							$sql2 = substr($sql2, 0, -2); // remove last comma
+
+							//WHERE EXISTS (IN may have poor perf with  lotsof data/but no row selected and limit/order)
+							$sql .=  " AND EXISTS ($sql2 WHERE $column = code) ";
 							
-							$sql .= " AND " . $column . " IN (" . $sql2 . ")";
+
 						}
 					} else {
 						
