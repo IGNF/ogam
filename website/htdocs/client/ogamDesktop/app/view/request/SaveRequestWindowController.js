@@ -239,11 +239,23 @@ Ext.define('OgamDesktop.view.request.SaveRequestWindowController', {
                     saveAndDisplayButton.enable();
                     this.getView().close();
                     OgamDesktop.toast(this.toastHtml_formSaved, this.toastTitle_formSaved);
-                    Ext.getStore('PredefinedRequestTabRequestStore').reload();
                     if (display) {
                         var pr = Ext.getCmp('predefined_request');
                         pr.ownerCt.setActiveTab(pr);
                     }
+                    Ext.getStore('PredefinedRequestTabRequestStore').reload({
+                	    callback: function(records, operation, success) {
+                	        if(success && display){
+                	        	records.forEach(function(element, index, array) {
+                	        	    if(element.get('request_id') === requestId){
+                                        pr.queryById('predefinedRequestGridPanel').setSelection(element);
+                                        return;
+                	        	    }
+                	        	});
+                	        }
+                	    },
+                	    scope: this
+                    });
                 },
                 failure: function(form, action) {
                     switch (action.failureType) {
