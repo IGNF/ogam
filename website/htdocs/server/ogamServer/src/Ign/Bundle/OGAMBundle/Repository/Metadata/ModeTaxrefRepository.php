@@ -254,4 +254,57 @@ class ModeTaxrefRepository extends \Doctrine\ORM\EntityRepository {
 		
 		return $query->getResult();
 	}
+	/**
+	* Get the query  in order to get all the children code from the reference taxon of a taxon.
+	* Used when building an SQL WHERE clause for a node of the taxref.
+	*
+	* Return an query
+	*
+	* @param String $unit
+	*        	The unit
+	* @param String $code
+	*        	The identifier of the start node in the tree (by default the root node is *)
+	* @param Integer $levels
+	*        	The number of levels of depth (if 0 then no limitation)
+	* @return NativeQuery
+	*/
+	public function getChildrenCodesSqlQuery(Unit $unit, $code, $levels) {
+		$rsm = new ResultSetMappingBuilder($this->_em);
+		$rsm->addScalarResult('code', 'code');
+		
+		if ($code === '*') { // fakeroot
+			$firstNode = "	SELECT '*'::character varying, 1 ";
+		} else {
+			$firstNode = "	SELECT code, 1 ";
+			$firstNode .= "	FROM mode_taxref mt ";
+			$firstNode .= "	WHERE unit = :unit ";
+			$firstNode .= "	AND code = :code ";
+		}
+
+		$sql = "WITH RECURSIVE node_list( code, level) AS ( ";
+		$sql .= $firstNode;
+		$sql .= "	UNION ALL ";
+		$sql .= "		SELECT child.code, level + 1 ";
+		$sql .= "		FROM mode_taxref child ";
+		$sql .= "		INNER JOIN node_list on (child.parent_code = node_list.code) ";
+		$sql .= "		WHERE child.unit = :unit ";
+		if ($levels != 0) {
+			$sql .= " AND level < :levels ";
+
+		}
+		$sql .= "	) ";
+		$sql .= "	SELECT code ";
+		$sql .= "	FROM node_list ";
+		
+		$query = $this->_em->createNativeQuery($sql, $rsm);
+		$query->setParameters(array(
+			'unit' => $unit,
+			'code' => $code,
+			'levels' => $levels
+		));
+		
+		return $query;
+		
+	}
+
 }
