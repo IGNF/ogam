@@ -27,6 +27,7 @@ Ext.define('OgamDesktop.view.request.PredefinedRequestSelector', {
      * The loading message (defaults to <tt>'Loading...'</tt>)
      */
     loadingMsg: 'Loading...',
+    scrollable: true,
 
     /**
      * Fonction handling the update of the request property
