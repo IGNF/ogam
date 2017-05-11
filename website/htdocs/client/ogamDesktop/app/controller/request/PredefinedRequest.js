@@ -22,13 +22,13 @@ Ext.define('OgamDesktop.controller.request.PredefinedRequest', {
                 predefinedRequestDeletion: 'onPredefinedRequestDeletion'
             }
         },
-		listen: {
-		    store: {
-		        '#CurrentUser': {
-		            load: 'onCurrentUserStoreLoad'
-		        }
-		    }
-		}
+        listen: {
+            store: {
+                '#CurrentUser': {
+                    load: 'onCurrentUserStoreLoad'
+                }
+            }
+        }
     },
     
     routes:{
@@ -64,11 +64,11 @@ Ext.define('OgamDesktop.controller.request.PredefinedRequest', {
      * @private
      */
     onCurrentUserStoreLoad:function(){
-    	var user = OgamDesktop.getApplication().getCurrentUser();
-    	if(user.isAllowed('MANAGE_PUBLIC_REQUEST') || user.isAllowed('MANAGE_OWNED_PRIVATE_REQUEST')){
-	        this.getAdvReqView().queryById('SaveButtonSeparator').show();
-	        this.getAdvReqView().queryById('SaveButton').show();
-    	}
+        var user = OgamDesktop.getApplication().getCurrentUser();
+        if(user.isAllowed('MANAGE_PUBLIC_REQUEST') || user.isAllowed('MANAGE_OWNED_PRIVATE_REQUEST')){
+            this.getAdvReqView().queryById('SaveButtonSeparator').show();
+            this.getAdvReqView().queryById('SaveButton').show();
+        }
     },
     
     /**
@@ -132,7 +132,7 @@ Ext.define('OgamDesktop.controller.request.PredefinedRequest', {
      * @private
      */
     onPredefinedRequestEdition:function(record){
-    	this.getAdvReqView().expand();
+        this.getAdvReqView().expand();
         this.getAdvReqView().mask(this.loadingMsg);
         this.getAdvReqView().lookupReference('processComboBox').setValue(record.get('dataset_id'));
         record.reqfieldsets({
@@ -158,39 +158,44 @@ Ext.define('OgamDesktop.controller.request.PredefinedRequest', {
      * @private
      */
     onPredefinedRequestDeletion:function(record){
-    	Ext.Msg.confirm(
-    		this.deletionConfirmTitle,
-    		this.deletionConfirmMessage,
-    		function(buttonId, value, opt){
-    			if(buttonId === 'yes'){
-    		        // Asks the request deletion to the server
-    		        this.getPredefinedRequestGridPanel().mask(this.loadingMsg);
-    		        Ext.Ajax.request({
-    		            url: Ext.manifest.OgamDesktop.requestServiceUrl + 'predefinedrequest/' + record.get('request_id'),
-    		            method: 'DELETE',
-    		            success: function(response, opts) {
-    		                var result = Ext.decode(response.responseText);
-    		                if (result.success) {
-	    		            	// Remove the request from the model if necessary
-	                            var modelRequestId = this.getAdvReqView().getViewModel().get('requestId');
-	                            if (record.get('request_id') === modelRequestId) {
-	                            	this.getAdvReqView().getViewModel().set('requestId', null);
-	                            }
-	    		                Ext.getStore('PredefinedRequestTabRequestStore').remove(record);
-    		                } else {
-    		                	OgamDesktop.toast(result.errorMessage, this.predefinedRequestDeletionErrorTitle);
-    		                }
-    		                this.getPredefinedRequestGridPanel().unmask();
-    		            },
-    		            failure: function(response, opts) {
-    		                console.log('server-side failure with status code ' + response.status);
-    		                this.getPredefinedRequestGridPanel().unmask();
-    		            },
-    		            scope :this
-    		        });
-    			}
-    		}, 
-    		this
-    	);
+        Ext.Msg.confirm(
+            this.deletionConfirmTitle,
+            this.deletionConfirmMessage,
+            function(buttonId, value, opt){
+                if(buttonId === 'yes'){
+                    // Asks the request deletion to the server
+                    this.getPredefinedRequestGridPanel().mask(this.loadingMsg);
+                    Ext.Ajax.request({
+                        url: Ext.manifest.OgamDesktop.requestServiceUrl + 'predefinedrequest/' + record.get('request_id'),
+                        method: 'DELETE',
+                        success: function(response, opts) {
+                            var result = Ext.decode(response.responseText);
+                            if (result.success) {
+                                // Remove the request from the predefined request model if necessary
+                                var prModelRequest = this.getPredefReqView().getViewModel().get('requete').selection;
+                                if (prModelRequest !== null && record.get('request_id') === prModelRequest.get('request_id')) {
+                                    this.getPredefReqView().getViewModel().set('requete', null);
+                                }
+                                // Remove the request from the advanced request model if necessary
+                                var modelRequestId = this.getAdvReqView().getViewModel().get('requestId');
+                                if (record.get('request_id') === modelRequestId) {
+                                    this.getAdvReqView().getViewModel().set('requestId', null);
+                                }
+                                Ext.getStore('PredefinedRequestTabRequestStore').remove(record);
+                            } else {
+                                OgamDesktop.toast(result.errorMessage, this.predefinedRequestDeletionErrorTitle);
+                            }
+                            this.getPredefinedRequestGridPanel().unmask();
+                        },
+                        failure: function(response, opts) {
+                            console.log('server-side failure with status code ' + response.status);
+                            this.getPredefinedRequestGridPanel().unmask();
+                        },
+                        scope :this
+                    });
+                }
+            }, 
+            this
+        );
     }
 });
