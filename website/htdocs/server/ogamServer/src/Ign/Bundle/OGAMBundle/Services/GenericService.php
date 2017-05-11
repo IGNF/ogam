@@ -453,8 +453,11 @@ class GenericService {
 							foreach($nodeModes->getParameters() as $param) {
 								$sql2 = str_replace(":".$param->getName(), $this->quote($nodeModes->processParameterValue($param->getValue())), $sql2);
 							}
-
-							$sql .= " AND EXISTS ($sql2 WHERE code = ANY($column) ) ";
+							
+							$alias = 'arraymodes'.crc32($column);
+							$sql .= " AND $column && ( select array_agg(code) from ("  . $sql2 . ") $alias) ";
+							//try the next one  if you have "stupid" performence probleme as with `$columncode_taxref IN ($list)`  in particular case
+							//$sql .= " AND EXISTS ($sql2 WHERE code = ANY($column) ) ";
 						}
 					} else {
 						
@@ -518,6 +521,7 @@ class GenericService {
 								$sql2 = str_replace(":".$param->getName(), $this->quote($nodeModes->processParameterValue($param->getValue())), $sql2);
 							}
 
+							//$sql .= " AND " . $column . " IN ( "  . $sql2 . ") ";
 							//WHERE EXISTS (IN may have poor perf with  lotsof data/but no row selected and limit/order)
 							$sql .=  " AND EXISTS ($sql2 WHERE $column = code) ";
 							
