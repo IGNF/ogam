@@ -109,8 +109,10 @@ Ext.define('OgamDesktop.controller.request.PredefinedRequest', {
                             code: item.getValue(),
                             label: item.getRawValue()
                         });
+                    } else if (item instanceof Ext.form.field.Checkbox) {
+                        selectedCodes[item.getName()] = item.getSubmitValue();
                     } else {
-                    	selectedCodes[item.getName()] = item.getValue();
+                        selectedCodes[item.getName()] = item.getValue();
                     }
                 });
                 this.getAdvReqView().getViewModel().set({
