@@ -102,13 +102,15 @@ Ext.define('OgamDesktop.controller.request.PredefinedRequest', {
             success:function(records){
                 var selectedCodes = {};
                 this.getPredefReqView().queryById('criteriaFieldset').items.each(function(item){
-                    if(item instanceof Ext.form.field.Tag) {
+                    if (item instanceof Ext.form.field.Tag) {
                         selectedCodes[item.getName()] = item.getValueRecords();
-                    } else {
+                    } else if (item instanceof Ext.form.field.ComboBox) {
                         selectedCodes[item.getName()] = new OgamDesktop.model.request.object.field.Code({
                             code: item.getValue(),
                             label: item.getRawValue()
                         });
+                    } else {
+                    	selectedCodes[item.getName()] = item.getValue();
                     }
                 });
                 this.getAdvReqView().getViewModel().set({
