@@ -144,6 +144,7 @@ Translate this site en;Traduire ce site en anglais
 ##########################
 #	Error				 #
 ##########################
+Please login;Veuillez vous authentifier
 An error occurred;Une erreur est survenue
 Page not found;Ressource introuvable
 Database Error;Accès refusé sur la base de données
@@ -328,6 +329,7 @@ Raw Data;Données brutes
 #  Data Edition          #
 ##########################
 No %value% found.;Aucun(e) %value% trouvé(e).
+Form not submitted;Formulaire non soumis
 Invalid form;Invalid form
 Data saved;Données sauvegardées - Rechargement
 Item cannot be deleted because it has children;La donnée ne peut pas être effacée car d'autres données sont liées
@@ -341,6 +343,7 @@ Error inserting data duplicate key;Erreur lors de l'insertion - la donnée exist
 ##########################
 Data Export;Export des données
 Request Criterias;Critères de requête
+Invalid request.;Requête invalide.
 That request's label already exists. Please indicate another one.;Ce libellé de requête est déjà utilisé. Veuillez en choisir un autre.
 An unexpected error occurred.;Une erreur inattendue est apparue.
 

@@ -144,6 +144,7 @@ Translate this site en;Translate this site in english
 ##########################
 #	Error				 #
 ##########################
+Please login;Please login
 An error occurred;An error occurred
 Page not found;Page not found
 Database Error;Database Error
@@ -325,6 +326,7 @@ Raw Data;Raw Data
 #  Data Edition          #
 ##########################
 No %value% found.;No %value% found.
+Form not submitted;Form not submitted
 Invalid form;Invalid form
 Data saved;Data saved - Reloading
 Item cannot be deleted because it has children;Item cannot be deleted because it has children
@@ -338,6 +340,7 @@ Data deleted;Data deleted
 ##########################
 Data Export;Data Export
 Request Criterias;Request Criterias
+Invalid request.;Invalid request.
 That request's label already exists. Please indicate another one.;That request's label already exists. Please indicate another one.
 An unexpected error occurred.;An unexpected error occurred.
 

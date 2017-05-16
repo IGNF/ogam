@@ -22,13 +22,13 @@ class AjaxErrorListener {
 		if (true && $event->isMasterRequest() && $request->isXmlHttpRequest()) {
 			if ($exception instanceof AuthenticationException || $exception instanceof AccessDeniedException) {
 				$response = array(
-					'errorMessage' => 'Please Loggin',
+				    'errorMessage' => $this->get('translator')->trans('Please login'),
 					'success' => false
 				);
 				$event->setResponse(new JsonResponse($response, 401));
 			} else {
 				$response = array(
-					'errorMessage' => 'Application Error2',
+				    'errorMessage' => $this->get('translator')->trans('Application error'),
 					'success' => false
 				);
 				$event->setResponse(new JsonResponse($response, 500));

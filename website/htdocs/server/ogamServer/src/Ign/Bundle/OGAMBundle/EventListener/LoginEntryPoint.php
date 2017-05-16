@@ -31,7 +31,7 @@ class LoginEntryPoint implements AuthenticationEntryPointInterface {
 			
 			return new JsonResponse(array(
 				'success' => false,
-				'errorMessage' => 'Please Login'
+			    'errorMessage' => $this->get('translator')->trans('Please login')
 			), 401);
 		}
 		

@@ -434,7 +434,7 @@ class DataEditionController extends Controller {
 		if (!$form->isSubmitted()) {
 			return $this->json([
 				'success' => false,
-				'errorMessage' => 'not submit'
+			    'errorMessage' => $this->get('translator')->trans("Form not submitted")
 			]);
 		}
 

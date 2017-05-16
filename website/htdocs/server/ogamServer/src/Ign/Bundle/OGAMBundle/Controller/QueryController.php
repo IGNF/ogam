@@ -256,7 +256,7 @@ class QueryController extends Controller {
 				$logger->error('Invalid request.');
 				return new JsonResponse([
 					'success' => false,
-					'errorMessage' => 'Invalid request.'
+				    'errorMessage' => $this->get('translator')->trans("Invalid request.")
 				]);
 			}
 		} catch (\Exception $e) {
