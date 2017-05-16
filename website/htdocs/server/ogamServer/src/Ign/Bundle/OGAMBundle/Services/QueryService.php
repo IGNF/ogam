@@ -307,7 +307,7 @@ class QueryService {
 	public function createPRCriteriaAndColumns (PredefinedRequest $pr, ParameterBag $r) {
 	    foreach ($r->all() as $inputName => $inputValue) {
 	        // Create the criterion entities and add its
-	        if (strpos($inputName, "criteria__") === 0 && !$this->isEmptyCriteria($inputValue)) {
+	        if (strpos($inputName, "criteria__") === 0) {
 	            $criteriaName = substr($inputName, strlen("criteria__"));
 	            $split = explode("__", $criteriaName);
 	            $this->createPRCriterion($pr, $split[0], $split[1], $inputValue[0]);
