@@ -441,8 +441,7 @@ class DataEditionController extends Controller {
 		if (!$form->isValid()) {
 			return $this->json([
 				'success' => false,
-				'errorMessage' => $this->get('translator')
-					->trans("Invalid form"),
+				'errorMessage' => $this->get('translator')->trans("Invalid form"),
 				'errors' => $form->getErrors(true, true)
 			]);
 		} else {
@@ -513,14 +512,13 @@ class DataEditionController extends Controller {
 					// Traitement du cas d'un doublon pour PostgreSQL
 					return $this->json([
 						'success' => false,
-						'errorMessage' => $this->get('translator')
-							->trans('Error inserting data duplicate key')
+						'errorMessage' => $this->get('translator')->trans('Error inserting data duplicate key')
 					]);
 				} else {
 					// Cas général
 					return $this->json([
 						'success' => false,
-						'errorMessage' => $e->getMessage()
+					    'errorMessage' => $this->get('translator')->trans("An unexpected error occurred.")
 					]);
 				}
 			}

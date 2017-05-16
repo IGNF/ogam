@@ -263,7 +263,7 @@ class QueryController extends Controller {
 			$logger->error('Error while getting result : ' . $e);
 			return new JsonResponse([
 				'success' => false,
-				'errorMessage' => $e->getMessage()
+			    'errorMessage' => $this->get('translator')->trans("An unexpected error occurred.")
 			]);
 		}
 	}
@@ -307,7 +307,7 @@ class QueryController extends Controller {
 			$logger->error('Error while getting result : ' . $e);
 			return new JsonResponse([
 				'success' => false,
-				'errorMessage' => $e->getMessage()
+			    'errorMessage' => $this->get('translator')->trans("An unexpected error occurred.")
 			]);
 		}
 	}
@@ -346,7 +346,7 @@ class QueryController extends Controller {
 			$logger->error('Error while getting result : ' . $e);
 			return new JsonResponse([
 				'success' => false,
-				'errorMessage' => $e->getMessage()
+			    'errorMessage' => $this->get('translator')->trans("An unexpected error occurred.")
 			]);
 		}
 	}
@@ -742,7 +742,7 @@ class QueryController extends Controller {
 			$logger->error('Error while getting details : ' . $e);
 			return new JsonResponse([
 				'success' => false,
-				'errorMessage' => $e->getMessage()
+			    'errorMessage' => $this->get('translator')->trans("An unexpected error occurred.")
 			]);
 		}
 	}
@@ -1394,7 +1394,7 @@ class QueryController extends Controller {
 			$logger->error('Error while getting details : ' . $e);
 			return new JsonResponse([
 				'success' => false,
-				'errorMessage' => $e->getMessage()
+			    'errorMessage' => $this->get('translator')->trans("An unexpected error occurred.")
 			]);
 		}
 	}
@@ -1426,7 +1426,7 @@ class QueryController extends Controller {
 			$logger->error('Error while getting details : ' . $e);
 			return new JsonResponse([
 				'success' => false,
-				'errorMessage' => $e->getMessage()
+			    'errorMessage' => $this->get('translator')->trans("An unexpected error occurred.")
 			]);
 		}
 	}
@@ -1465,7 +1465,7 @@ class QueryController extends Controller {
 			$logger->error('Error while getting details : ' . $e);
 			return new JsonResponse([
 				'success' => false,
-				'errorMessage' => $e->getMessage()
+			    'errorMessage' => $this->get('translator')->trans("An unexpected error occurred.")
 			]);
 		}
 	}
@@ -1504,7 +1504,7 @@ class QueryController extends Controller {
 			$logger->error('Error while getting details : ' . $e);
 			return new JsonResponse([
 				'success' => false,
-				'errorMessage' => $e->getMessage()
+			    'errorMessage' => $this->get('translator')->trans("An unexpected error occurred.")
 			]);
 		}
 	}
@@ -1547,7 +1547,7 @@ class QueryController extends Controller {
 			$logger->error('Error while getting details : ' . $e);
 			return new JsonResponse([
 				'success' => false,
-				'errorMessage' => $e->getMessage()
+			    'errorMessage' => $this->get('translator')->trans("An unexpected error occurred.")
 			]);
 		}
 	}
@@ -1587,7 +1587,7 @@ class QueryController extends Controller {
 			$logger->error('Error while getting details : ' . $e);
 			return new JsonResponse([
 				'success' => false,
-				'errorMessage' => $e->getMessage()
+			    'errorMessage' => $this->get('translator')->trans("An unexpected error occurred.")
 			]);
 		}
 	}
@@ -1747,7 +1747,7 @@ class QueryController extends Controller {
 			$logger->error('Error while getting details : ' . $e);
 			return new JsonResponse([
 				'success' => false,
-				'errorMessage' => $e->getMessage()
+			    'errorMessage' => $this->get('translator')->trans("An unexpected error occurred.")
 			]);
 		}
 	}
