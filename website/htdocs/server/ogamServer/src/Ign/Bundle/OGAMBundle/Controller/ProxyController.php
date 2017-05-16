@@ -60,7 +60,7 @@ class ProxyController extends Controller {
 			$logger->error('Error while creating the PDF report for the data submission : ' . $e);
 				
 			return $this->render('OGAMBundle:Integration:data_error.html.twig', array(
-				'error' => $e->getMessage()
+			    'error' => $this->get('translator')->trans("An unexpected error occurred.")
 			));
 		}
 		

@@ -101,7 +101,7 @@ class IntegrationController extends Controller {
 				$this->get('logger')->error('Error while creating new data submission : ' . $e);
 			
 				return $this->render('OGAMBundle:Integration:data_error.html.twig', array(
-					'error' => $e->getMessage()
+				    'error' => $this->get('translator')->trans("An unexpected error occurred.")
 				));
 			}
 			
@@ -267,7 +267,7 @@ class IntegrationController extends Controller {
 				'exception' => $e
 			));
 			return $this->render('OGAMBundle:Integration:data_error.html.twig', array(
-				'error' => $e->getMessage()
+			    'error' => $this->get('translator')->trans("An unexpected error occurred.")
 			));
 		}
 
@@ -295,7 +295,7 @@ class IntegrationController extends Controller {
 			$this->get('logger')->error('Error during upload: ' . $e);
 
 			return $this->render('OGAMBundle:Integration:data_error.html.twig', array(
-				'error' => $e->getMessage()
+			    'error' => $this->get('translator')->trans("An unexpected error occurred.")
 			));
 		}
 
@@ -319,7 +319,7 @@ class IntegrationController extends Controller {
 			$this->getLogger()->error('Error during upload: ' . $e);
 
 			return $this->render('OGAMBundle:Integration:data_error.html.twig', array(
-				'error' => $e->getMessage()
+			    'error' => $this->get('translator')->trans("An unexpected error occurred.")
 			));
 		}
 
@@ -346,7 +346,7 @@ class IntegrationController extends Controller {
 			$this->getLogger()->error('Error during upload: ' . $e);
 
 			return $this->render('OGAMBundle:Integration:data_error.html.twig', array(
-				'error' => $e->getMessage()
+			    'error' => $this->get('translator')->trans("An unexpected error occurred.")
 			));
 		}
 
@@ -393,7 +393,7 @@ class IntegrationController extends Controller {
 
 			return $this->json(array(
 				'success' => FALSE,
-				"errorMsg" => $e->getMessage()
+			    "errorMessage" => $this->get('translator')->trans("An unexpected error occurred.")
 			)
 			);
 		}
