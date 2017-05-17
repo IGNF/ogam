@@ -41,7 +41,7 @@ class PredefinedRequestCriterion {
 
 	/**
 	 *
-	 * @var string @ORM\Column(name="value", type="string", length=500)
+	 * @var string @ORM\Column(name="value", type="string")
 	 */
 	private $value;
 

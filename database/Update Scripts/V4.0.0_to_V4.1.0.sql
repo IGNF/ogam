@@ -155,7 +155,7 @@ CREATE TABLE website.predefined_request_criterion
   request_id integer NOT NULL, -- The request identifier
   format character varying(36) NOT NULL, -- The form format of the criterion
   data character varying(36) NOT NULL, -- The form field of the criterion
-  value character varying(500) NOT NULL, -- The field value (multiple values are separated by a semicolon)
+  value text NOT NULL, -- The field value (multiple values are separated by a semicolon)
   CONSTRAINT pk_predefined_request_criterion PRIMARY KEY (request_id, format, data),
   CONSTRAINT fk_predefined_request_criterion_request_name FOREIGN KEY (request_id)
       REFERENCES website.predefined_request (request_id) MATCH SIMPLE
