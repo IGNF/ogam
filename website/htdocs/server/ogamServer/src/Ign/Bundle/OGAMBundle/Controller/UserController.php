@@ -159,9 +159,9 @@ class UserController extends Controller {
 			}
 
 			// In both cases (user is found or not), display a confirmation message
-			return $this->render('OGAMBundle:User:confirm_password_email_sent.html.twig', array(
-				"email" => $email
-			));
+			$this->addFlash('success', $this->get('translator')->trans("Password_change_request_msg", array("%email%" => $email)));
+			return $this->showLoginFormAction($request);
+			
 		} else {
 
 			// Display the forgotten password form
@@ -221,7 +221,7 @@ class UserController extends Controller {
 			return $this->redirectToRoute('homepage');
 		}
 
-		return $this->render('OGAMBundle:User:forgotten_password_change.html.twig', array(
+		return $this->render('OGAMBundle:User:change_password.html.twig', array(
 			'form' => $form->createView()
 		));
 	}

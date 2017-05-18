@@ -176,7 +176,8 @@ Authentication;Authentication
 Username;Username
 Password;Password
 Password_forgotten;Password Forgotten ?
-Forgotten_password_send_email_message;An email will be sent to your email adress
+Password_change_request;Password change request
+Password_change_request_msg;You have requested to reset the password associated with the email address: <b>%email% </b>.<br/>If this address is associated with a user account, you will receive an email giving you the path to follow. Please check your inbox.<br/><b>Note:</b> The email is sent automatically, so check your spam if you do not receive it quickly.
 
 ﻿##########################
 #  Data integration      #

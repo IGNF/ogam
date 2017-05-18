@@ -735,6 +735,11 @@ button#form_submit, .zend_form .button button{
 .login-form .form-ct {
 	width: 300px;
 }
+.forgotten_password_link {
+    display: block;
+    margin: 10px 0 0 0;
+    text-align: right;
+}
 
 /**************************************/
 /** User Management Part
