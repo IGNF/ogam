@@ -43,7 +43,7 @@ class PredefinedRequestCriterionRepository extends \Doctrine\ORM\EntityRepositor
 				'TREE',
 				'TAXREF'
 			];
-			if (in_array($inputType, $inputTypes) && $criterion->getValue() !== null) {
+			if (in_array($inputType, $inputTypes) && $criterion->getValue() !== null && $criterion->getValue() !== "") {
 				$unit = $formField->getData()->getUnit();
 				$valuesModes = $this->_em->getRepository(Unit::class)->getModesFilteredByCode($unit, $criterion->getValue(), $locale);
 				$unit->setModes($valuesModes);
