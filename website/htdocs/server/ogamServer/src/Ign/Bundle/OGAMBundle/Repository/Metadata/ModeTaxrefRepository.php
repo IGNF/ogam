@@ -26,7 +26,10 @@ class ModeTaxrefRepository extends \Doctrine\ORM\EntityRepository {
 	 *        	The locale
 	 *        	return Mode[] The unit mode(s)
 	 */
-	public function getModes(Unit $unit, $locale) {
+    public function getModes(Unit $unit, $locale = "EN") {
+        if( $unit === null || $unit === "") {
+            throw new \InvalidArgumentException('Invalid arguments.');
+        }
 		$rsm = new ResultSetMappingBuilder($this->_em);
 		$rsm->addRootEntityFromClassMetadata($this->_entityName, 'm');
 		$params = [
@@ -58,8 +61,11 @@ class ModeTaxrefRepository extends \Doctrine\ORM\EntityRepository {
 	 *        	The locale
 	 * @return Mode|[Mode] The filtered mode(s)
 	 */
-	public function getModesFilteredByCode(Unit $unit, $code, $locale) {
-		$rsm = new ResultSetMappingBuilder($this->_em);
+	public function getModesFilteredByCode(Unit $unit, $code, $locale = "EN") {
+	    if( $unit === null || $unit === "" || $code === null || $code === "") {
+	        throw new \InvalidArgumentException('Invalid arguments.');
+	    }
+	    $rsm = new ResultSetMappingBuilder($this->_em);
 		$rsm->addRootEntityFromClassMetadata($this->_entityName, 'mt');
 		$parameters = array(
 			'unit' => $unit->getUnit(),
@@ -70,13 +76,13 @@ class ModeTaxrefRepository extends \Doctrine\ORM\EntityRepository {
 		$sql .= " FROM mode_taxref mt";
 		$sql .= " LEFT JOIN translation t ON (lang = :lang AND table_format = 'MODE_TAXREF' AND row_pk = mt.unit || ',' || mt.code) ";
 		$sql .= " WHERE unit = :unit";
-		if ($code != null) {
-			if (is_array($code)) {
-				$sql .= " AND code IN ( :code )";
-			} else {
-				$sql .= " AND code = :code";
-			}
+
+		if (is_array($code)) {
+			$sql .= " AND code IN ( :code )";
+		} else {
+			$sql .= " AND code = :code";
 		}
+
 		$sql .= " ORDER BY position, code";
 		
 		$query = $this->_em->createNativeQuery($sql, $rsm);
@@ -96,8 +102,11 @@ class ModeTaxrefRepository extends \Doctrine\ORM\EntityRepository {
 	 *        	The locale
 	 * @return [Mode] The filtered mode(s)
 	 */
-	public function getModesFilteredByLabel(Unit $unit, $query, $locale) {
-		$rsm = new ResultSetMappingBuilder($this->_em);
+	public function getModesFilteredByLabel(Unit $unit, $query, $locale = "EN") {
+	    if( $unit === null || $unit === "" || $query === null || $query === "") {
+	        throw new \InvalidArgumentException('Invalid arguments.');
+	    }
+	    $rsm = new ResultSetMappingBuilder($this->_em);
 		$rsm->addRootEntityFromClassMetadata($this->_entityName, 'mt');
 		$parameters = array(
 			'unit' => $unit->getUnit(),
@@ -132,8 +141,11 @@ class ModeTaxrefRepository extends \Doctrine\ORM\EntityRepository {
 	 *        	max mode return
 	 * @return [Mode] filtered mode (eventually partial =>bound [$start .. $start+$limit])
 	 */
-	public function getTaxrefModesSimilarTo(Unit $unit, $query, $locale, $start = null, $limit = null) {
-		$rsm = new ResultSetMappingBuilder($this->_em);
+	public function getTaxrefModesSimilarTo(Unit $unit, $query, $locale = "EN", $start = null, $limit = null) {
+	    if( $unit === null || $unit === "" || $query === null || $query === "") {
+	        throw new \InvalidArgumentException('Invalid arguments.');
+	    }
+	    $rsm = new ResultSetMappingBuilder($this->_em);
 		$rsm->addRootEntityFromClassMetadata($this->_entityName, 'mt');
 		$parameters = array(
 			'unit' => $unit->getUnit(),
@@ -174,8 +186,11 @@ class ModeTaxrefRepository extends \Doctrine\ORM\EntityRepository {
 	 *        	The locale
 	 * @return Integer
 	 */
-	public function getTaxrefModesCount($unit, $query = null, $locale) {
-		$sql = "SELECT count(*) as count";
+	public function getTaxrefModesCount($unit, $query = null, $locale = "EN") {
+	    if( $unit === null || $unit === "" || $query === null || $query === "") {
+	        throw new \InvalidArgumentException('Invalid arguments.');
+	    }
+	    $sql = "SELECT count(*) as count";
 		$sql .= " FROM mode_taxref mt";
 		$sql .= " LEFT JOIN translation t ON (lang = :lang AND table_format = 'MODE_TAXREF' AND row_pk = mt.unit || ',' || mt.code) ";
 		$sql .= " WHERE unit = :unit AND (
@@ -214,8 +229,11 @@ class ModeTaxrefRepository extends \Doctrine\ORM\EntityRepository {
 	 *        	The locale
 	 * @return Array[ModeTaxref]
 	 */
-	public function getTaxrefChildrenModes(Unit $unit, $code = '*', $levels = 1, $locale) {
-		$rsm = new ResultSetMappingBuilder($this->_em);
+	public function getTaxrefChildrenModes(Unit $unit, $code = '*', $levels = 1, $locale = "EN") {
+	    if( $unit === null || $unit === "") {
+	        throw new \InvalidArgumentException('Invalid arguments.');
+	    }
+	    $rsm = new ResultSetMappingBuilder($this->_em);
 		$rsm->addRootEntityFromClassMetadata($this->_entityName, 'mt');
 		
 		if ($code === '*') { // fakeroot
@@ -254,6 +272,7 @@ class ModeTaxrefRepository extends \Doctrine\ORM\EntityRepository {
 		
 		return $query->getResult();
 	}
+
 	/**
 	* Get the query  in order to get all the children code from the reference taxon of a taxon.
 	* Used when building an SQL WHERE clause for a node of the taxref.
@@ -268,8 +287,11 @@ class ModeTaxrefRepository extends \Doctrine\ORM\EntityRepository {
 	*        	The number of levels of depth (if 0 then no limitation)
 	* @return NativeQuery
 	*/
-	public function getChildrenCodesSqlQuery(Unit $unit, $code, $levels) {
-		$rsm = new ResultSetMappingBuilder($this->_em);
+	public function getChildrenCodesSqlQuery(Unit $unit, $code, int $levels) {
+	    if( $unit === null || $unit === "" || $code === null || $code === "") {
+	        throw new \InvalidArgumentException('Invalid arguments.');
+	    }
+	    $rsm = new ResultSetMappingBuilder($this->_em);
 		$rsm->addScalarResult('code', 'code');
 		
 		if ($code === '*') { // fakeroot

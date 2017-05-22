@@ -26,7 +26,10 @@ class ModeTreeRepository extends \Doctrine\ORM\EntityRepository {
 	 *        	The locale
 	 *        	return Mode[] The unit mode(s)
 	 */
-	public function getModes(Unit $unit, $locale) {
+    public function getModes(Unit $unit, $locale = "EN") {
+        if( $unit === null || $unit === "") {
+            throw new \InvalidArgumentException('Invalid arguments.');
+        }
 		$rsm = new ResultSetMappingBuilder($this->_em);
 		$rsm->addRootEntityFromClassMetadata($this->_entityName, 'm');
 		$params = [
@@ -58,8 +61,11 @@ class ModeTreeRepository extends \Doctrine\ORM\EntityRepository {
 	 *        	The locale
 	 * @return Mode|[Mode] The filtered mode(s)
 	 */
-	public function getModesFilteredByCode(Unit $unit, $code, $locale) {
-		$rsm = new ResultSetMappingBuilder($this->_em);
+	public function getModesFilteredByCode(Unit $unit, $code, $locale = "EN") {
+	    if( $unit === null || $unit === "" || $code === null || $code === "") {
+	        throw new \InvalidArgumentException('Invalid arguments.');
+	    }
+	    $rsm = new ResultSetMappingBuilder($this->_em);
 		$rsm->addRootEntityFromClassMetadata($this->_entityName, 'mt');
 		$parameters = array(
 			'unit' => $unit->getUnit(),
@@ -70,13 +76,13 @@ class ModeTreeRepository extends \Doctrine\ORM\EntityRepository {
 		$sql .= " FROM mode_tree mt";
 		$sql .= " LEFT JOIN translation t ON (lang = :lang AND table_format = 'MODE_TREE' AND row_pk = mt.unit || ',' || mt.code) ";
 		$sql .= " WHERE unit = :unit";
-		if ($code != null) {
-			if (is_array($code)) {
-				$sql .= " AND code IN ( :code )";
-			} else {
-				$sql .= " AND code = :code";
-			}
+
+		if (is_array($code)) {
+			$sql .= " AND code IN ( :code )";
+		} else {
+			$sql .= " AND code = :code";
 		}
+		
 		$sql .= " ORDER BY position, code";
 		
 		$query = $this->_em->createNativeQuery($sql, $rsm);
@@ -96,8 +102,11 @@ class ModeTreeRepository extends \Doctrine\ORM\EntityRepository {
 	 *        	The locale
 	 * @return [Mode] The filtered mode(s)
 	 */
-	public function getModesFilteredByLabel(Unit $unit, $query, $locale) {
-		$rsm = new ResultSetMappingBuilder($this->_em);
+	public function getModesFilteredByLabel(Unit $unit, $query, $locale = "EN") {
+	    if( $unit === null || $unit === "" || $query === null || $query === "") {
+	        throw new \InvalidArgumentException('Invalid arguments.');
+	    }
+	    $rsm = new ResultSetMappingBuilder($this->_em);
 		$rsm->addRootEntityFromClassMetadata($this->_entityName, 'mt');
 		$parameters = array(
 			'unit' => $unit->getUnit(),
@@ -131,8 +140,11 @@ class ModeTreeRepository extends \Doctrine\ORM\EntityRepository {
 	 *        	max # mode to return
 	 * @return [Mode] The filtered mode(s)
 	 */
-	public function getTreeModesSimilareTo(Unit $unit, $query, $locale, $start = null, $limit = null) {
-		$rsm = new ResultSetMappingBuilder($this->_em);
+	public function getTreeModesSimilareTo(Unit $unit, $query, $locale = "EN", $start = null, $limit = null) {
+	    if( $unit === null || $unit === "" || $query === null || $query === "") {
+	        throw new \InvalidArgumentException('Invalid arguments.');
+	    }
+	    $rsm = new ResultSetMappingBuilder($this->_em);
 		$rsm->addRootEntityFromClassMetadata($this->_entityName, 'mt');
 		$parameters = array(
 			'unit' => $unit->getUnit(),
@@ -169,8 +181,11 @@ class ModeTreeRepository extends \Doctrine\ORM\EntityRepository {
 	 *        	the locale
 	 * @return Integer
 	 */
-	public function getTreeModesSimilareToCount(Unit $unit, $query, $locale) {
-		$rsm = new ResultSetMappingBuilder($this->_em);
+	public function getTreeModesSimilareToCount(Unit $unit, $query, $locale = "EN") {
+	    if( $unit === null || $unit === "" || $query === null || $query === "") {
+	        throw new \InvalidArgumentException('Invalid arguments.');
+	    }
+	    $rsm = new ResultSetMappingBuilder($this->_em);
 		$rsm->addScalarResult('count', 'count', 'integer');
 		$parameters = array(
 			'unit' => $unit->getUnit(),
@@ -203,8 +218,11 @@ class ModeTreeRepository extends \Doctrine\ORM\EntityRepository {
 	 *        	The locale
 	 * @return Array[ModeTree]
 	 */
-	public function getTreeChildrenModes($unit, $code = '*', $levels = 1, $locale) {
-		$rsm = new ResultSetMappingBuilder($this->_em);
+	public function getTreeChildrenModes($unit, $code = '*', $levels = 1, $locale = "EN") {
+	    if( $unit === null || $unit === "") {
+	        throw new \InvalidArgumentException('Invalid arguments.');
+	    }
+	    $rsm = new ResultSetMappingBuilder($this->_em);
 		$rsm->addRootEntityFromClassMetadata($this->_entityName, 'mt');
 		
 		if ($code === '*') { // fakeroot

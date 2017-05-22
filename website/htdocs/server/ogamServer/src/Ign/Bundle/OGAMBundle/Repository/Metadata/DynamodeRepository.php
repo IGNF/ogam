@@ -26,7 +26,10 @@ class DynamodeRepository extends \Doctrine\ORM\EntityRepository {
 	 *        	The locale
 	 *        	return Mode[] The unit mode(s)
 	 */
-	public function getModes(Unit $unit, $locale) {
+    public function getModes(Unit $unit, $locale = "EN") {
+        if( $unit === null || $unit === "") {
+            throw new \InvalidArgumentException('Invalid arguments.');
+        }
 		$rsm = new ResultSetMappingBuilder($this->_em);
 		$rsm->addRootEntityFromClassMetadata(Mode::class, 'm');
 		$params = [
@@ -57,8 +60,11 @@ class DynamodeRepository extends \Doctrine\ORM\EntityRepository {
 	 *        	The locale
 	 * @return [Mode] The filtered mode(s)
 	 */
-	public function getModesFilteredByCode(Unit $unit, $code, $locale) {
-		$rsm = new ResultSetMappingBuilder($this->_em);
+	public function getModesFilteredByCode(Unit $unit, $code, $locale = "EN") {
+	    if( $unit === null || $unit === "" || $code === null || $code === "") {
+	        throw new \InvalidArgumentException('Invalid arguments.');
+	    }
+	    $rsm = new ResultSetMappingBuilder($this->_em);
 		$rsm->addRootEntityFromClassMetadata(Mode::class, 'm');
 		$params = [
 			'lang' => $locale,
@@ -92,8 +98,11 @@ class DynamodeRepository extends \Doctrine\ORM\EntityRepository {
 	 *        	The locale
 	 * @return [Mode] The filtered mode(s)
 	 */
-	public function getModesFilteredByLabel(Unit $unit, $query, $locale) {
-		$rsm = new ResultSetMappingBuilder($this->_em);
+	public function getModesFilteredByLabel(Unit $unit, $query, $locale = "EN") {
+	    if( $unit === null || $unit === "" || $query === null || $query === "") {
+	        throw new \InvalidArgumentException('Invalid arguments.');
+	    }
+	    $rsm = new ResultSetMappingBuilder($this->_em);
 		$rsm->addRootEntityFromClassMetadata(Mode::class, 'm');
 		$params = [
 			'unit' => $unit->getUnit(),
