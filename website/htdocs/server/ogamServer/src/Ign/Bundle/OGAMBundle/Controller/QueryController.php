@@ -145,7 +145,7 @@ class QueryController extends Controller {
     			'forms' => $this->get('ogam.manager.query')
     				->getQueryForms($datasetId, $requestId)
     		), $response);
-		} catch (\Exception $e){ dump($e);
+		} catch (\Exception $e){
 			$logger->error('Error while getting the query forms : ' . $e);
 			return new JsonResponse([
 			    'success' => false,
@@ -607,7 +607,7 @@ class QueryController extends Controller {
     	        'success' => false,
     	        'errorMessage' => $this->get('translator')->trans("That request's label already exists. Please indicate another one.")
     	    ]);
-	    } catch (\Exception $e){ dump($e);
+	    } catch (\Exception $e){
 	        $logger->error('Error while creating predefined request : ' . $e);
 	        return new JsonResponse([
 	            'success' => false,

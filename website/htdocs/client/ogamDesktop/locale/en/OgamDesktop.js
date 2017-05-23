@@ -287,7 +287,9 @@ Ext.define('OgamDesktop.locale.en.view.request.PredefinedRequest', {
 
 Ext.define('OgamDesktop.locale.en.view.request.PredefinedRequestSelector', {
 	override:'OgamDesktop.view.request.PredefinedRequestSelector',
-	defaultCardPanelText : 'Please select a request...',
+	defaultCardPanelText: 'Please select a request...',
+	reqfieldsetsErrorTitle: 'Request loading failed:',
+	reqfieldsetsErrorMessage: 'Request loading failed...',
 	loadingMsg: 'Loading...'
 });
 Ext.define('OgamDesktop.locale.en.view.request.SaveRequestWindow', {

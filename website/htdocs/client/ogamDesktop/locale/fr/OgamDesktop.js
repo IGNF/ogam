@@ -287,7 +287,9 @@ Ext.define('OgamDesktop.locale.fr.view.request.PredefinedRequest', {
 
 Ext.define('OgamDesktop.locale.fr.view.request.PredefinedRequestSelector', {
 	override:'OgamDesktop.view.request.PredefinedRequestSelector',
-	defaultCardPanelText : 'Veuillez sélectionner une requête...',
+	defaultCardPanelText: 'Veuillez sélectionner une requête...',
+	reqfieldsetsErrorTitle: 'Erreur lors du chargement de la requête :',
+	reqfieldsetsErrorMessage: 'Le chargement de la requête a échoué...',
 	loadingMsg: 'Chargement...'
 });
 Ext.define('OgamDesktop.locale.fr.view.request.SaveRequestWindow', {

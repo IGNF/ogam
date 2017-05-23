@@ -27,6 +27,19 @@ Ext.define('OgamDesktop.view.request.PredefinedRequestSelector', {
      * The loading message (defaults to <tt>'Loading...'</tt>)
      */
     loadingMsg: 'Loading...',
+    
+    /**
+     * @cfg {String} reqfieldsetsErrorTitle
+     * The error title when the request fieldsets loading fails (defaults to <tt>'Request loading failed:'</tt>)
+     */
+    reqfieldsetsErrorTitle: 'Request loading failed:',
+    
+    /**
+     * @cfg {String} reqfieldsetsErrorMessage
+     * The error message when the request fieldsets loading fails (defaults to <tt>'Request loading failed...'</tt>)
+     */
+    reqfieldsetsErrorMessage: 'Request loading failed...',
+
     scrollable: true,
 
     /**
@@ -86,7 +99,7 @@ Ext.define('OgamDesktop.view.request.PredefinedRequestSelector', {
             }]);
             
             n.reqfieldsets({ // Get the criteria and columns information
-                success:function(records){
+                success: function(records){
                     var criteria = [];
                     var columns = [];
                     records.each(function(fieldset) { // OgamDesktop.model.request.FieldSet
@@ -107,6 +120,18 @@ Ext.define('OgamDesktop.view.request.PredefinedRequestSelector', {
                     this.queryById('criteriaFieldset').add(criteria);
                     this.queryById('columnsFieldset').add(columns);
                     
+                },
+                failure: function(store, operation){
+                    var result = Ext.decode(operation.getResponse().responseText);
+                    OgamDesktop.toast(result.errorMessage, this.reqfieldsetsErrorTitle);
+                    delete n._reqfieldsets; // For reloading
+                    this.removeAll();
+                    // Error message
+                    this.add([{
+                        xtype : 'box',
+                        margin: '10 10 10 10',
+                        html : this.reqfieldsetsErrorMessage
+                    }]);
                 },
                 scope:this
             });
