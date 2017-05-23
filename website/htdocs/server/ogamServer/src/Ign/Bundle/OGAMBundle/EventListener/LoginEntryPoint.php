@@ -6,6 +6,7 @@ use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\Translation\TranslatorInterface;
 
 /**
  * When the user is not authenticated at all (i.e.
@@ -15,9 +16,11 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 class LoginEntryPoint implements AuthenticationEntryPointInterface {
 
 	protected $router;
+	protected $translator;
 
-	public function __construct($router) {
+	public function __construct($router, TranslatorInterface $translator) {
 		$this->router = $router;
+		$this->translator = $translator;
 	}
 
 	/**
@@ -31,7 +34,7 @@ class LoginEntryPoint implements AuthenticationEntryPointInterface {
 			
 			return new JsonResponse(array(
 				'success' => false,
-			    'errorMessage' => $this->get('translator')->trans('Please login')
+			    'errorMessage' => $this->translator->trans('Please login')
 			), 401);
 		}
 		
