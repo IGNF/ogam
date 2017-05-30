@@ -24,7 +24,8 @@ echo "Install Java"
 # Suppression d'un warning "dpkg-preconfigure: unable to re-open stdin"
 export DEBIAN_FRONTEND=noninteractive
 
-sudo apt-get install -y openjdk-7-jdk
+#sudo apt-get install -y openjdk-7-jdk
+sudo apt-get install -y -t jessie-backports openjdk-8-jdk
 
 #----------------------------------------------------------------
 # Installation ANT

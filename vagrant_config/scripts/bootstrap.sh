@@ -46,7 +46,7 @@ export http_proxy=proxy.ign.fr:3128
 # Suppression d'un warning "dpkg-preconfigure: unable to re-open stdin"
 export DEBIAN_FRONTEND=noninteractive
 
-  
+echo 'deb http://ftp.fr.debian.org/debian jessie-backports main' >> /etc/apt/sources.list
 apt-get update -y && apt-get upgrade -y 
 
 
