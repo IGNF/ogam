@@ -287,7 +287,7 @@ class ModeTaxrefRepository extends \Doctrine\ORM\EntityRepository {
 	*        	The number of levels of depth (if 0 then no limitation)
 	* @return NativeQuery
 	*/
-	public function getChildrenCodesSqlQuery(Unit $unit, $code, int $levels) {
+	public function getChildrenCodesSqlQuery(Unit $unit, $code, $levels) {
 	    if( $unit === null || $unit === "" || $code === null || $code === "") {
 	        throw new \InvalidArgumentException('Invalid arguments.');
 	    }
