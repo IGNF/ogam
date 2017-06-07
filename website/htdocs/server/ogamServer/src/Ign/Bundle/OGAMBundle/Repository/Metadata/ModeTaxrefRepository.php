@@ -27,9 +27,6 @@ class ModeTaxrefRepository extends \Doctrine\ORM\EntityRepository {
 	 *        	return Mode[] The unit mode(s)
 	 */
     public function getModes(Unit $unit, $locale = "EN") {
-        if( $unit === null || $unit === "") {
-            throw new \InvalidArgumentException('Invalid arguments.');
-        }
 		$rsm = new ResultSetMappingBuilder($this->_em);
 		$rsm->addRootEntityFromClassMetadata($this->_entityName, 'm');
 		$params = [
@@ -62,7 +59,7 @@ class ModeTaxrefRepository extends \Doctrine\ORM\EntityRepository {
 	 * @return Mode|[Mode] The filtered mode(s)
 	 */
 	public function getModesFilteredByCode(Unit $unit, $code, $locale = "EN") {
-	    if( $unit === null || $unit === "" || $code === null || $code === "") {
+	    if( $code === null || $code === "") {
 	        throw new \InvalidArgumentException('Invalid arguments.');
 	    }
 	    $rsm = new ResultSetMappingBuilder($this->_em);
@@ -103,7 +100,7 @@ class ModeTaxrefRepository extends \Doctrine\ORM\EntityRepository {
 	 * @return [Mode] The filtered mode(s)
 	 */
 	public function getModesFilteredByLabel(Unit $unit, $query, $locale = "EN") {
-	    if( $unit === null || $unit === "" || $query === null || $query === "") {
+	    if( $query === null || $query === "") {
 	        throw new \InvalidArgumentException('Invalid arguments.');
 	    }
 	    $rsm = new ResultSetMappingBuilder($this->_em);
@@ -142,7 +139,7 @@ class ModeTaxrefRepository extends \Doctrine\ORM\EntityRepository {
 	 * @return [Mode] filtered mode (eventually partial =>bound [$start .. $start+$limit])
 	 */
 	public function getTaxrefModesSimilarTo(Unit $unit, $query, $locale = "EN", $start = null, $limit = null) {
-	    if( $unit === null || $unit === "" || $query === null || $query === "") {
+	    if( $query === null || $query === "") {
 	        throw new \InvalidArgumentException('Invalid arguments.');
 	    }
 	    $rsm = new ResultSetMappingBuilder($this->_em);
@@ -178,7 +175,7 @@ class ModeTaxrefRepository extends \Doctrine\ORM\EntityRepository {
 	/**
 	 * Return the count of code for a taxref filtered by query.
 	 *
-	 * @param String $unit
+	 * @param Unit $unit
 	 *        	The unit
 	 * @param String $query
 	 *        	the searched text (optional)
@@ -186,8 +183,8 @@ class ModeTaxrefRepository extends \Doctrine\ORM\EntityRepository {
 	 *        	The locale
 	 * @return Integer
 	 */
-	public function getTaxrefModesCount($unit, $query = null, $locale = "EN") {
-	    if( $unit === null || $unit === "" || $query === null || $query === "") {
+	public function getTaxrefModesCount(Unit $unit, $query = null, $locale = "EN") {
+	    if($query === null || $query === "") {
 	        throw new \InvalidArgumentException('Invalid arguments.');
 	    }
 	    $sql = "SELECT count(*) as count";
@@ -219,7 +216,7 @@ class ModeTaxrefRepository extends \Doctrine\ORM\EntityRepository {
 	 *
 	 * Return an array of codes.
 	 *
-	 * @param String $unit
+	 * @param Unit $unit
 	 *        	The unit
 	 * @param String $code
 	 *        	The identifier of the start node in the tree (by default the root node is *)
@@ -230,10 +227,7 @@ class ModeTaxrefRepository extends \Doctrine\ORM\EntityRepository {
 	 * @return Array[ModeTaxref]
 	 */
 	public function getTaxrefChildrenModes(Unit $unit, $code = '*', $levels = 1, $locale = "EN") {
-	    if( $unit === null || $unit === "") {
-	        throw new \InvalidArgumentException('Invalid arguments.');
-	    }
-	    $rsm = new ResultSetMappingBuilder($this->_em);
+		$rsm = new ResultSetMappingBuilder($this->_em);
 		$rsm->addRootEntityFromClassMetadata($this->_entityName, 'mt');
 		
 		if ($code === '*') { // fakeroot
@@ -279,7 +273,7 @@ class ModeTaxrefRepository extends \Doctrine\ORM\EntityRepository {
 	*
 	* Return an query
 	*
-	* @param String $unit
+	* @param Unit $unit
 	*        	The unit
 	* @param String $code
 	*        	The identifier of the start node in the tree (by default the root node is *)
@@ -288,7 +282,7 @@ class ModeTaxrefRepository extends \Doctrine\ORM\EntityRepository {
 	* @return NativeQuery
 	*/
 	public function getChildrenCodesSqlQuery(Unit $unit, $code, $levels) {
-	    if( $unit === null || $unit === "" || $code === null || $code === "") {
+	    if( $code === null || $code === "") {
 	        throw new \InvalidArgumentException('Invalid arguments.');
 	    }
 	    $rsm = new ResultSetMappingBuilder($this->_em);
