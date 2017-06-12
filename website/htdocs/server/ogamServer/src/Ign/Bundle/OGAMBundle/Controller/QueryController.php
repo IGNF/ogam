@@ -1503,7 +1503,7 @@ class QueryController extends Controller {
 		$logger->debug('ajaxgetdynamiccodesAction');
 		try {
 			$unitCode = $request->query->get('unit');
-			$query = $request->query->get('query', null);
+			$query = $request->query->get('query', '');
 			$max = 1000;
 			$start = $request->query->getInt('start', 0);
 			$limit = $request->query->getInt('limit', $max);
@@ -1591,15 +1591,20 @@ class QueryController extends Controller {
 			$unit = $em->find(Unit::class, $unitCode);
 
 			$locale = $this->get('ogam.locale_listener')->getLocale();
-
-			// $em->getRepository(Unit::class)->getModesFilteredByLabel($unit, $query, $locale);
-			$rows = $em->getRepository('OGAMBundle:Metadata\ModeTree')->getTreeModesSimilareTo($unit, $query, $locale, $start, $limit);
-			if (count($rows) < $limit) {
-				// optimisation
-				$count = count($rows);
+			
+			if ($query === null){
+				$rows = $em->getRepository(Unit::class)->getModes($unit, $locale);
+				$count = $em->getRepository('OGAMBundle:Metadata\ModeTree')->getTreeModesSimilareToCount($unit);
 			} else {
-				// TODO use a paginator ?
-				$count = $em->getRepository('OGAMBundle:Metadata\ModeTree')->getTreeModesSimilareToCount($unit, $query, $locale);
+				// $em->getRepository(Unit::class)->getModesFilteredByLabel($unit, $query, $locale);
+				$rows = $em->getRepository('OGAMBundle:Metadata\ModeTree')->getTreeModesSimilareTo($unit, $query, $locale, $start, $limit);
+				if (count($rows) < $limit) {
+					// optimisation
+					$count = count($rows);
+				} else {
+					// TODO use a paginator ?
+					$count = $em->getRepository('OGAMBundle:Metadata\ModeTree')->getTreeModesSimilareToCount($unit, $query, $locale);
+				}
 			}
 			return $this->render('OGAMBundle:Query:ajaxgettreecodes.json.twig', array(
 				'data' => $rows,
@@ -1633,13 +1638,17 @@ class QueryController extends Controller {
 			$unit = $em->find(Unit::class, $unitCode);
 
 			$locale = $this->get('ogam.locale_listener')->getLocale();
-
-			$rows = $em->getRepository('OGAMBundle:Metadata\ModeTaxref')->getTaxrefModesSimilarTo($unit, $query, $locale, $start, $limit);
-			if (count($rows) < $limit) {
-				// optimisation
-				$count = count($rows);
+			if ($query === null) {
+				$rows = $em->getRepository(Unit::class)->getModes($unit, $locale);
+				$count = $em->getRepository('OGAMBundle:Metadata\ModeTaxref')->getTaxrefModesCount($unit);
 			} else {
-				$count = $em->getRepository('OGAMBundle:Metadata\ModeTaxref')->getTaxrefModesCount($unit, $query, $locale);
+				$rows = $em->getRepository('OGAMBundle:Metadata\ModeTaxref')->getTaxrefModesSimilarTo($unit, $query, $locale, $start, $limit);
+				if (count($rows) < $limit) {
+					// optimisation
+					$count = count($rows);
+				} else {
+					$count = $em->getRepository('OGAMBundle:Metadata\ModeTaxref')->getTaxrefModesCount($unit, $query, $locale);
+				}
 			}
 			return $this->render('OGAMBundle:Query:ajaxgettaxrefcodes.json.twig', array(
 				'data' => $rows,
