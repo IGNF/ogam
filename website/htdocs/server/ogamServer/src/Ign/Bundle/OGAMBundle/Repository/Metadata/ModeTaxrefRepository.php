@@ -59,7 +59,7 @@ class ModeTaxrefRepository extends \Doctrine\ORM\EntityRepository {
 	 * @return Mode|[Mode] The filtered mode(s)
 	 */
 	public function getModesFilteredByCode(Unit $unit, $code, $locale = "EN") {
-	    if( $code === null || $code === "") {
+	    if ($code === null || $code === "") {
 	        throw new \InvalidArgumentException('Invalid arguments.');
 	    }
 	    $rsm = new ResultSetMappingBuilder($this->_em);
@@ -100,7 +100,7 @@ class ModeTaxrefRepository extends \Doctrine\ORM\EntityRepository {
 	 * @return [Mode] The filtered mode(s)
 	 */
 	public function getModesFilteredByLabel(Unit $unit, $query, $locale = "EN") {
-	    if( $query === null || $query === "") {
+	    if ($query === null || $query === "") {
 	        throw new \InvalidArgumentException('Invalid arguments.');
 	    }
 	    $rsm = new ResultSetMappingBuilder($this->_em);
@@ -125,7 +125,7 @@ class ModeTaxrefRepository extends \Doctrine\ORM\EntityRepository {
 	/**
 	 * Returns the mode(s) whose an part of thme is similare to the searched text.
 	 * parts explored : label, vernacular_name,complete_name
-	 * 
+	 *
 	 * @param Unit $unit
 	 *        	The unit
 	 * @param string $query
@@ -139,10 +139,10 @@ class ModeTaxrefRepository extends \Doctrine\ORM\EntityRepository {
 	 * @return [Mode] filtered mode (eventually partial =>bound [$start .. $start+$limit])
 	 */
 	public function getTaxrefModesSimilarTo(Unit $unit, $query, $locale = "EN", $start = null, $limit = null) {
-	    if( $query === null || $query === "") {
-	        throw new \InvalidArgumentException('Invalid arguments.');
-	    }
-	    $rsm = new ResultSetMappingBuilder($this->_em);
+		if ($query === null || $query === "") {
+			throw new \InvalidArgumentException('Invalid arguments.');
+		}
+		$rsm = new ResultSetMappingBuilder($this->_em);
 		$rsm->addRootEntityFromClassMetadata($this->_entityName, 'mt');
 		$parameters = array(
 			'unit' => $unit->getUnit(),
@@ -153,11 +153,14 @@ class ModeTaxrefRepository extends \Doctrine\ORM\EntityRepository {
 		$sql = "SELECT unit, code, COALESCE(t.label, mt.label) as label, COALESCE(t.definition, mt.definition) as definition, position, parent_code, is_leaf, complete_name, vernacular_name, is_reference";
 		$sql .= " FROM mode_taxref mt";
 		$sql .= " LEFT JOIN translation t ON (lang = :lang AND table_format = 'MODE_TAXREF' AND row_pk = mt.unit || ',' || mt.code) ";
-		$sql .= " WHERE unit = :unit AND (
+		$sql .= " WHERE unit = :unit ";
+		if ($query !== null && $query !== "") {//assume empty query is all the unit
+			$sql .= " AND (
             unaccent(COALESCE(t.label, mt.label)) ilike unaccent(:query_parttern)
             OR unaccent(vernacular_name) ilike unaccent(:query_parttern)
             OR unaccent(complete_name) ilike unaccent(:query_parttern)
             )";
+		}
 		$sql .= " ORDER BY GREATEST(similarity(COALESCE(t.label, mt.label), :query), similarity(vernacular_name,:query) , similarity(complete_name, :query)) DESC, position, code";
 		
 		if ($start !== null && $limit !== null) {
@@ -184,17 +187,17 @@ class ModeTaxrefRepository extends \Doctrine\ORM\EntityRepository {
 	 * @return Integer
 	 */
 	public function getTaxrefModesCount(Unit $unit, $query = null, $locale = "EN") {
-	    if($query === null || $query === "") {
-	        throw new \InvalidArgumentException('Invalid arguments.');
-	    }
-	    $sql = "SELECT count(*) as count";
+		$sql = "SELECT count(*) as count";
 		$sql .= " FROM mode_taxref mt";
 		$sql .= " LEFT JOIN translation t ON (lang = :lang AND table_format = 'MODE_TAXREF' AND row_pk = mt.unit || ',' || mt.code) ";
-		$sql .= " WHERE unit = :unit AND (
+		$sql .= " WHERE unit = :unit " ;
+		if ($query !== null && $query !== "") {//assume empty query is all the unit
+			$sql .= " AND (
             unaccent(COALESCE(t.label, mt.label)) ilike unaccent(:query)
             OR unaccent(vernacular_name) ilike unaccent(:query)
             OR unaccent(complete_name) ilike unaccent(:query)
             )";
+		}
 		$parameters = array(
 			'unit' => $unit->getUnit(),
 			'lang' => $locale,
@@ -282,7 +285,7 @@ class ModeTaxrefRepository extends \Doctrine\ORM\EntityRepository {
 	* @return NativeQuery
 	*/
 	public function getChildrenCodesSqlQuery(Unit $unit, $code, $levels) {
-	    if( $code === null || $code === "") {
+	    if ($code === null || $code === "") {
 	        throw new \InvalidArgumentException('Invalid arguments.');
 	    }
 	    $rsm = new ResultSetMappingBuilder($this->_em);
