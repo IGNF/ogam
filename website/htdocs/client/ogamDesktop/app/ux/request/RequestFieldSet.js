@@ -131,13 +131,14 @@ Ext.define('OgamDesktop.ux.request.RequestFieldSet', {
 	getFilledCriteriaConfig : function() {
 		var items = [];
 		this.criteriaDS.each(function(record) {
-			var fieldValues, newRecord, i;
+			var fieldName, fieldValues, newRecord, i;
 			// Check if there are some criteriaValues from the predefined
 			// request page
 			if (!Ext.isEmpty(this.form.criteriaValues)) {
-				fieldValues = this.form.criteriaValues['criteria__' + record.data.name+'[]'];
+				fieldName = 'criteria__' + record.data.name + '[]';
 				// Check if there are some criteriaValues for this criteria
-				if (!Ext.isEmpty(fieldValues)) {
+				if (this.form.criteriaValues.hasOwnProperty(fieldName)) {
+					fieldValues = this.form.criteriaValues[fieldName];
 					if(record.get('data').unit.type === 'ARRAY') {
 						newRecord = record.copy();
 						newRecord.data.default_value = fieldValues;

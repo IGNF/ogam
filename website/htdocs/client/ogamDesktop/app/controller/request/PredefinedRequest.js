@@ -105,10 +105,14 @@ Ext.define('OgamDesktop.controller.request.PredefinedRequest', {
                     if (item instanceof Ext.form.field.Tag) {
                         selectedCodes[item.getName()] = item.getValueRecords();
                     } else if (item instanceof Ext.form.field.ComboBox) {
-                        selectedCodes[item.getName()] = new OgamDesktop.model.request.object.field.Code({
-                            code: item.getValue(),
-                            label: item.getRawValue()
-                        });
+                        if (item.getValue() != null) {
+                            selectedCodes[item.getName()] = new OgamDesktop.model.request.object.field.Code({
+                                code: item.getValue(),
+                                label: item.getRawValue()
+                            });
+                        } else {
+                            selectedCodes[item.getName()] = null;
+                        }
                     } else if (item instanceof Ext.form.field.Checkbox) {
                         selectedCodes[item.getName()] = item.getSubmitValue();
                     } else {
