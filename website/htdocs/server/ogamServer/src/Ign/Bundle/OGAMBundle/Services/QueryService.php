@@ -570,9 +570,12 @@ class QueryService {
 			$split = explode("__", $sort);
 			$formField = new GenericField($split[0], $split[1]);
 			$dstField = $queryForm->getFieldMappingSet()->getDstField($formField);
-			$key = $dstField->getFormat() . "." . $dstField->getData();
-			$order .= " ORDER BY " . $key . " " . $sortDir;
-		} else {
+			if($dstField != null){
+    			$key = $dstField->getFormat() . "." . $dstField->getData();
+    			$order .= " ORDER BY " . $key . " " . $sortDir;
+			}
+		}
+		if ($order === "") {
 			$order .= " ORDER BY " . $pKey;
 		}
 
