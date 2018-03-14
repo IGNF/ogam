@@ -1,15 +1,12 @@
 # Set the default behavior for files detected as text, convert in LF.
 * text eol=lf
-
 #
 # To get all file extensions in the project
 # find . -type f | perl -ne 'print $1 if m/\.([^.\/]+)$/' | sort -u
 #
-
 #
 # These files are text and should be normalized (Convert crlf => lf)
 #
-
 # source code
 *.php text
 *.c text
@@ -48,20 +45,14 @@
 *.txt text
 *.xml text
 *.kml text
-
-
 # server config
 .htaccess text
-
 # git config
 .gitattributes text
 .gitignore text
 .gitconfig text
-
-
 # mapserv config
 *.map text
-
 # misc config
 *.cfg text
 *.conf text
@@ -70,15 +61,11 @@
 *.list text
 *.properties text
 *.setting text
-
 # Documentation
 *.md text
-
-
 # Data
 *.csv text
 *.CSV text
-
 # Scripts
 # Pas de convertion en LF pour les scripts shell Windows
 Vagrantfile text
@@ -87,12 +74,9 @@ gradlew text
 *.sh text
 *.bat text eol=crlf
 *.cmd text eol=crlf
-
-
 #
 # These files are binary and should be left untouched
 #
-
 # (binary is a macro for -text -diff)
 *.png binary
 *.jpg binary
@@ -129,3 +113,5 @@ gradlew text
 *.cgi binary
 *.rptconfig binary
 *.rptdesign binary
+database/Referentiels/TAXREFv80.txt filter=lfs diff=lfs merge=lfs -text
+service_generation_rapport/build/libs/birt.war filter=lfs diff=lfs merge=lfs -text
