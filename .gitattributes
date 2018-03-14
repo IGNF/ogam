@@ -113,4 +113,5 @@ gradlew text
 *.cgi binary
 *.rptconfig binary
 *.rptdesign binary
-TAXREFv80.txt filter=lfs diff=lfs merge=lfs -text
+database/Referentiels/TAXREFv80.txt filter=lfs diff=lfs merge=lfs -text
+service_generation_rapport/build/libs/birt.war filter=lfs diff=lfs merge=lfs -text
