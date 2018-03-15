@@ -29,15 +29,14 @@ $ vagrant up
 ```
 * Configure (if necessary) the proxy for the virtual machine:
   * Add the following environment variables:
-```shell
-$ http_proxy = http://proxy.ign.fr:3128/
-$ https_proxy = http://proxy.ign.fr:3128/
-```
-
+  ```shell
+  $ http_proxy = http://proxy.ign.fr:3128/
+  $ https_proxy = http://proxy.ign.fr:3128/
+  ```
   * Install the vagrant-proxyconf plugin:
-```shell
-$ vagrant plugin install vagrant-proxyconf
-```
+  ```shell
+  $ vagrant plugin install vagrant-proxyconf
+  ```
 
   * Open your profile's Vagrantfile:
 ```shell
