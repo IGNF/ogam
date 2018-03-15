@@ -17,7 +17,7 @@ Git est utilisé pour récupérer le projet qui est hébergé sur [GitHub](https
 
 Pour l'utiliser :
 * Installer [Git](https://git-scm.com/)
-* Lancer la commande `$ git clone https://github.com/IGNF/ogam.git` pour faire un cloner le projet en local.
+* Lancer la commande `$ git clone https://github.com/IGNF/ogam.git` pour faire un clone du projet en local.
 
 # Vagrant
 
@@ -56,7 +56,7 @@ Vagrant.configure("2") do |config|
   end
 end
 ```
-  * Vérifier que le fichier précédent est bien pris en compte :
+  * Vérifier la configuration :
 ```shell
 $ vagrant up
 ```
@@ -66,7 +66,7 @@ Vérifier la présence du message « Setting of the IGN proxy configuration. ».
 * Utiliser la commande "vagrant ssh"
 * Utiliser l'interface de VirtualBox
 * (ou) se connecter en SSH sur localhost sur le port 2222 avec le compte vagrant/vagrant  
-* PostgreSQL est accessible via le port 5432, user ogam / ogam
+* PostgreSQL est accessible via le port 5433, user ogam / ogam
 * Le site Web est sur http://192.168.50.4/, user admin / admin
 
 

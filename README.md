@@ -1,9 +1,7 @@
 # OGAM
 
-OGAM is a generic system based on metadata allowing to build a web site to collect data, display them on a map, request the data, ... 
- 
+OGAM is a generic system based on metadata allowing to build a web site to collect data, display them on a map, request the data, ...<br/>
 OGAM is under GPL license.
-
 
 # Documentation
 
@@ -11,67 +9,58 @@ The documentation, installation and configuration procedures, etc is in the "doc
 
 # Git
 
-Git is used to get the project from [Gitlab](http://gitlab.dockerforge.ign.fr/ogam/ogam).
+Git is used to get the project from [GitHub](https://github.com/IGNF/ogam).
 
 To use git :
-* install [Git](https://git-scm.com/)
-* you need an account on the gitlab website to access the project.
-* generate a SSH key to connect with the website : see http://gitlab.dockerforge.ign.fr/help/ssh/ssh.
-* launch `git clone ssh://git@gitlab.dockerforge.ign.fr:10022/ogam/ogam.git` in the project root directory to clone it.
-
+* Install [Git](https://git-scm.com/)
+* Launch the command `$ git clone https://github.com/IGNF/ogam.git` to clone the project locally.
 
 # Vagrant
 
 Vagrant is used to instanciate a virtual machine with the project components (Apache, Tomcat, Mapserver, ...).
 
 **To use vagrant :**
-* install [VirtualBox](https://www.virtualbox.org/)
-* install [Vagrant](https://www.vagrantup.com/)
-* launch `vagrant up`  in the project root directory to start the VM
-
-* In case of problem with the "guest additions", launch :
- 
->vagrant plugin install vagrant-vbguest
-
-* If have to pass through a proxy :
-
-uncomment followed block in /vagrant_config/Scripts/bootstrap.sh :
-
->cp /vagrant/ogam/vagrant_config/conf/sources.list /etc/apt/sources.list
-
->cp /vagrant/ogam/vagrant_config/conf/apt-proxy.conf /etc/apt/apt.conf.d/proxy
-
->
-
->echo "
-
->http_proxy=http://proxy.ign.fr:3128
-
->https_proxy=http://proxy.ign.fr:3128
-
->HTTP_PROXY=http://proxy.ign.fr:3128
-
->HTTPS_PROXY=http://proxy.ign.fr:3128
-
->no_proxy=localhost,127.0.0.0/8,ogam.fr
-
->" >> /etc/environment
-
->source /etc/environment
-
-add proxy options in /vagrant_config/Scripts/install_ogam_services.sh :
- 
-replace :
-
->cd /vagrant/ogam/ && chmod a+x gradlew && bash gradlew && bash gradlew deploy -PtomcatHome='/var/lib/tomcat7' -PapplicationName='OGAM'
-
-with :
-
->cd /vagrant/ogam/ && chmod a+x gradlew && bash gradlew -Dhttps.proxyHost=proxy.ign.fr -Dhttps.proxyPort=3128 && bash gradlew deploy -PtomcatHome='/var/lib/tomcat7' -PapplicationName='OGAM' -Dhttps.proxyHost=proxy.ign.fr -Dhttps.proxyPort=3128
+* Install [VirtualBox](https://www.virtualbox.org/)
+* Install [Vagrant](https://www.vagrantup.com/)
+* Launch the virtual machine:
+```shell
+$ cd ogam
+$ vagrant up
+```
+* Configure (if necessary) the proxy for the virtual machine:
+  * Add the following environment variables:
+```shell
+$ http_proxy = http://proxy.ign.fr:3128/
+$ https_proxy = http://proxy.ign.fr:3128/
+```
+  * Install the vagrant-proxyconf plugin:
+```shell
+$ vagrant plugin install vagrant-proxyconf
+```
+  * Open your profile's Vagrantfile:
+```shell
+$ nano  ~/.vagrant.d/Vagrantfile
+```
+  * Add the following code:
+```shell
+Vagrant.configure("2") do |config|
+  puts "Setting of the IGN proxy configuration."
+  if Vagrant.has_plugin?("vagrant-proxyconf")
+    config.proxy.http     = "http://proxy.ign.fr:3128/"
+    config.proxy.https    = "http://proxy.ign.fr:3128/"
+    config.proxy.no_proxy = "localhost,127.0.0.1,.example.com"
+  end
+end
+```
+  * Check the configuration:
+```shell
+$ vagrant up
+```
+Check that the « Setting of the IGN proxy configuration. » message is present.
 
 **To connect the VM :**
-* use the command "vagrant ssh"
-* use VirtualBox interface
+* Use the command "vagrant ssh"
+* Use VirtualBox interface
 * (or) connect with SSH on localhost on port 2222 with the login vagrant/vagrant  
 * PostgreSQL is on port 5433, user ogam / ogam
 * Web site is at http://192.168.50.4/, user admin / admin
@@ -81,8 +70,7 @@ with :
 
 # Gradle
 
-Gradle is used to launch the build of the components of the project.
-
+Gradle is used to launch the build of the components of the project.<br/>
 To use gradle :
-* install [Gradle](https://gradle.org/)
-* launch `gradle tasks`  in the project root directory to get the list of available tasks
+* Install [Gradle](https://gradle.org/)
+* Launch `$ gradle tasks`  in the project root directory to get the list of available tasks.
