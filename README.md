@@ -37,29 +37,26 @@ $ vagrant up
   ```shell
   $ vagrant plugin install vagrant-proxyconf
   ```
-
   * Open your profile's Vagrantfile:
-```shell
-$ nano  ~/.vagrant.d/Vagrantfile
-```
-
+  ```shell
+  $ nano  ~/.vagrant.d/Vagrantfile
+  ```
   * Add the following code:
-```shell
-Vagrant.configure("2") do |config|
-  puts "Setting of the IGN proxy configuration."
-  if Vagrant.has_plugin?("vagrant-proxyconf")
-    config.proxy.http     = "http://proxy.ign.fr:3128/"
-    config.proxy.https    = "http://proxy.ign.fr:3128/"
-    config.proxy.no_proxy = "localhost,127.0.0.1,.example.com"
+  ```shell
+  Vagrant.configure("2") do |config|
+    puts "Setting of the IGN proxy configuration."
+    if Vagrant.has_plugin?("vagrant-proxyconf")
+      config.proxy.http     = "http://proxy.ign.fr:3128/"
+      config.proxy.https    = "http://proxy.ign.fr:3128/"
+      config.proxy.no_proxy = "localhost,127.0.0.1,.example.com"
+    end
   end
-end
-```
-
+  ```
   * Check the configuration:
-```shell
-$ vagrant up
-```
-Check that the « Setting of the IGN proxy configuration. » message is present.
+  ```shell
+  $ vagrant up
+  ```
+  Check that the « Setting of the IGN proxy configuration. » message is present.
 
 **To connect the VM :**
 * Use the command "vagrant ssh"
