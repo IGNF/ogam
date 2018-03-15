@@ -27,18 +27,18 @@ Vagrant is used to instanciate a virtual machine with the project components (Ap
 $ cd ogam
 $ vagrant up
 ```
-* Configure (if necessary) the proxy for the virtual machine:
-  * Add the following environment variables:
+1. Configure (if necessary) the proxy for the virtual machine:
+  1. Add the following environment variables:
   ```shell
   $ http_proxy = http://proxy.ign.fr:3128/
   $ https_proxy = http://proxy.ign.fr:3128/
   ```
-  * Install the vagrant-proxyconf plugin:
+  1. Install the vagrant-proxyconf plugin:
   ```shell
   $ vagrant plugin install vagrant-proxyconf
   ```
 
-  * Open your profile's Vagrantfile:
+  1. Open your profile's Vagrantfile:
 ```shell
 $ nano  ~/.vagrant.d/Vagrantfile
 ```
