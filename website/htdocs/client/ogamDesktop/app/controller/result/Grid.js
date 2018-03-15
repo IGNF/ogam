@@ -221,6 +221,15 @@ Ext.define('OgamDesktop.controller.result.Grid',{
             // and apply pageSize value.
             resultStore.setConfig('pageSize', gridTab.gridPageSize);
             resultStore.setModel(gridModel);
+            
+            // Remove the sorter(s) without colonne
+            var sortersToRemove = [], sorters = resultStore.getSorters();
+            sorters.each(function(item, index, len){
+                if ( gridModel.getField(item.getProperty()) === null ) {
+                    sortersToRemove.push(item);
+                }
+            }, this);
+            resultStore.getSorters().remove(sortersToRemove);
 
             // Load the grid results store
             resultStore.loadPage(1, {

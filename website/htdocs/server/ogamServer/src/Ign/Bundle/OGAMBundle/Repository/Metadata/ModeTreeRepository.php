@@ -27,9 +27,6 @@ class ModeTreeRepository extends \Doctrine\ORM\EntityRepository {
 	 *        	return Mode[] The unit mode(s)
 	 */
     public function getModes(Unit $unit, $locale = "EN") {
-        if( $unit === null || $unit === "") {
-            throw new \InvalidArgumentException('Invalid arguments.');
-        }
 		$rsm = new ResultSetMappingBuilder($this->_em);
 		$rsm->addRootEntityFromClassMetadata($this->_entityName, 'm');
 		$params = [
@@ -62,7 +59,7 @@ class ModeTreeRepository extends \Doctrine\ORM\EntityRepository {
 	 * @return Mode|[Mode] The filtered mode(s)
 	 */
 	public function getModesFilteredByCode(Unit $unit, $code, $locale = "EN") {
-	    if( $unit === null || $unit === "" || $code === null || $code === "") {
+	    if ($code === null || $code === "") {
 	        throw new \InvalidArgumentException('Invalid arguments.');
 	    }
 	    $rsm = new ResultSetMappingBuilder($this->_em);
@@ -103,7 +100,7 @@ class ModeTreeRepository extends \Doctrine\ORM\EntityRepository {
 	 * @return [Mode] The filtered mode(s)
 	 */
 	public function getModesFilteredByLabel(Unit $unit, $query, $locale = "EN") {
-	    if( $unit === null || $unit === "" || $query === null || $query === "") {
+	    if ($query === null || $query === "") {
 	        throw new \InvalidArgumentException('Invalid arguments.');
 	    }
 	    $rsm = new ResultSetMappingBuilder($this->_em);
@@ -141,7 +138,7 @@ class ModeTreeRepository extends \Doctrine\ORM\EntityRepository {
 	 * @return [Mode] The filtered mode(s)
 	 */
 	public function getTreeModesSimilareTo(Unit $unit, $query, $locale = "EN", $start = null, $limit = null) {
-	    if( $unit === null || $unit === "" || $query === null || $query === "") {
+	    if ($query === null || $query === "") {
 	        throw new \InvalidArgumentException('Invalid arguments.');
 	    }
 	    $rsm = new ResultSetMappingBuilder($this->_em);
@@ -176,13 +173,13 @@ class ModeTreeRepository extends \Doctrine\ORM\EntityRepository {
 	 * @param Unit $unit
 	 *        	The unit
 	 * @param String $query
-	 *        	the searched text (optional)
+	 *        	the searched text (optional) (assume ''  is full list of the unit)
 	 * @param String $locale
 	 *        	the locale
 	 * @return Integer
 	 */
-	public function getTreeModesSimilareToCount(Unit $unit, $query, $locale = "EN") {
-	    if( $unit === null || $unit === "" || $query === null || $query === "") {
+	public function getTreeModesSimilareToCount(Unit $unit, $query ='', $locale = "EN") {
+	    if ($query === null) {
 	        throw new \InvalidArgumentException('Invalid arguments.');
 	    }
 	    $rsm = new ResultSetMappingBuilder($this->_em);
@@ -195,8 +192,10 @@ class ModeTreeRepository extends \Doctrine\ORM\EntityRepository {
 		$sql = "SELECT count(*)";
 		$sql .= " FROM mode_tree mt";
 		$sql .= " LEFT JOIN translation t ON (lang = :lang AND table_format = 'MODE_TREE' AND row_pk = mt.unit || ',' || mt.code) ";
-		$sql .= " WHERE unit = :unit AND COALESCE(t.label, mt.label) ilike :query ";
-		
+		$sql .= " WHERE unit = :unit ";
+		if ($query !== null && $query !=='') {
+			$sql .= " AND COALESCE(t.label, mt.label) ilike :query ";
+		}
 		$query = $this->_em->createNativeQuery($sql, $rsm);
 		$query->setParameters($parameters);
 		
@@ -219,7 +218,7 @@ class ModeTreeRepository extends \Doctrine\ORM\EntityRepository {
 	 * @return Array[ModeTree]
 	 */
 	public function getTreeChildrenModes($unit, $code = '*', $levels = 1, $locale = "EN") {
-	    if( $unit === null || $unit === "") {
+	    if ($unit === null || $unit === "") {
 	        throw new \InvalidArgumentException('Invalid arguments.');
 	    }
 	    $rsm = new ResultSetMappingBuilder($this->_em);

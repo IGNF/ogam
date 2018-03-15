@@ -26,6 +26,7 @@ use Ign\Bundle\OGAMBundle\Entity\Website\PredefinedRequestCriterion;
 use Ign\Bundle\OGAMBundle\Entity\Website\PredefinedRequestColumn;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Ign\Bundle\OGAMBundle\Entity\Metadata\Data;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * The Query Service.
@@ -569,9 +570,12 @@ class QueryService {
 			$split = explode("__", $sort);
 			$formField = new GenericField($split[0], $split[1]);
 			$dstField = $queryForm->getFieldMappingSet()->getDstField($formField);
-			$key = $dstField->getFormat() . "." . $dstField->getData();
-			$order .= " ORDER BY " . $key . " " . $sortDir;
-		} else {
+			if($dstField != null){
+    			$key = $dstField->getFormat() . "." . $dstField->getData();
+    			$order .= " ORDER BY " . $key . " " . $sortDir;
+			}
+		}
+		if ($order === "") {
 			$order .= " ORDER BY " . $pKey;
 		}
 
@@ -762,8 +766,8 @@ class QueryService {
 		$field->label = $tableField->getLabel();
 
 		$field->isPK = in_array($tableField->getData()->getData(), $tableField->getFormat()->getPrimaryKeys(), true) ? '1' : '0';
-		if ($tableField->getData()->getUnit() === $formField->getData()->getUnit()) {
-			$this->logger->info('query_service :: table field and form field has not the same unit ?!');
+		if ($tableField->getData()->getUnit() !== $formField->getData()->getUnit()) {
+			$this->logger->warning('query_service :: table field and form field has not the same unit ?!', array('tablefield'=>$tableField,'formfield'=>$formField));
 		}
 
 		$field->value = $tableRowField->getValue();
@@ -804,9 +808,20 @@ class QueryService {
 
 		if ($field->inputType === 'RADIO' && $field->type === 'CODE') {
 
-			$opts = $this->metadataModel->getRepository(Unit::class)->getModes($formField->getUnit());
+			$opts = $this->metadataModel->getRepository(Unit::class)->getModes($formField->getData()->getUnit(), $this->locale);
 
-			$field->options = array_column($opts, 'label', 'code');
+			if (false === ($opts instanceof Collection)) {
+				$opts = new ArrayCollection($opts);
+			}
+			$array_res = $opts->map(function ($element) {
+				return [
+					'code' => $element->getCode(),
+					'label' => $element->getLabel()
+				];
+			});
+			
+			//$field->options = array_column($array_res->toArray(), 'label', 'code');
+			$field->codes = $array_res->toArray();
 		}
 
 		return $field;

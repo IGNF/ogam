@@ -32,9 +32,6 @@ class UnitRepository extends \Doctrine\ORM\EntityRepository {
 	 *        	return Mode[] The unit mode(s)
 	 */
     public function getModes(Unit $unit, $locale = "EN") {
-	    if( $unit === null || $unit === "") {
-	        throw new \InvalidArgumentException('Invalid arguments.');
-	    }
 		/*
 		 * Must handle these cases :
 		 * CODE MODE
@@ -74,7 +71,7 @@ class UnitRepository extends \Doctrine\ORM\EntityRepository {
 	 * @return Mode[] The filtered mode(s)
 	 */
 	public function getModesFilteredByCode(Unit $unit, $code, $locale = "EN") {
-	    if( $unit === null || $unit === "" || $code === null || $code === "") {
+	    if ($code === null || $code === "") {
 	        throw new \InvalidArgumentException('Invalid arguments.');
 	    }
 		/*
@@ -116,7 +113,7 @@ class UnitRepository extends \Doctrine\ORM\EntityRepository {
 	 * @return Mode[] The filtered mode(s)
 	 */
 	public function getModesFilteredByLabel(Unit $unit, $query, $locale = "EN") {
-	    if( $unit === null || $unit === "" || $query === null || $query === "") {
+	    if ($query === null ) {
 	        throw new \InvalidArgumentException('Invalid arguments.');
 	    }
 		/*
@@ -158,7 +155,7 @@ class UnitRepository extends \Doctrine\ORM\EntityRepository {
 	 * @return array The filtered modes labels
 	 */
 	public function getModesLabelsFilteredByCode(Unit $unit, $code, $locale = "EN") {
-	    if( $unit === null || $unit === "" || $code === null || $code === "") {
+	    if ($code === null || $code === "") {
 	        throw new \InvalidArgumentException('Invalid arguments.');
 	    }
 		$res = $this->getModesFilteredByCode($unit, $code, $locale);

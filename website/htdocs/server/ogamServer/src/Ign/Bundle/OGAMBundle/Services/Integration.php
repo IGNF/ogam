@@ -14,6 +14,7 @@
 namespace Ign\Bundle\OGAMBundle\Services;
 
 use Zend\Http\Client;
+use Ign\Bundle\OGAMBundle\Exception\ServiceException;
 
 /**
  * This is a model allowing to access the integration service via HTTP calls.
@@ -72,7 +73,7 @@ class Integration extends AbstractService {
 		// Check the result status
 		if (!$response->isSuccess()) {
 			$this->logger->debug("Error while creating new data submission : " . $response->getReasonPhrase());
-			throw new \Exception("Error while creating new data submission : " . $response->getReasonPhrase());
+			throw new ServiceException("Error while creating new data submission : " . $response->getReasonPhrase());
 		}
 		
 		// Extract the response body
@@ -83,7 +84,7 @@ class Integration extends AbstractService {
 		if (strpos($body, "<Status>OK</Status>") === FALSE) {
 			// Parse an error message
 			$error = $this->parseErrorMessage($body);
-			throw new \Exception("Error while creating new data submission : " . $error->errorMessage);
+			throw new ServiceException("Error while creating new data submission : " . $error->errorMessage);
 		} else {
 			// Parse a valid response
 			$value = $this->parseValueResponse($body);
@@ -138,7 +139,7 @@ class Integration extends AbstractService {
 		// Check the result status
 		if (!$response->isOk()) {
 			$this->logger->debug("Error while creating new data submission : " . $response->getReasonPhrase());
-			throw new \Exception("Error while creating new data submission : " . $response->getReasonPhrase());
+			throw new ServiceException("Error while creating new data submission : " . $response->getReasonPhrase());
 		}
 		
 		// Extract the response body
@@ -149,7 +150,7 @@ class Integration extends AbstractService {
 		if (strpos($body, "<Status>OK</Status>") === FALSE) {
 			// Parse an error message
 			$error = $this->parseErrorMessage($body);
-			throw new \Exception("Error while creating new data submission : " . $error->errorMessage);
+			throw new ServiceException("Error while creating new data submission : " . $error->errorMessage);
 		} else {
 			return true;
 		}
@@ -184,7 +185,7 @@ class Integration extends AbstractService {
 		// Check the result status
 		if (!$response->isSuccess()) {
 			$this->logger->debug("Error while cancelling the data submission : " . $response->getReasonPhrase());
-			throw new \Exception("Error while cancelling the data submission : " . $response->getReasonPhrase());
+			throw new ServiceException("Error while cancelling the data submission : " . $response->getReasonPhrase());
 		}
 		
 		// Extract the response body
@@ -195,7 +196,7 @@ class Integration extends AbstractService {
 		if (strpos($body, "<Status>OK</Status>") === FALSE) {
 			// Parse an error message
 			$error = $this->parseErrorMessage($body);
-			throw new \Exception("Error while cancelling the data submission : " . $error->errorMessage);
+			throw new ServiceException("Error while cancelling the data submission : " . $error->errorMessage);
 		} else {
 			return true;
 		}
@@ -230,7 +231,7 @@ class Integration extends AbstractService {
 		// Check the result status
 		if (!$response->isSuccess()) {
 			$this->logger->debug("Error while validating the data submission : " . $response->getReasonPhrase());
-			throw new \Exception("Error while validating the data submission : " . $response->getReasonPhrase());
+			throw new ServiceException("Error while validating the data submission : " . $response->getReasonPhrase());
 		}
 		
 		// Extract the response body
@@ -241,7 +242,7 @@ class Integration extends AbstractService {
 		if (strpos($body, "<Status>OK</Status>") === FALSE) {
 			// Parse an error message
 			$error = $this->parseErrorMessage($body);
-			throw new \Exception("Error while validating the data submission : " . $error->errorMessage);
+			throw new ServiceException("Error while validating the data submission : " . $error->errorMessage);
 		} else {
 			return true;
 		}
@@ -276,7 +277,7 @@ class Integration extends AbstractService {
 		// Check the result status
 		if (!$response->isSuccess()) {
 			$this->logger->debug("Error while checking the data submission : " . $response->getReasonPhrase());
-			throw new \Exception("Error while checking the data submission : " . $response->getReasonPhrase());
+			throw new ServiceException("Error while checking the data submission : " . $response->getReasonPhrase());
 		}
 		
 		// Extract the response body
@@ -287,7 +288,7 @@ class Integration extends AbstractService {
 		if (strpos($body, "<Status>OK</Status>") === FALSE) {
 			// Parse an error message
 			$error = $this->parseErrorMessage($body);
-			throw new \Exception("Error while checking the data submission : " . $error->errorMessage);
+			throw new ServiceException("Error while checking the data submission : " . $error->errorMessage);
 		} else {
 			return true;
 		}
@@ -326,7 +327,7 @@ class Integration extends AbstractService {
 		// Check the result status
 		if (!$response->isSuccess()) {
 			$this->logger->debug("Error while getting the status : " . $response->getReasonPhrase());
-			throw new \Exception("Error while getting the status : " . $response->getReasonPhrase());
+			throw new ServiceException("Error while getting the status : " . $response->getReasonPhrase());
 		}
 		
 		// Extract the response body
@@ -337,7 +338,7 @@ class Integration extends AbstractService {
 		if (strpos($body, "<Status>OK</Status>") === FALSE) {
 			// Parse an error message
 			$error = $this->parseErrorMessage($body);
-			throw new \Exception("Error while getting the status : " . $error->errorMessage);
+			throw new ServiceException("Error while getting the status : " . $error->errorMessage);
 		} else {
 			return $this->parseStatusResponse($body);
 		}
