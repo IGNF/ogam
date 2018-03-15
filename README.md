@@ -33,14 +33,17 @@ $ vagrant up
 $ http_proxy = http://proxy.ign.fr:3128/
 $ https_proxy = http://proxy.ign.fr:3128/
 ```
+
   * Install the vagrant-proxyconf plugin:
 ```shell
 $ vagrant plugin install vagrant-proxyconf
 ```
+
   * Open your profile's Vagrantfile:
 ```shell
 $ nano  ~/.vagrant.d/Vagrantfile
 ```
+
   * Add the following code:
 ```shell
 Vagrant.configure("2") do |config|
@@ -52,6 +55,7 @@ Vagrant.configure("2") do |config|
   end
 end
 ```
+
   * Check the configuration:
 ```shell
 $ vagrant up
