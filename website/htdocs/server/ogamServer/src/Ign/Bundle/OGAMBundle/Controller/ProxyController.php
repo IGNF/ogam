@@ -20,54 +20,6 @@ class ProxyController extends Controller {
 	}
 
 	/**
-	 * Show a PDF report for the data submission.
-	 *
-	 * @Route("/show-report", name = "proxy_show-report")
-	 */
-	function showReportAction(Request $request) {
-		$logger = $this->get('logger');
-		$logger->debug('showreportAction');
-
-		// Get the configuration parameters
-		$configuration = $this->get('ogam.configuration_manager');
-		$reportServiceURL = $configuration->getConfig('reportGenerationService_url', 'http://localhost:8080/OGAMRG/');
-		$errorReport = $configuration->getConfig('errorReport', 'ErrorReport.rptdesign');
-
-		// Get the request parameter
-		$submissionId = $request->query->getInt("submissionId");
-
-		// Build the report URL
-		$reportURL = $reportServiceURL . "/run?__format=pdf&__report=report/" . $errorReport . "&submissionid=" . $submissionId;
-		$logger->debug('redirect showreport : ' . $reportURL);
-
-		// Set the header
-		set_time_limit(0);
-		$response = new Response();
-		$response->headers->set('Cache-control', 'private');
-		$response->headers->set('Content-Type', 'application/pdf');
-		$response->headers->set('Content-transfer-encoding', 'binary');
-		$response->headers->set('Content-disposition', 'attachment; filename=Error_Report_' . $submissionId . '.pdf');
-
-		try {
-			$method = $request->getRealMethod(); // GET or POST
-			if ($method == 'GET') {
-				$result = $this->sendGET($reportURL);
-			} else {
-				$result = $this->sendPOST($reportURL, $request->getContent());
-			}
-			$response->setContent($result);
-		} catch (\Exception $e) {
-			$logger->error('Error while creating the PDF report for the data submission : ' . $e);
-				
-			return $this->render('OGAMBundle:Integration:data_error.html.twig', array(
-			    'error' => $this->get('translator')->trans("An unexpected error occurred.")
-			));
-		}
-		
-		return $response;
-	}
-
-	/**
 	 * Simulate a GET.
 	 *
 	 * Not private because can be used by custom controllers.

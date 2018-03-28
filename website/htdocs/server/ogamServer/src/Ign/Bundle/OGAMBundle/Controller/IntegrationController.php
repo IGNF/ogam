@@ -64,6 +64,35 @@ class IntegrationController extends Controller {
 	}
 
 	/**
+	 * Show the data submission report page.
+	 *
+	 * @Route("/show-data-submission-report-page", name="integration_report")
+	 */
+	public function showDataSubmissionReportPageAction(Request $request) {
+
+		// Get the request parameter
+		$submissionId = $request->query->getInt("submissionId");
+
+		$submission = $this->getEntityManger()
+			->getRepository('OGAMBundle:RawData\Submission')
+			->find($submissionId);
+
+		$errors = $this->getEntityManger()
+			->getRepository('OGAMBundle:RawData\CheckError')
+			->getOrderedCheckErrors($submissionId);
+
+		$checks = $this->getEntityManger()
+			->getRepository('OGAMBundle:Metadata\Checks')
+			->getSubmissionCheckCount($submissionId);
+
+		return $this->render('OGAMBundle:Integration:show_data_submission_report_page.html.twig', array(
+			'submission' => $submission,
+			'checks' => $checks,
+			'errors' => $errors
+		));
+	}
+
+	/**
 	 * Show the create data submission page.
 	 *
 	 * @Route("/create-data-submission", name="integration_creation")
@@ -292,10 +321,10 @@ class IntegrationController extends Controller {
 		// Send the cancel request to the integration server
 		try {
 			$this->get('ogam.integration_service')->cancelDataSubmission($submissionId);
-			
+
 		} catch (ServiceException $e){
 		    $this->get('logger')->error('Error during cancel: ' . $e);
-		    
+
 		    return $this->render('OGAMBundle:Integration:data_error.html.twig', array(
 		        'error' => $this->get('translator')->trans($e->getMessage())
 		    ));

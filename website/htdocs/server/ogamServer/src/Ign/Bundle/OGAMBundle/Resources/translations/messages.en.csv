@@ -186,6 +186,10 @@ Submissions;Submissions
 Add data;Add data
 Choose a table:;Choose a table:
 Data integration module;Data integration module
+Submission report;Submission report
+Submission details;Submission details
+Errors summary;Errors summary
+Errors details (limited to 100);Errors details (limited to 100)
 Submit Data;Submit Data
 Submission ID;Submission ID
 Date;Date
@@ -196,6 +200,14 @@ Status;Status
 File;File
 Lines;Lines
 Actions;Actions
+Check ID;Check ID
+Importance;Importance
+Number of occurrences;Number of occurrences
+Description;Description
+Data;Data
+Line;Line
+Found value;Found value
+Error message;Error message
 Create data submission;Create data submission
 Upload Data;Upload Data
 Check data;Check data
@@ -352,6 +364,7 @@ An unexpected error occurred.;An unexpected error occurred.
 Breadcrumb_Home;Home
 Breadcrumb_Integration;Data integration
 Breadcrumb_Integration_New;Create data submission
+Breadcrumb_Integration_Report;Submission report
 Breadcrumb_Visualization;Visualize data
 Breadcrumb_Harmonization;Harmonize data
 Breadcrumb_Edition;Data edition

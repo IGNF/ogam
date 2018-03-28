@@ -38,11 +38,6 @@ INSERT INTO application_parameters (name, value, description) VALUES ('defaultUs
 INSERT INTO application_parameters (name, value, description) VALUES ('fileMaxSize', '100', 'UPLOAD');
 INSERT INTO application_parameters (name, value, description) VALUES ('integrationService_url', 'http://localhost:8080/OGAMIntegrationService/', 'INTEGRATION SERVICE');
 INSERT INTO application_parameters (name, value, description) VALUES ('harmonizationService_url', 'http://localhost:8080/OGAMHarmonizationService/', 'HARMONIZATION SERVICE');
-INSERT INTO application_parameters (name, value, description) VALUES ('reportGenerationService_url', 'http://localhost:8080/OGAMRG/', 'REPORT GENERATION SERVICE');
-INSERT INTO application_parameters (name, value, description) VALUES ('errorReport', 'ErrorReport.rptdesign', 'REPORT GENERATION SERVICE');
-INSERT INTO application_parameters (name, value, description) VALUES ('plotErrorReport', 'PlotErrorReport.rptdesign', 'REPORT GENERATION SERVICE');
-INSERT INTO application_parameters (name, value, description) VALUES ('simplifiedReport', 'SimplifiedReport.rptdesign', 'REPORT GENERATION SERVICE');
-INSERT INTO application_parameters (name, value, description) VALUES ('max_report_generation_time', '480', 'REPORT GENERATION SERVICE');
 INSERT INTO application_parameters (name, value, description) VALUES ('useCache', 'false', 'Cache');
 INSERT INTO application_parameters (name, value, description) VALUES ('max_execution_time', '480', 'Timeout , 0 : no limit');
 INSERT INTO application_parameters (name, value, description) VALUES ('memory_limit', '1024M', 'memory limit');
@@ -105,8 +100,8 @@ INSERT INTO role(role_code, role_label, role_definition) VALUES ('ADMIN','Admini
 INSERT INTO role(role_code, role_label, role_definition) VALUES ('VISITOR','Visitor', 'Visites the website');
 
 -- Create some users
-INSERT INTO users(user_login, user_password, user_name, provider_id, email) VALUES ('admin', 'd033e22ae348aeb5660fc2140aec35850c4da997', 'admin user', '1', null); 
-INSERT INTO users(user_login, user_password, user_name, provider_id, email) VALUES ('visitor', '4ed0428505b0b89fe7bc1a01928ef1bd4c77c1be', 'Visitor', '2', null); 
+INSERT INTO users(user_login, user_password, user_name, provider_id, email) VALUES ('admin', 'd033e22ae348aeb5660fc2140aec35850c4da997', 'admin user', '1', null);
+INSERT INTO users(user_login, user_password, user_name, provider_id, email) VALUES ('visitor', '4ed0428505b0b89fe7bc1a01928ef1bd4c77c1be', 'Visitor', '2', null);
 
 -- Link the users to their roles
 INSERT INTO role_to_user(user_login, role_code) VALUES ('admin', 'ADMIN');
