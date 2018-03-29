@@ -10,7 +10,7 @@ use Symfony\Component\Debug\Debug;
 
 // This check prevents access to debug front controllers that are deployed by accident to production servers.
 // Feel free to remove this, extend it, or make something more sophisticated.
-if (!(in_array(@$_SERVER['SERVER_ADDR'], ['127.0.0.1', '192.168.50.4', 'fe80::1', '::1']))) {
+if (!(in_array(@$_SERVER['SERVER_ADDR'], ['127.0.0.1', '@ogam::host_ip_address@', 'fe80::1', '::1']))) {
     header('HTTP/1.0 403 Forbidden');
     exit('You are not allowed to access this file. Check '.basename(__FILE__).' for more information.');
 }
