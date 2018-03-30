@@ -34,3 +34,5 @@ vendor
 /website/htdocs/server/ogamServer/bin/doctrine.php
 /website/htdocs/server/ogamServer/bin/phpunit
 /website/htdocs/server/ogamServer/bin/security-checker
+/website/htdocs/server/ogamServer/web/config.php
+/website/htdocs/server/ogamServer/app/SymfonyRequirements.php
