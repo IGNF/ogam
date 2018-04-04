@@ -113,4 +113,3 @@ gradlew text
 *.cgi binary
 *.rptconfig binary
 *.rptdesign binary
-service_generation_rapport/build/libs/birt.war filter=lfs diff=lfs merge=lfs -text
