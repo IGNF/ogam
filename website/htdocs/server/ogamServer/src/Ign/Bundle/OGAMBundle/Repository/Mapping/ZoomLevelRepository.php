@@ -1,8 +1,6 @@
 <?php
 namespace Ign\Bundle\OGAMBundle\Repository\Mapping;
 
-use Doctrine\DBAL\Connection;
-
 /**
  * ZoomLevelRepository
  *

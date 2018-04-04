@@ -2,6 +2,7 @@
 namespace Ign\Bundle\OGAMBundle\Services;
 
 use Zend\Http\Client;
+use Ign\Bundle\OGAMBundle\Exception\ServiceException;
 
 /**
  * This is a model allowing to access the harmonization service via HTTP calls.
@@ -62,7 +63,7 @@ class Harmonization extends AbstractService {
 		// Check the result status
 		if (!$response->isSuccess()) {
 			$this->logger->debug("Error while harmonizing data : " . $response->getReasonPhrase());
-			throw new \Exception("Error while harmonizing data : " . $response->getReasonPhrase());
+			throw new ServiceException("Error while harmonizing data : " . $response->getReasonPhrase());
 		}
 		
 		// Extract the response body
@@ -73,7 +74,7 @@ class Harmonization extends AbstractService {
 		if (strpos($body, "<Status>OK</Status>") === FALSE) {
 			// Parse an error message
 			$error = $this->parseErrorMessage($body);
-			throw new \Exception("Error while harmonizing data : " . $error->errorMessage);
+			throw new ServiceException("Error while harmonizing data : " . $error->errorMessage);
 		} else {
 			return true;
 		}
@@ -113,7 +114,7 @@ class Harmonization extends AbstractService {
 		// Check the result status
 		if (!$response->isSuccess()) {
 			$this->logger->debug("Error while getting the status : " . $response->getReasonPhrase());
-			throw new \Exception("Error while getting the status : " . $response->getReasonPhrase());
+			throw new ServiceException("Error while getting the status : " . $response->getReasonPhrase());
 		}
 		
 		// Extract the response body
@@ -124,7 +125,7 @@ class Harmonization extends AbstractService {
 		if (strpos($body, "<Status>OK</Status>") === FALSE) {
 			// Parse an error message
 			$error = $this->parseErrorMessage($body);
-			throw new \Exception("Error while getting the status : " . $error->errorMessage);
+			throw new ServiceException("Error while getting the status : " . $error->errorMessage);
 		} else {
 			return $this->parseStatusResponse($body);
 		}

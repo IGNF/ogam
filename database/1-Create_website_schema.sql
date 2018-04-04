@@ -29,6 +29,7 @@ USER_PASSWORD        VARCHAR(50)          null,
 USER_NAME            VARCHAR(50)          null,
 PROVIDER_ID          VARCHAR(36)          null,
 EMAIL                VARCHAR(250)         null,
+ACTIVATION_CODE		 VARCHAR(50)          null,
 constraint PK_USERS primary key (USER_LOGIN)
 );
 
@@ -38,6 +39,7 @@ COMMENT ON COLUMN USERS.USER_PASSWORD IS 'The password of the user';
 COMMENT ON COLUMN USERS.USER_NAME IS 'The user name';
 COMMENT ON COLUMN USERS.PROVIDER_ID IS 'The identifier of the provider (used to group users and manage dataset accessibility)';
 COMMENT ON COLUMN USERS.EMAIL IS 'The user email address';
+COMMENT ON COLUMN USERS.ACTIVATION_CODE IS 'The activation code for password reset';
 
 /*==============================================================*/
 /* Table : ROLE                                                 */
@@ -154,30 +156,6 @@ ON UPDATE NO ACTION ON DELETE NO ACTION;
 
 
 /*==============================================================*/
-/* Table: layer_profile_restriction                             */
-/* Mark some layers as forbidden for some user profiles         */
-/*==============================================================*/
-CREATE TABLE layer_role_restriction
-(
-  layer_name 			VARCHAR(50)    NOT NULL,   -- Logical name of the layer
-  role_code				VARCHAR(36)    NOT NULL,   -- Role for whom this layer is forbidden
-  PRIMARY KEY  (layer_name, role_code)
-) WITHOUT OIDS;
-
-COMMENT ON COLUMN layer_role_restriction.layer_name IS 'Logical name of the layer';
-COMMENT ON COLUMN layer_role_restriction.role_code IS 'Role for whom this layer is forbidden';
-
-ALTER TABLE layer_role_restriction 
-ADD CONSTRAINT fk_layer_role_restriction_layer_name 
-FOREIGN KEY (layer_name) REFERENCES mapping.layer(name)
-ON UPDATE NO ACTION ON DELETE NO ACTION;
-
-ALTER TABLE layer_role_restriction 
-ADD CONSTRAINT fk_layer_role_restriction_role_code 
-FOREIGN KEY (role_code) REFERENCES website."role" (role_code)
-ON UPDATE NO ACTION ON DELETE NO ACTION;
-
-/*==============================================================*/
 /* Table : PROVIDERS                                            */
 /*==============================================================*/
 CREATE SEQUENCE provider_id_seq;
@@ -191,115 +169,112 @@ CONSTRAINT pk_provider PRIMARY KEY (id)
 /*==============================================================*/
 /* Table : PREDEFINED_REQUEST                                   */
 /*==============================================================*/
-create table PREDEFINED_REQUEST (
-NAME             VARCHAR(50)          not null,
-SCHEMA_CODE          	 VARCHAR(36)          not null,
-DATASET_ID               VARCHAR(36)          not null,
-DEFINITION				 VARCHAR(500)         null,
-LABEL 					 VARCHAR(50)	      null,
-DATE 					 date      			  DEFAULT now(),
-constraint PK_PREDEFINED_REQUEST primary key (NAME)
+CREATE TABLE website.predefined_request
+(
+  request_id serial NOT NULL, -- The request identifier
+  dataset_id character varying(36) NOT NULL, -- The dataset used by this request
+  schema_code character varying(36) NOT NULL, -- The schema used by this request
+  user_login character varying(50), -- The user login of the creator of the request
+  definition character varying(500), -- The description of the request
+  label character varying(50) NOT NULL, -- The label of the request
+  date date DEFAULT now(), -- Date of creation of the request
+  is_public boolean NOT NULL DEFAULT false, -- True if the request is public
+  CONSTRAINT pk_predefined_request PRIMARY KEY (request_id),
+  CONSTRAINT fk_predefined_request_dataset FOREIGN KEY (dataset_id)
+      REFERENCES metadata.dataset (dataset_id) MATCH SIMPLE
+      ON UPDATE RESTRICT ON DELETE RESTRICT,
+  CONSTRAINT fk_predefined_request_users FOREIGN KEY (user_login)
+      REFERENCES website.users (user_login) MATCH SIMPLE
+      ON UPDATE RESTRICT ON DELETE RESTRICT,
+  CONSTRAINT uk_predefined_request UNIQUE (label, user_login, dataset_id, is_public)
 );
 
+COMMENT ON COLUMN website.predefined_request.request_id IS 'The request identifier';
+COMMENT ON COLUMN website.predefined_request.dataset_id IS 'The dataset used by this request';
+COMMENT ON COLUMN website.predefined_request.schema_code IS 'The schema used by this request';
+COMMENT ON COLUMN website.predefined_request.user_login IS 'The user login of the creator of the request';
+COMMENT ON COLUMN website.predefined_request.definition IS 'The description of the request';
+COMMENT ON COLUMN website.predefined_request.label IS 'The label of the request';
+COMMENT ON COLUMN website.predefined_request.date IS 'Date of creation of the request';
+COMMENT ON COLUMN website.predefined_request.is_public IS 'True if the request is public';
 
-
-alter table PREDEFINED_REQUEST
-add constraint FK_PREDEFINED_REQUEST_DATASET foreign key (DATASET_ID)
-      references metadata.DATASET (DATASET_ID)
-      on delete restrict on update restrict;
-      
-COMMENT ON COLUMN PREDEFINED_REQUEST.NAME IS 'The request name';
-COMMENT ON COLUMN PREDEFINED_REQUEST.SCHEMA_CODE IS 'The schema used by this request';
-COMMENT ON COLUMN PREDEFINED_REQUEST.DATASET_ID IS 'The dataset used by this request';
-COMMENT ON COLUMN PREDEFINED_REQUEST.DEFINITION IS 'The description of the request';
-COMMENT ON COLUMN PREDEFINED_REQUEST.LABEL IS 'The label of the request';
-COMMENT ON COLUMN PREDEFINED_REQUEST.DATE IS 'Date of creation of the request';
-
-
+CREATE UNIQUE INDEX uk_predefined_request_2 ON website.predefined_request (label, dataset_id) WHERE is_public;
 
 /*==============================================================*/
 /* Table : PREDEFINED_REQUEST_CRITERION                          */
 /*==============================================================*/
-create table PREDEFINED_REQUEST_CRITERION (
-REQUEST_NAME           VARCHAR(50)          NOT NULL,
-FORMAT         		   VARCHAR(36)          NOT NULL,
-DATA                   VARCHAR(36)          NOT NULL,
-VALUE        		   VARCHAR(500)         NOT NULL,
-FIXED 				   boolean              NOT NULL DEFAULT false,
-constraint PK_PREDEFINED_REQUEST_CRITERION primary key (REQUEST_NAME, FORMAT, DATA)
+CREATE TABLE website.predefined_request_criterion
+(
+  request_id integer NOT NULL, -- The request identifier
+  format character varying(36) NOT NULL, -- The form format of the criterion
+  data character varying(36) NOT NULL, -- The form field of the criterion
+  value text NOT NULL, -- The field value (multiple values are separated by a semicolon)
+  CONSTRAINT pk_predefined_request_criterion PRIMARY KEY (request_id, format, data),
+  CONSTRAINT fk_predefined_request_criterion_request_name FOREIGN KEY (request_id)
+      REFERENCES website.predefined_request (request_id) MATCH SIMPLE
+      ON UPDATE RESTRICT ON DELETE RESTRICT
 );
 
-COMMENT ON COLUMN PREDEFINED_REQUEST_CRITERION.REQUEST_NAME IS 'The request name';
-COMMENT ON COLUMN PREDEFINED_REQUEST_CRITERION.FORMAT IS 'The form format of the criterion';
-COMMENT ON COLUMN PREDEFINED_REQUEST_CRITERION.DATA IS 'The form field of the criterion';
-COMMENT ON COLUMN PREDEFINED_REQUEST_CRITERION.VALUE IS 'The field value (multiple values are separated by a semicolon)';
-COMMENT ON COLUMN PREDEFINED_REQUEST_CRITERION.FIXED IS 'Indicate if the criterion is fixed or selectable';
-
-ALTER TABLE ONLY predefined_request_criterion
-    ADD CONSTRAINT fk_predefined_request_criterion_request_name 
-    FOREIGN KEY (request_name) 
-    REFERENCES predefined_request(name) ON UPDATE RESTRICT ON DELETE RESTRICT;
+COMMENT ON COLUMN website.predefined_request_criterion.request_id IS 'The request identifier';
+COMMENT ON COLUMN website.predefined_request_criterion.format IS 'The form format of the criterion';
+COMMENT ON COLUMN website.predefined_request_criterion.data IS 'The form field of the criterion';
+COMMENT ON COLUMN website.predefined_request_criterion.value IS 'The field value (multiple values are separated by a semicolon)';
 
 /*==============================================================*/
 /* Table : PREDEFINED_REQUEST_COLUMN                  */
 /*==============================================================*/
-create table PREDEFINED_REQUEST_COLUMN (
-REQUEST_NAME           VARCHAR(50)          not null,
-FORMAT         		   VARCHAR(36)          not null,
-DATA                   VARCHAR(36)          not null,
-constraint PK_PREDEFINED_REQUEST_COLUMN primary key (REQUEST_NAME, FORMAT, DATA)
+CREATE TABLE website.predefined_request_column
+(
+  request_id integer NOT NULL, -- The request identifier
+  format character varying(36) NOT NULL, -- The form format of the column
+  data character varying(36) NOT NULL, -- The form field of the column
+  CONSTRAINT pk_predefined_request_column PRIMARY KEY (request_id, format, data),
+  CONSTRAINT fk_predefined_request_column_request_name FOREIGN KEY (request_id)
+      REFERENCES website.predefined_request (request_id) MATCH SIMPLE
+      ON UPDATE RESTRICT ON DELETE RESTRICT
 );
 
-COMMENT ON COLUMN PREDEFINED_REQUEST_COLUMN.REQUEST_NAME IS 'The request name';
-COMMENT ON COLUMN PREDEFINED_REQUEST_COLUMN.FORMAT IS 'The form format of the column';
-COMMENT ON COLUMN PREDEFINED_REQUEST_COLUMN.DATA IS 'The form field of the column';
-
-ALTER TABLE ONLY predefined_request_column
-    ADD CONSTRAINT fk_predefined_request_column_request_name 
-    FOREIGN KEY (request_name) 
-    REFERENCES predefined_request(name) ON UPDATE RESTRICT ON DELETE RESTRICT;
+COMMENT ON COLUMN website.predefined_request_column.request_id IS 'The request identifier';
+COMMENT ON COLUMN website.predefined_request_column.format IS 'The form format of the column';
+COMMENT ON COLUMN website.predefined_request_column.data IS 'The form field of the column';
 
 
 /*==============================================================*/
 /* Table : PREDEFINED_REQUEST_GROUP                             */
 /*==============================================================*/
-CREATE TABLE PREDEFINED_REQUEST_GROUP (
-NAME 		VARCHAR(50) 	NOT NULL,
-LABEL			VARCHAR(50),
-DEFINITION  	VARCHAR(250),
-POSITION		smallint,
-constraint PK_PREDEFINED_REQUEST_GROUP primary key (NAME)
+CREATE TABLE website.predefined_request_group
+(
+  group_id serial NOT NULL, -- The group identifier
+  label character varying(50) NOT NULL, -- The label of the group
+  definition character varying(250), -- The definition of the group
+  "position" smallint, -- The position of the group
+  CONSTRAINT pk_predefined_request_group PRIMARY KEY (group_id)
 );
 
-COMMENT ON COLUMN PREDEFINED_REQUEST_GROUP.NAME IS 'The name of the group';
-COMMENT ON COLUMN PREDEFINED_REQUEST_GROUP.LABEL IS 'The label of the group';
-COMMENT ON COLUMN PREDEFINED_REQUEST_GROUP.DEFINITION IS 'The definition of the group';
-COMMENT ON COLUMN PREDEFINED_REQUEST_GROUP.POSITION IS 'The position of the group';
-
+COMMENT ON COLUMN website.predefined_request_group.group_id IS 'The group identifier';
+COMMENT ON COLUMN website.predefined_request_group.label IS 'The label of the group';
+COMMENT ON COLUMN website.predefined_request_group.definition IS 'The definition of the group';
+COMMENT ON COLUMN website.predefined_request_group."position" IS 'The position of the group';
 
 
 /*==============================================================*/
 /* Table : PREDEFINED_REQUEST_GROUP_ASSO                        */
 /*==============================================================*/
-CREATE TABLE PREDEFINED_REQUEST_GROUP_ASSO (
-GROUP_NAME 		VARCHAR(50) 	NOT NULL,
-REQUEST_NAME 	VARCHAR(50),
-POSITION		smallint,
-constraint PK_PREDEFINED_REQUEST_GROUP_ASSO primary key (GROUP_NAME, REQUEST_NAME)
+CREATE TABLE website.predefined_request_group_asso
+(
+  group_id integer NOT NULL, -- The group identifier
+  request_id integer NOT NULL, -- The request identifier
+  "position" smallint, -- The position of the request inside the group
+  CONSTRAINT pk_predefined_request_group_asso PRIMARY KEY (group_id, request_id),
+  CONSTRAINT fk_predefined_request_group_name FOREIGN KEY (group_id)
+      REFERENCES website.predefined_request_group (group_id) MATCH SIMPLE
+      ON UPDATE RESTRICT ON DELETE RESTRICT,
+  CONSTRAINT fk_predefined_request_request_name FOREIGN KEY (request_id)
+      REFERENCES website.predefined_request (request_id) MATCH SIMPLE
+      ON UPDATE RESTRICT ON DELETE RESTRICT
 );
 
-COMMENT ON COLUMN PREDEFINED_REQUEST_GROUP_ASSO.GROUP_NAME IS 'The name of the group';
-COMMENT ON COLUMN PREDEFINED_REQUEST_GROUP_ASSO.REQUEST_NAME IS 'The label of the predefined request';
-COMMENT ON COLUMN PREDEFINED_REQUEST_GROUP_ASSO.POSITION IS 'The position of the request inside the group';
-
-       
-ALTER TABLE ONLY predefined_request_group_asso
-    ADD CONSTRAINT fk_predefined_request_group_name 
-    FOREIGN KEY (group_name) 
-    REFERENCES predefined_request_group(name) ON UPDATE RESTRICT ON DELETE RESTRICT;
-    
-ALTER TABLE ONLY predefined_request_group_asso
-    ADD CONSTRAINT fk_predefined_request_request_name 
-    FOREIGN KEY (request_name) 
-    REFERENCES predefined_request(name) ON UPDATE RESTRICT ON DELETE RESTRICT;
+COMMENT ON COLUMN website.predefined_request_group_asso.group_id IS 'The group identifier';
+COMMENT ON COLUMN website.predefined_request_group_asso.request_id IS 'The request identifier';
+COMMENT ON COLUMN website.predefined_request_group_asso."position" IS 'The position of the request inside the group';
     

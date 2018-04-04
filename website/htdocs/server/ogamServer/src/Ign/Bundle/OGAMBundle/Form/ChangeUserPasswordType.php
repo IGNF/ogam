@@ -9,6 +9,12 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Ign\Bundle\OGAMBundle\Entity\Website\User;
 
+/**
+ * Form used to change a password.
+ *
+ * This form is used by a non-connected user to change is own password when he forgot it.
+ *
+ */
 class ChangeUserPasswordType extends AbstractType {
 
 	/**

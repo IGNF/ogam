@@ -24,10 +24,10 @@ Ext.define('OgamDesktop.ux.form.field.NumberRangeField', {
     alias: 'widget.numberrangefield',
     requires:['OgamDesktop.ux.picker.NumberRange'],
 
-	/*
-	 * Internationalization.
-	 */
-    //<locale>  
+    /*
+     * Internationalization.
+     */
+    //<locale>
     numberSeparator: ' - ',
     decimalSeparator : ".",
     maxNumberPrefix: '<= ',
@@ -37,7 +37,7 @@ Ext.define('OgamDesktop.ux.form.field.NumberRangeField', {
     reverseText : "The max number must be superior to the min number",
     formatText : "The correct formats are",
     nanText : "'{0}' is not a valid number",
-    //</locale>   
+    //</locale>
     
     /**
      * @cfg {Boolean} usePrefix if true, maxNumberPrefix and minNumberPrefix are used (defaults to true).
@@ -50,7 +50,7 @@ Ext.define('OgamDesktop.ux.form.field.NumberRangeField', {
      */
     allowDecimals : true,
     
-    //<locale>   
+    //<locale>
     /**
      * @cfg {Number} decimalPrecision The maximum precision to display after the decimal separator (defaults to 2)
      */
@@ -119,7 +119,7 @@ Ext.define('OgamDesktop.ux.form.field.NumberRangeField', {
         var format = 0;
         if (this.decimalPrecision > 0) {
             format = format+ this.decimalSeparator;
-            format += "0".repeat(this.decimalPrecision);
+            format += Ext.String.repeat("0", this.decimalPrecision);
         }
         this.formatText = this.formatText + " '{0}', '"+this.maxNumberPrefix+" {0}', '"+this.minNumberPrefix+" {0}', '{0} "+this.numberSeparator+" {0}'.";
         this.formatText = Ext.String.format(this.formatText, format);
@@ -131,8 +131,8 @@ Ext.define('OgamDesktop.ux.form.field.NumberRangeField', {
      * @return {Boolean} True if the number is valide
      */
     validateValue : function(value){// OGAM-595 - TODO : override getErrors, recommended since 3.2
-    	var format =Ext.String.format;
-    	
+        var format =Ext.String.format;
+
         if (!this.callParent(arguments)){ //super! not parent, in override case
             return false;
         }
@@ -204,7 +204,7 @@ Ext.define('OgamDesktop.ux.form.field.NumberRangeField', {
      */
     setValue : function(v){
         v = this.formatNumberValue(v);
-        return  this.callParent([v]);;
+        return  this.callParent([v]);
     },
     
     /**

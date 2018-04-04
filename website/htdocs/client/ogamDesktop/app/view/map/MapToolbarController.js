@@ -373,7 +373,7 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
         if (layer.tileSize) {
             tileSizeArray = [layer.tileSize.h, layer.tileSize.w];
             layerStr += ', "tileSize": [' + tileSizeArray.toString() + ']';
-        };
+        }
         layerStr += '}';
         return layerStr;
     },
@@ -384,7 +384,7 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
             if (lyr.isLayerGroup) {
                 for (var i in this.retrieveLayersToPrint(lyr)) {
                     layersToPrint.push(this.retrieveLayersToPrint(lyr)[i]);
-                };
+                }
             } else {
                 
                 if (lyr.getVisible() && lyr.get('printable')) {
@@ -583,7 +583,7 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
             
             // Updates the comment div with the text area content
             var textareaValue = Ext.get('o-map-print-comment-textarea').dom.value;
-            Ext.get('o-map-print-comment-div').dom.innerHTML = (textareaValue !== '') ? textareaValue:'Aucun commentaire.';            
+            Ext.get('o-map-print-comment-div').dom.innerText = (textareaValue !== '') ? textareaValue:'Aucun commentaire.';
 
             // Updates the map and scale line screenshot
             // Note: The default navigator screenshot doesn't work well in landscape mode

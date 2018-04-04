@@ -13,19 +13,19 @@ class PredefinedRequestGroupAsso {
 
 	/**
 	 *
-	 * @var string @ORM\Id
+	 * @var integer @ORM\Id
 	 *      @ORM\ManyToOne(targetEntity="PredefinedRequestGroup", inversedBy="requests")
-	 *      @ORM\JoinColumn(name="group_name", referencedColumnName="name")
+	 *      @ORM\JoinColumn(name="group_id", referencedColumnName="group_id")
 	 */
-	private $groupName;
+	private $groupId;
 
 	/**
 	 *
-	 * @var string @ORM\Id
+	 * @var integer @ORM\Id
 	 *      @ORM\ManyToOne(targetEntity="PredefinedRequest", inversedBy="groups")
-	 *      @ORM\JoinColumn(name="request_name", referencedColumnName="name")
+	 *      @ORM\JoinColumn(name="request_id", referencedColumnName="request_id")
 	 */
-	private $requestName;
+	private $requestId;
 
 	/**
 	 *
@@ -34,47 +34,47 @@ class PredefinedRequestGroupAsso {
 	private $position;
 
 	/**
-	 * Set groupName
+	 * Set groupId
 	 *
-	 * @param string $groupName
+	 * @param integer $groupId
 	 *
 	 * @return PredefinedRequestGroupAsso
 	 */
-	public function setGroupName($groupName) {
-		$this->groupName = $groupName;
+	public function setGroupId($groupId) {
+		$this->groupId = $groupId;
 
 		return $this;
 	}
 
 	/**
-	 * Get groupName
+	 * Get groupId
 	 *
-	 * @return string
+	 * @return integer
 	 */
-	public function getGroupName() {
-		return $this->groupName;
+	public function getGroupId() {
+		return $this->groupId;
 	}
 
 	/**
-	 * Set requestName
+	 * Set requestId
 	 *
-	 * @param string $requestName
+	 * @param integer $requestId
 	 *
 	 * @return PredefinedRequestGroupAsso
 	 */
-	public function setRequestName($requestName) {
-		$this->requestName = $requestName;
+	public function setRequestId($requestId) {
+		$this->requestId = $requestId;
 
 		return $this;
 	}
 
 	/**
-	 * Get requestName
+	 * Get requestId
 	 *
-	 * @return string
+	 * @return integer
 	 */
-	public function getRequestName() {
-		return $this->requestName;
+	public function getRequestId() {
+		return $this->requestId;
 	}
 
 	/**

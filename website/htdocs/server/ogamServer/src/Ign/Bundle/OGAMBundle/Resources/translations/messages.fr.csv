@@ -144,6 +144,7 @@ Translate this site en;Traduire ce site en anglais
 ##########################
 #	Error				 #
 ##########################
+Please login;Veuillez vous authentifier
 An error occurred;Une erreur est survenue
 Page not found;Ressource introuvable
 Database Error;Accès refusé sur la base de données
@@ -176,6 +177,10 @@ User Module;Module utilisateur
 Authentication;Authentification
 Username;Identifiant
 Password;Mot de passe
+Password_forgotten;Mot de passe oublié ?
+Password_change_request;Demande de modification de mot de passe
+Password_change_request_msg;Vous avez demandé à réinitialiser le mot de passe associé à l'adresse email: <b>%email%</b>.<br/>Si cette adresse est bien associée à un compte utilisateur, vous allez recevoir un courriel vous indiquant la marche à suivre. Merci de vérifier votre boite de réception. Vous devrez accéder à la page indiquée dans le courriel, afin de saisir votre nouveau mot de passe.<br/><b>Note:</b> Le courriel est envoyé de façon automatique, pensez à vérifier votre courrier indésirable si vous ne le recevez pas rapidement.
+
 
 ﻿##########################
 #  Data integration      #
@@ -184,6 +189,10 @@ Submissions;Soumissions
 Add data;Ajout d'observations
 Choose a table:;Choisissez une table :
 Data integration module;Module d'intégration de données
+Submission report;Rapport de soumission
+Submission details;Détails de la soumission
+Errors summary;Résumé des erreurs
+Errors details (limited to 100);Détails des erreurs (limité à 100)
 Submit Data;Soumettre des données
 Submission ID;Id de soumission
 Date;Date
@@ -195,6 +204,14 @@ Status;Statut
 File;Fichier
 Lines;Lignes
 Actions;Actions
+Check ID; Id de contrôle
+Importance;Importance
+Number of occurrences;Nombre d'occurrences
+Description;Description
+Data;Données
+Line;Ligne
+Found value;Valeur trouvée
+Error message;Message d'erreur
 Create data submission;Nouvelle soumission
 Upload Data;Chargement des données
 Check data;Vérifier les données
@@ -205,11 +222,12 @@ Confirm submission;Confirmer la soumission
 Confirm_submission_warning;Une fois validées, les données seront disponibles pour la suite des traitements. Voulez-vous confirmer ?
 Submit;Valider
 Error;Erreur
-The expected fields are:;Les champs attendus sont: 
+The expected fields are:;Les champs attendus sont:
 Are you sure?;Etes-vous sûr ?
 No submission found;Aucune soumission trouvée.
 Download a file model for;Télécharger un modèle de fichier pour
 File format description;Description des formats de fichiers
+Error while cancelling the data submission : Integrity constraints not respected, please check that the linked data exist (when inserting) or not (when deleting) .;Erreur lors de la suppression des données: Contraintes d'intégrité non respectées, veuillez vérifier que les données associées sont chargées (lors d'une insertion) ou supprimées (lors d'une suppression).
 
 ﻿##########################
 #  Data Copy             #
@@ -300,11 +318,10 @@ Password does not match confirmation;Le mot de passe ne correspond pas
 Old password is not correct;L'ancien mot de passe n'est pas correct
 Role Code;Code du rôle
 Role Label;Libellé du rôle
-Role Definition;Définition du rôle 
+Role Definition;Définition du rôle
 Permissions;Permissions
 Schemas Permissions;Permissions sur les schémas de base de données
-Dataset Restrictions;Restrictions sur les datasets 
-Layer Restrictions;Restrictions sur les couches carto
+Datasets Restrictions;Restrictions sur les datasets
 
 # User Rights
 Manage users;Administrer les utilisateurs
@@ -327,6 +344,7 @@ Raw Data;Données brutes
 #  Data Edition          #
 ##########################
 No %value% found.;Aucun(e) %value% trouvé(e).
+Form not submitted;Formulaire non soumis
 Invalid form;Invalid form
 Data saved;Données sauvegardées - Rechargement
 Item cannot be deleted because it has children;La donnée ne peut pas être effacée car d'autres données sont liées
@@ -340,6 +358,9 @@ Error inserting data duplicate key;Erreur lors de l'insertion - la donnée exist
 ##########################
 Data Export;Export des données
 Request Criterias;Critères de requête
+Invalid request.;Requête invalide.
+That request's label already exists. Please indicate another one.;Ce libellé de requête est déjà utilisé. Veuillez en choisir un autre.
+An unexpected error occurred.;Une erreur inattendue est apparue.
 
 ################################
 #  Fil d'ariane (Breadcrumb)   #
@@ -347,6 +368,7 @@ Request Criterias;Critères de requête
 Breadcrumb_Home;Accueil
 Breadcrumb_Integration;Intégrer des données
 Breadcrumb_Integration_New;Nouvelle soumission
+Breadcrumb_Integration_Report;Rapport de soumission
 Breadcrumb_Visualization;Visualiser les données
 Breadcrumb_Harmonization;Harmoniser les données
 Breadcrumb_Edition;Editer les données

@@ -7,10 +7,7 @@ use Ign\Bundle\OGAMBundle\Entity\Metadata\Mode;
 use Ign\Bundle\OGAMBundle\Entity\Metadata\Dynamode;
 use Ign\Bundle\OGAMBundle\Entity\Metadata\ModeTree;
 use Ign\Bundle\OGAMBundle\Entity\Metadata\ModeTaxref;
-use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Selectable;
-use phpDocumentor\Reflection\Types\Mixed;
 use Doctrine\Common\Collections\Collection;
 
 /**
@@ -34,7 +31,7 @@ class UnitRepository extends \Doctrine\ORM\EntityRepository {
 	 *        	The locale
 	 *        	return Mode[] The unit mode(s)
 	 */
-	public function getModes(Unit $unit, $locale) {
+    public function getModes(Unit $unit, $locale = "EN") {
 		/*
 		 * Must handle these cases :
 		 * CODE MODE
@@ -73,7 +70,10 @@ class UnitRepository extends \Doctrine\ORM\EntityRepository {
 	 *        	The locale
 	 * @return Mode[] The filtered mode(s)
 	 */
-	public function getModesFilteredByCode(Unit $unit, $code, $locale) {
+	public function getModesFilteredByCode(Unit $unit, $code, $locale = "EN") {
+	    if ($code === null || $code === "") {
+	        throw new \InvalidArgumentException('Invalid arguments.');
+	    }
 		/*
 		 * Must handle these cases :
 		 * CODE MODE
@@ -112,7 +112,10 @@ class UnitRepository extends \Doctrine\ORM\EntityRepository {
 	 *        	The locale
 	 * @return Mode[] The filtered mode(s)
 	 */
-	public function getModesFilteredByLabel(Unit $unit, $query, $locale) {
+	public function getModesFilteredByLabel(Unit $unit, $query, $locale = "EN") {
+	    if ($query === null ) {
+	        throw new \InvalidArgumentException('Invalid arguments.');
+	    }
 		/*
 		 * Must handle these cases :
 		 * CODE MODE
@@ -151,7 +154,10 @@ class UnitRepository extends \Doctrine\ORM\EntityRepository {
 	 *        	The locale
 	 * @return array The filtered modes labels
 	 */
-	public function getModesLabelsFilteredByCode(Unit $unit, $code, $locale) {
+	public function getModesLabelsFilteredByCode(Unit $unit, $code, $locale = "EN") {
+	    if ($code === null || $code === "") {
+	        throw new \InvalidArgumentException('Invalid arguments.');
+	    }
 		$res = $this->getModesFilteredByCode($unit, $code, $locale);
 		if ($res === null) {
 			return null;

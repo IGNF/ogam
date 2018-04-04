@@ -27,7 +27,7 @@ class ModeRepository extends \Doctrine\ORM\EntityRepository {
 	 *        	The locale
 	 *        	return Mode[] The unit mode(s)
 	 */
-	public function getModes(Unit $unit, $locale) {
+    public function getModes(Unit $unit, $locale = "EN") {
 		$rsm = new ResultSetMappingBuilder($this->_em);
 		$rsm->addRootEntityFromClassMetadata($this->_entityName, 'm');
 		$params = [
@@ -60,8 +60,11 @@ class ModeRepository extends \Doctrine\ORM\EntityRepository {
 	 * @return [Mode] The filtered mode(s)
 	 *        
 	 */
-	public function getModesFilteredByCode(Unit $unit, $code, $locale) {
-		$qb = $this->createQueryBuilder('m');
+	public function getModesFilteredByCode(Unit $unit, $code, $locale = "EN") {
+	    if($code === null || $code === "") {
+	        throw new \InvalidArgumentException('Invalid arguments.');
+	    }
+	    $qb = $this->createQueryBuilder('m');
 		$qb->select('m', 't.label as label')
 			->leftJoin('OGAMBundle:Metadata\Translation', 't', Join::WITH, 't.lang = :lang  AND t.tableFormat = \'METADATA_MODE\' AND t.rowPk = CONCAT(CONCAT(m.unit , \',\'), m.code)')
 			->where('m.unit = :unit and m.code IN (:code)')
@@ -95,8 +98,11 @@ class ModeRepository extends \Doctrine\ORM\EntityRepository {
 	 *        	The locale
 	 * @return [Mode] The filtered mode(s)
 	 */
-	public function getModesFilteredByLabel(Unit $unit, $query, $locale) {
-		$rsm = new ResultSetMappingBuilder($this->_em);
+	public function getModesFilteredByLabel(Unit $unit, $query, $locale = "EN") {
+	    if ($query === null) {
+	        throw new \InvalidArgumentException('Invalid arguments.');
+	    }
+	    $rsm = new ResultSetMappingBuilder($this->_em);
 		$rsm->addRootEntityFromClassMetadata($this->_entityName, 'mt');
 		
 		$sql = "SELECT unit, code, COALESCE(t.label, m.label) as label, position, COALESCE(t.definition, m.definition) ";

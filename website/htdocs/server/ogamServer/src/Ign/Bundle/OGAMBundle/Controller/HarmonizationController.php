@@ -92,7 +92,7 @@ class HarmonizationController extends Controller {
 			));
 
 			return $this->render('OGAMBundle:Harmonization:show_harmonization_process_error.html.twig', array(
-				'errorMessage' => $e->getMessage()
+			    'errorMessage' => $this->get('translator')->trans("An unexpected error occurred.")
 			));
 		}
 
@@ -122,7 +122,7 @@ class HarmonizationController extends Controller {
 			));
 
 			return $this->render('OGAMBundle:Harmonization:show_harmonization_process_error.html.twig', array(
-				'errorMessage' => $e->getMessage()
+			    'errorMessage' => $this->get('translator')->trans("An unexpected error occurred.")
 			));
 		}
 
@@ -171,7 +171,7 @@ class HarmonizationController extends Controller {
 
 			return $this->json(array(
 				'success' => FALSE,
-				'errorMessage' => $e->getMessage()
+			    'errorMessage' => $this->get('translator')->trans("An unexpected error occurred.")
 			)
 			);
 		}

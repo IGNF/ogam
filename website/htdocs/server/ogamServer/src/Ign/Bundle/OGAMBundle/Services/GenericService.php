@@ -19,6 +19,7 @@ use Ign\Bundle\OGAMBundle\Entity\Metadata\Unit;
 use Ign\Bundle\OGAMBundle\Entity\Generic\GenericTableFormat;
 use Ign\Bundle\OGAMBundle\Entity\Metadata\ModeTaxref;
 use Ign\Bundle\OGAMBundle\Entity\Generic\GenericGeomField;
+use Doctrine\ORM\Query;
 
 /**
  * The Generic Service.
@@ -423,7 +424,7 @@ class GenericService {
 						}
 						
 						if ($exact) {
-							$sql .= " AND " . $column . " = '" . $value . "'";
+							$sql .= " AND " . $column . " = ". $this->quote($value);
 						} else {
 							// Get all the children of a selected node
 							$nodeModes = $this->metadataModel->getRepository(ModeTree::class)->getTreeChildrenModes($unit, $value, 0, $this->locale);
@@ -444,19 +445,19 @@ class GenericService {
 						}
 						
 						if ($exact) {
-							$sql .= " AND " . $column . " = '" . $value . "'";
+							$sql .= " AND " . $column . " = ". $this->quote($value);
 						} else {
 							// Get all the children of a selected taxon
-							$nodeModes = $this->metadataModel->getRepository(ModeTaxref::class)->getTaxrefChildrenModes($unit, $value, 0, $this->locale);
-							
-							$nodeModesArray = [];
-							foreach ($nodeModes as $nodeMode) {
-								$nodeModesArray[] .= $nodeMode->getCode();
+							$nodeModes = $this->metadataModel->getRepository(ModeTaxref::class)->getChildrenCodesSqlQuery($unit, $value, 0);
+							$sql2 = $nodeModes->getSql();
+							foreach($nodeModes->getParameters() as $param) {
+								$sql2 = str_replace(":".$param->getName(), $this->quote($nodeModes->processParameterValue($param->getValue())), $sql2);
 							}
 							
-							// Case of a list of values
-							$stringValue = $this->_arrayToSQLString($nodeModesArray);
-							$sql .= " AND " . $column . " && " . $stringValue;
+							$alias = 'arraymodes'.crc32($column);
+							$sql .= " AND $column && ( select array_agg(code) from ("  . $sql2 . ") $alias) ";
+							//try the next one  if you have "stupid" performence probleme as with `$columncode_taxref IN ($list)`  in particular case
+							//$sql .= " AND EXISTS ($sql2 WHERE code = ANY($column) ) ";
 						}
 					} else {
 						
@@ -473,7 +474,7 @@ class GenericService {
 							if ($exact) {
 								$sql .= " AND " . $column . " = " . $stringValue;
 							} else {
-								$sql .= " AND '" . $value . "' = ANY(" . $column . ")";
+								$sql .= " AND $stringValue = ANY(" . $column . ")";
 							}
 						}
 					}
@@ -489,14 +490,14 @@ class GenericService {
 						}
 						
 						if ($exact) {
-							$sql .= " AND " . $column . " = '" . $value . "'";
+							$sql .= " AND " . $column . " = " .$this->quote($value);
 						} else {
 							// Get all the children of a selected node
 							$nodeModes = $this->metadataModel->getRepository(ModeTree::class)->getTreeChildrenModes($unit, $value, 0, $this->locale);
 							
 							$sql2 = '';
 							foreach ($nodeModes as $nodeMode) {
-								$sql2 .= "'" . $nodeMode->getCode() . "', ";
+								$sql2 .= $this->quote($nodeMode->getCode()) . ", ";
 							}
 							$sql2 = substr($sql2, 0, -2); // remove last comma
 							
@@ -509,19 +510,22 @@ class GenericService {
 						}
 						
 						if ($exact) {
-							$sql .= " AND " . $column . " = '" . $value . "'";
+							$sql .= " AND " . $column . " = " .$this->quote($value);
 						} else {
 							
 							// Get all the children of a selected taxon
-							$nodeModes = $this->metadataModel->getRepository(ModeTaxref::class)->getTaxrefChildrenModes($unit, $value, 0, $this->locale);
+							$nodeModes = $this->metadataModel->getRepository(ModeTaxref::class)->getChildrenCodesSqlQuery($unit, $value, 0);
 							
-							$sql2 = '';
-							foreach ($nodeModes as $nodeMode) {
-								$sql2 .= "'" . $nodeMode->getCode() . "', ";
+							$sql2 = $nodeModes->getSql();
+							foreach($nodeModes->getParameters() as $param) {
+								$sql2 = str_replace(":".$param->getName(), $this->quote($nodeModes->processParameterValue($param->getValue())), $sql2);
 							}
-							$sql2 = substr($sql2, 0, -2); // remove last comma
+
+							//$sql .= " AND " . $column . " IN ( "  . $sql2 . ") ";
+							//WHERE EXISTS (IN may have poor perf with  lotsof data/but no row selected and limit/order)
+							$sql .=  " AND EXISTS ($sql2 WHERE $column = code) ";
 							
-							$sql .= " AND " . $column . " IN (" . $sql2 . ")";
+
 						}
 					} else {
 						
@@ -531,7 +535,7 @@ class GenericService {
 							$values = '';
 							foreach ($value as $val) {
 								if ($val !== null && $val !== '' && is_string($val)) {
-									$values .= "'" . $val . "', ";
+									$values .= $this->quote($val) . ", ";
 								}
 							}
 							if ($values !== '') {
@@ -540,7 +544,7 @@ class GenericService {
 							}
 						} else {
 							// Single value
-							$sql .= " AND " . $column . " = '" . $value . "'";
+							$sql .= " AND " . $column . " = " .$this->quote($value);
 						}
 					}
 					break;
@@ -585,9 +589,9 @@ class GenericService {
 						foreach ($value as $val) {
 							if ($val !== null && $val !== '' && is_string($val)) {
 								if ($exact) {
-									$sql .= $column . " = '" . $val . "'";
+									$sql .= $column . ' = '.$this->quote($val);
 								} else {
-									$sql .= $column . " ILIKE '%" . $val . "%'";
+									$sql .= $column . ' ILIKE '.$this->quote('%' . $val . '%');
 								}
 								$sql .= " OR ";
 								$oradded = true;
@@ -602,9 +606,9 @@ class GenericService {
 							// Single value
 							$sql .= " AND (" . $column;
 							if ($exact) {
-								$sql .= " = '" . $value . "'";
+								$sql .= ' = '.$this->quote($value);
 							} else {
-								$sql .= " ILIKE '%" . $value . "%'";
+								$sql .= ' ILIKE '.$this->quote('%' . $value . '%');
 							}
 							$sql .= ")";
 						}
@@ -797,10 +801,10 @@ class GenericService {
 	 *
 	 * @param Array[String] $value
 	 *        	an array of values.
-	 * @return the String representation of the array
+	 * @return the String representation of the array (already quote)
 	 */
 	private function _arrayToSQLString($arrayValues) {
-		$string = "'{";
+		$string = "{";
 		
 		if (is_array($arrayValues)) {
 			foreach ($arrayValues as $value) {
@@ -812,9 +816,9 @@ class GenericService {
 		} else {
 			$string .= $arrayValues;
 		}
-		$string .= "}'";
+		$string .= "}";
 		
-		return $string;
+		return  $this->quote($string);
 	}
 
 	/**
@@ -855,14 +859,14 @@ class GenericService {
 				if ($value === "" || $value === null) {
 					$sql = "NULL";
 				} else {
-					$sql = " to_date('" . $value . "', 'YYYY/MM/DD')";
+					$sql = " to_date({$this->quote($value)}, 'YYYY/MM/DD')";
 				}
 				break;
 			case "TIME":
 				if ($value === "" || $value === null) {
 					$sql = "NULL";
 				} else {
-					$sql = "'" . $value . "'";
+					$sql = $this->quote($value);
 				}
 				break;
 			case "INTEGER":
@@ -879,19 +883,19 @@ class GenericService {
 				$sql = $this->_arrayToSQLString($value);
 				break;
 			case "CODE":
-				$sql = "'" . $value . "'";
+				$sql = $this->quote($value);
 				break;
 			case "GEOM":
 				if ($value === "" || $value === null) {
 					$sql = "NULL";
 				} else {
-					$sql = " ST_transform(ST_GeomFromText('" . $value . "', " . $this->visualisationSRS . "), " . $databaseSRS . ")";
+					$sql = " ST_transform(ST_GeomFromText( " . $this->quote($value) . " , " . $this->visualisationSRS . "), " . $databaseSRS . ")";
 				}
 				break;
 			case "STRING":
 			default:
 				// Single value
-				$sql = "'" . $value . "'";
+				$sql = $this->quote($value);
 				break;
 		}
 		
@@ -1269,6 +1273,15 @@ class GenericService {
 		} else {
 			return null;
 		}
+	}
+	/**
+	 * quote sql value
+	 * @param unknown $value
+	 * @param unknown $type
+	 * @return string
+	 */
+	protected function quote($value, $type=null){
+		return $this->metadataModel->getConnection()->quote($value, $type);
 	}
 
 	/**

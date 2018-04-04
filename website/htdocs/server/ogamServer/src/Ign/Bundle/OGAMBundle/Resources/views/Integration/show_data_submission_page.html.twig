@@ -77,7 +77,7 @@
                     {% endif %}
                     {% if submission.step is not constant('STEP_INIT', submission) and submission.status is not constant('STATUS_RUNNING', submission) %}
                          <p>
-                            <a href="{{ absolute_url("../proxy/show-report?submissionId=#{submission.id}") }}" >{{ 'Show report'|trans }}</a>
+                            <a href="{{ absolute_url("../integration/show-data-submission-report-page?submissionId=#{submission.id}") }}" >{{ 'Show report'|trans }}</a>
                          </p>
                     {% endif %}
                     {% if (submission.step is same as('CHECK') and (submission.status is same as("OK") or submission.status is same as('WARNING'))) %}
@@ -90,7 +90,7 @@
                         <p>
                             <a href="{{ path('integration_cancel', {'submissionId': submission.id}) }}" onClick="return confirm('{{ 'Are you sure?'|trans }}');">{{ 'Cancel Submission'|trans }}</a>
                         </p>
-                    {% endif %} 
+                    {% endif %}
                 </td>
             </tr>
         {% endfor %}

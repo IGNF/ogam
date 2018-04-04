@@ -103,18 +103,18 @@ Ext.define('OgamDesktop.ux.form.field.Factory', function () {
             var field = {xtype : 'radiobuttonfield'};
             switch (record.get('type')) {
             case 'CODE':
-            	var radios = [];
-            	if(record.get('codes')){
-            		record.get('codes').forEach(function (code, index) {
-            			radios.push({
-            				xtype:'radio',
-            				inputValue: code.code,
-            				boxLabel:code.label,
-            				checked:code.code === record.get('value')
-            			});
-            		});
-	            	field.items=radios;
-            	}
+                var radios = [];
+                if(record.get('codes')){
+                    record.get('codes').forEach(function (code, index) {
+                        radios.push({
+                            xtype:'radio',
+                            inputValue: code.code,
+                            boxLabel:code.label,
+                            checked:code.code === record.get('value')
+                        });
+                    });
+                    field.items=radios;
+                }
                 break;
             default: 
                 console.error('The radio field value type is not specified for the "' + record.get('type') + '" type');

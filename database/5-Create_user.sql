@@ -34,7 +34,6 @@ GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE website.predefined_request_group_a
 GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE website.predefined_request_column TO ogam;
 GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE website.providers TO ogam;
 GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE website.dataset_role_restriction TO ogam;
-GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE website.layer_role_restriction TO ogam;
 GRANT ALL ON ALL SEQUENCES IN SCHEMA website TO ogam;
 
 -- raw-data
@@ -47,6 +46,9 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE raw_data.location TO ogam;
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE raw_data.plot_data TO ogam;
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE raw_data.species_data TO ogam;
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE raw_data.tree_data TO ogam;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE raw_data.TEST_1 TO ogam;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE raw_data.TEST_2 TO ogam;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE raw_data.TEST_3 TO ogam;
 GRANT ALL ON TABLE raw_data.submission TO ogam;
 GRANT ALL ON TABLE raw_data.submission_file TO ogam;
 GRANT EXECUTE ON FUNCTION raw_data.a_geomfromcoordinate() TO ogam;
@@ -58,7 +60,9 @@ ALTER TABLE raw_data.location OWNER TO ogam;
 ALTER TABLE raw_data.plot_data OWNER TO ogam;
 ALTER TABLE raw_data.species_data OWNER TO ogam;
 ALTER TABLE raw_data.tree_data OWNER TO ogam;
-
+ALTER TABLE raw_data.TEST_1 OWNER TO ogam;
+ALTER TABLE raw_data.TEST_2 OWNER TO ogam;
+ALTER TABLE raw_data.TEST_3 OWNER TO ogam;
 
 -- harmonized-data
 GRANT ALL ON SCHEMA harmonized_data TO ogam;
@@ -76,8 +80,9 @@ ALTER TABLE harmonized_data.harmonized_location OWNER TO ogam;
 ALTER TABLE harmonized_data.harmonized_plot_data OWNER TO ogam;
 ALTER TABLE harmonized_data.harmonized_species_data OWNER TO ogam;
 ALTER TABLE harmonized_data.harmonized_tree_data OWNER TO ogam;
-
-
+ALTER TABLE harmonized_data.HARMONIZED_TEST_1 OWNER TO ogam;
+ALTER TABLE harmonized_data.HARMONIZED_TEST_2 OWNER TO ogam;
+ALTER TABLE harmonized_data.HARMONIZED_TEST_3 OWNER TO ogam;
 
 -- metadata
 GRANT ALL ON SCHEMA metadata TO ogam;

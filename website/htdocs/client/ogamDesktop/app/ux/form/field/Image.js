@@ -59,7 +59,7 @@ Ext.define('OgamDesktop.ux.form.field.ImageField',{
 			buttonCfg : {
 				iconCls : 'upload-icon'
 			}
-		}
+		};
 
 		// apply config
 		Ext.apply(this, Ext.apply(this.initialConfig, config));

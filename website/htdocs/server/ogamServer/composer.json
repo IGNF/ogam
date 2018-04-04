@@ -11,32 +11,32 @@
             "app/AppCache.php"
         ]
     },
-	"autoload-dev" : {
-		"psr-4" : {
-			"Tests\\" : "tests/"
-		}
-	},
+    "autoload-dev" : {
+        "psr-4" : {
+            "Tests\\" : "tests/"
+        }
+    },
     "require": {
-		"php" : ">=5.5.9",
+        "php" : ">=5.5.9",
         "symfony/symfony": "2.8.*",
-		"doctrine/orm" : "^2.4",
-		"doctrine/doctrine-bundle" : "^1.2",
-		"doctrine/doctrine-cache-bundle" : "^1.2",
-		"symfony/swiftmailer-bundle" : "^2.3",
-		"symfony/monolog-bundle" : "^2.8",
-		"symfony/polyfill-apcu" : "^1.0",
-		"sensio/distribution-bundle" : "^5.0",
+        "doctrine/orm" : "^2.4",
+        "doctrine/doctrine-bundle" : "^1.2",
+        "doctrine/doctrine-cache-bundle" : "^1.2",
+        "symfony/swiftmailer-bundle" : "^2.3",
+        "symfony/monolog-bundle" : "^2.8",
+        "symfony/polyfill-apcu" : "^1.0",
+        "sensio/distribution-bundle" : "^5.0",
         "sensio/framework-extra-bundle": "^3.0.2",
-		"incenteev/composer-parameter-handler" : "^2.0",
-		"zendframework/zend-http" : "^2.5",
-		"phpunit/phpunit" : "^4.8",
-	    "whiteoctober/breadcrumbs-bundle": "^1.2",
+        "incenteev/composer-parameter-handler" : "^2.0",
+        "zendframework/zend-http" : "^2.5",
+        "whiteoctober/breadcrumbs-bundle": "^1.2",
         "symfony/assetic-bundle": "^2.8",
-        "phpcheckstyle/phpcheckstyle" : "^0.14.4"
+        "sensio/generator-bundle" : "^3.0"
     },
     "require-dev": {
-		"sensio/generator-bundle" : "^3.0",
-		"symfony/phpunit-bridge" : "^3.0"
+        "phpcheckstyle/phpcheckstyle" : "^0.14.4",
+        "phpunit/phpunit": "^5.7",
+        "symfony/phpunit-bridge" : "^3.0"
     },
     "scripts": {
         "symfony-scripts": [
@@ -55,22 +55,22 @@
         ]
     },
     "config": {
-		"secure-http" : false,
-		"bin-dir" : "bin",
-		"platform" : {
-			"php" : "5.5.9"
-		}
+        "secure-http" : false,
+        "bin-dir" : "bin",
+        "platform" : {
+            "php": "5.6"
+        }
     },
     "extra": {
         "symfony-app-dir": "app",
         "symfony-web-dir": "web",
-		"symfony-tests-dir" : "tests",
+        "symfony-tests-dir" : "tests",
         "symfony-assets-install": "relative",
         "incenteev-parameters": {
             "file": "app/config/parameters.yml"
         },
-		"branch-alias" : {
-			"dev-master" : null
+        "branch-alias" : {
+            "dev-master" : null
+        }
     }
-}
 }

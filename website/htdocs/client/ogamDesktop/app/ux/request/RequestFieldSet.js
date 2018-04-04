@@ -25,8 +25,8 @@ Ext.define('OgamDesktop.ux.request.RequestFieldSet', {
 	extend: 'Ext.panel.Panel',
 	requires:[
 		'Ext.data.JsonStore','OgamDesktop.store.Tree',
-	    'OgamDesktop.model.request.object.field.Code',
-	    'OgamDesktop.ux.form.field.*'
+		'OgamDesktop.model.request.object.field.Code',
+		'OgamDesktop.ux.form.field.*'
 	],
 
 //<locale>
@@ -131,13 +131,14 @@ Ext.define('OgamDesktop.ux.request.RequestFieldSet', {
 	getFilledCriteriaConfig : function() {
 		var items = [];
 		this.criteriaDS.each(function(record) {
-			var fieldValues, newRecord, i;
+			var fieldName, fieldValues, newRecord, i;
 			// Check if there are some criteriaValues from the predefined
 			// request page
 			if (!Ext.isEmpty(this.form.criteriaValues)) {
-				fieldValues = this.form.criteriaValues['criteria__' + record.data.name+'[]'];
+				fieldName = 'criteria__' + record.data.name + '[]';
 				// Check if there are some criteriaValues for this criteria
-				if (!Ext.isEmpty(fieldValues)) {
+				if (this.form.criteriaValues.hasOwnProperty(fieldName)) {
+					fieldValues = this.form.criteriaValues[fieldName];
 					if(record.get('data').unit.type === 'ARRAY') {
 						newRecord = record.copy();
 						newRecord.data.default_value = fieldValues;
@@ -162,14 +163,6 @@ Ext.define('OgamDesktop.ux.request.RequestFieldSet', {
 		});
 		return items;
 	},
-
-
-	/**
-	 * Builds a column for the record.
-	 * @private
-	 * @param {Ext.data.Record} record The column combobox record to add
-	 */
-	getColumnConfig : Ext.emptyFn,
 
 	/**
 	 * Builds the default columns.
@@ -256,11 +249,11 @@ Ext.define('OgamDesktop.ux.request.RequestFieldSet', {
 								'unit' : record.get('unit')
 							},
 							reader: {
-							    type : 'json',
-							    rootProperty : 'data',
-							    totalProperty  : 'total',
-							    successProperty: 'success',
-							    messageProperty: 'errorMessage'
+								type : 'json',
+								rootProperty : 'data',
+								totalProperty  : 'total',
+								successProperty: 'success',
+								messageProperty: 'errorMessage'
 							}
 						},
 						data : record.get('data').unit.codes
@@ -407,19 +400,19 @@ Ext.define('OgamDesktop.ux.request.RequestFieldSet', {
 					}
 	
 					field.treePickerColumns = {
-					    items: [{
-					        xtype: 'treecolumn',
-				            text: cls.prototype.taxrefLatinNameColumnTitle,
-				            dataIndex: "label"
-				        },{
-				            text: cls.prototype.taxrefVernacularNameColumnTitle,
-				            dataIndex: "vernacularName"
-				        },Ext.applyIf({
-				            text: cls.prototype.taxrefReferentColumnTitle,
-				            dataIndex: "isReference",
-				            flex:0,
-				            witdh:15
-				        }, OgamDesktop.ux.grid.column.Factory.buildBooleanColumnConfig())],
+						items: [{
+							xtype: 'treecolumn',
+							text: cls.prototype.taxrefLatinNameColumnTitle,
+							dataIndex: "label"
+						},{
+							text: cls.prototype.taxrefVernacularNameColumnTitle,
+							dataIndex: "vernacularName"
+						},Ext.applyIf({
+							text: cls.prototype.taxrefReferentColumnTitle,
+							dataIndex: "isReference",
+							flex:0,
+							witdh:15
+						}, OgamDesktop.ux.grid.column.Factory.buildBooleanColumnConfig())],
 						defaults : {
 							flex : 1
 						}
@@ -432,8 +425,8 @@ Ext.define('OgamDesktop.ux.request.RequestFieldSet', {
 								'<tpl if="!Ext.isEmpty(values.isReference) && values.isReference == 1"><b>{label}</b></tpl>',
 								'<br/>',
 								'<tpl if="!Ext.isEmpty(values.vernacularName) && values.vernacularName != null">({vernacularName})</tpl>',
-					        '</div></tpl>'
-					        ]};
+							'</div></tpl>'
+							]};
 					field.store = {
 						xtype : 'jsonstore',
 						autoDestroy : true,
@@ -494,6 +487,44 @@ Ext.define('OgamDesktop.ux.request.RequestFieldSet', {
 				};
 				return field;
 			}
+		},
+		
+		/**
+		 * Construct a column for the record.
+		 * @private
+		 * @param {Ext.data.Record} record The column combobox record to add
+		 * @return {Object} The column config object
+		 */
+		getColumnConfig : function(record) {
+			var field = {
+				xtype : 'container',
+				autoEl : 'div',
+				width : '100%',
+				cls : 'o-ux-adrfs-column-item',
+				items : [ {
+					xtype : 'box',
+					autoEl : {
+						tag : 'span',
+						cls : 'o-columnLabel columnLabelColor',
+						html : record.get('label')
+					},
+					listeners : {
+						'render' : function(cmp) {
+							Ext.QuickTips.register({
+								target : cmp.getEl(),
+								title : record.get('label'),
+								text : record.get('definition'),
+								width : 200
+							});
+						}
+					}
+				}, {
+					xtype : 'hidden',
+					name : 'column__' + record.get('name'),
+					value : '1'
+				} ]
+			};
+			return field;
 		}
 	}
 });

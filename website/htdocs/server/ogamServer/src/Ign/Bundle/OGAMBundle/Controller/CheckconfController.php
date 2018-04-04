@@ -220,7 +220,7 @@ class CheckconfController extends Controller {
 						}
 						break;
 					case "NUMERIC":
-						if ($foundField->type !== 'DOUBLE PRECISION') {
+						if ($foundField->type !== 'DOUBLE PRECISION' && $foundField->type !== 'REAL') {
 							$fieldTypeMsg[] = $msg;
 						}
 						break;

@@ -34,6 +34,9 @@ home:
         integrationupload:
           label: Breadcrumb_Integration_New
           route: integration_validate_creation
+        integrationreport:
+          label: Breadcrumb_Integration_Report
+          route: integration_report
     harmonization:
       label: Breadcrumb_Harmonization
       route: harmonization_home

@@ -14,39 +14,36 @@ class PredefinedRequestCriterion {
 
 	/**
 	 *
-	 * @var PredefinedRequest @ORM\Id
-	 *      @ORM\ManyToOne(targetEntity="PredefinedRequest")
-	 *      @ORM\JoinColumn(name="request_name", referencedColumnName="name")
+	 * @var PredefinedRequest 
+	 * @ORM\Id
+	 * @ORM\ManyToOne(targetEntity="PredefinedRequest")
+	 * @ORM\JoinColumn(name="request_id", referencedColumnName="request_id")
 	 */
-	private $requestName;
+	private $requestId;
 
 	/**
 	 *
-	 * @var Format @ORM\Id
-	 *      @ORM\ManyToOne(targetEntity="Ign\Bundle\OGAMBundle\Entity\Metadata\Format")
-	 *      @ORM\JoinColumns({@ORM\JoinColumn(name="format", referencedColumnName="format")})
+	 * @var Format 
+	 * @ORM\Id
+	 * @ORM\ManyToOne(targetEntity="Ign\Bundle\OGAMBundle\Entity\Metadata\Format")
+	 * @ORM\JoinColumns({@ORM\JoinColumn(name="format", referencedColumnName="format")})
 	 */
 	private $format;
 
 	/**
 	 *
-	 * @var Data @ORM\Id
-	 *      @ORM\ManyToOne(targetEntity="Ign\Bundle\OGAMBundle\Entity\Metadata\Data")
-	 *      @ORM\JoinColumns({@ORM\JoinColumn(name="data", referencedColumnName="data")})
+	 * @var Data 
+	 * @ORM\Id
+	 * @ORM\ManyToOne(targetEntity="Ign\Bundle\OGAMBundle\Entity\Metadata\Data")
+	 * @ORM\JoinColumns({@ORM\JoinColumn(name="data", referencedColumnName="data")})
 	 */
 	private $data;
 
 	/**
 	 *
-	 * @var string @ORM\Column(name="value", type="string", length=500)
+	 * @var string @ORM\Column(name="value", type="string")
 	 */
 	private $value;
-
-	/**
-	 *
-	 * @var bool @ORM\Column(name="fixed", type="boolean")
-	 */
-	private $fixed;
 
 	/**
 	 *
@@ -65,25 +62,25 @@ class PredefinedRequestCriterion {
 	}
 
 	/**
-	 * Set requestName
+	 * Set requestId
 	 *
-	 * @param string $requestName
+	 * @param integer $requestId
 	 *
 	 * @return PredefinedRequestCriterion
 	 */
-	public function setRequestName($requestName) {
-		$this->requestName = $requestName;
+	public function setRequestId($requestId) {
+		$this->requestId = $requestId;
 
 		return $this;
 	}
 
 	/**
-	 * Get requestName
+	 * Get requestId
 	 *
-	 * @return string
+	 * @return integer
 	 */
-	public function getRequestName() {
-		return $this->requestName;
+	public function getRequestId() {
+		return $this->requestId;
 	}
 
 	/**
@@ -150,28 +147,6 @@ class PredefinedRequestCriterion {
 	 */
 	public function getValue() {
 		return $this->value;
-	}
-
-	/**
-	 * Set fixed
-	 *
-	 * @param boolean $fixed
-	 *
-	 * @return PredefinedRequestCriterion
-	 */
-	public function setFixed($fixed) {
-		$this->fixed = $fixed;
-
-		return $this;
-	}
-
-	/**
-	 * Get fixed
-	 *
-	 * @return bool
-	 */
-	public function getFixed() {
-		return $this->fixed;
 	}
 
 	/**

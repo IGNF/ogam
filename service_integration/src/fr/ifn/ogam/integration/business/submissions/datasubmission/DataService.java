@@ -1,12 +1,12 @@
 /**
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
- * 
+ *
  * © European Union, 2008-2012
  *
  * Reuse is authorised, provided the source is acknowledged. The reuse policy of the European Commission is implemented by a Decision of 12 December 2011.
  *
- * The general principle of reuse can be subject to conditions which may be specified in individual copyright notices. 
- * Therefore users are advised to refer to the copyright notices of the individual websites maintained under Europa and of the individual documents. 
+ * The general principle of reuse can be subject to conditions which may be specified in individual copyright notices.
+ * Therefore users are advised to refer to the copyright notices of the individual websites maintained under Europa and of the individual documents.
  * Reuse is not applicable to documents subject to intellectual property rights of third parties.
  */
 package fr.ifn.ogam.integration.business.submissions.datasubmission;
@@ -50,7 +50,7 @@ public class DataService extends AbstractService {
 
 	/**
 	 * The logger used to log the errors or several information.
-	 * 
+	 *
 	 * @see org.apache.log4j.Logger
 	 */
 	private final transient Logger logger = Logger.getLogger(this.getClass());
@@ -87,7 +87,7 @@ public class DataService extends AbstractService {
 
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param thread
 	 *            The thread that launched the service
 	 */
@@ -97,7 +97,7 @@ public class DataService extends AbstractService {
 
 	/**
 	 * Get a submission.
-	 * 
+	 *
 	 * @param submissionId
 	 *            the identifier of the submission
 	 * @return the data submission object
@@ -110,7 +110,7 @@ public class DataService extends AbstractService {
 
 	/**
 	 * Create a new data submission.
-	 * 
+	 *
 	 * @param providerId
 	 *            the dataset identifier
 	 * @param datasetId
@@ -135,7 +135,7 @@ public class DataService extends AbstractService {
 
 	/**
 	 * Validate a data submission.
-	 * 
+	 *
 	 * @param submissionId
 	 *            the identifier of the submission
 	 */
@@ -150,7 +150,7 @@ public class DataService extends AbstractService {
 
 	/**
 	 * Invalidate a data submission.
-	 * 
+	 *
 	 * @param submissionId
 	 *            the identifier of the submission
 	 */
@@ -165,7 +165,7 @@ public class DataService extends AbstractService {
 
 	/**
 	 * Cancel a data submission.
-	 * 
+	 *
 	 * @param submissionId
 	 *            the identifier of the submission
 	 */
@@ -186,7 +186,6 @@ public class DataService extends AbstractService {
 		while (tableIter.hasNext()) {
 			String tableFormat = tableIter.next();
 			TableFormatData tableFormatData = metadataDAO.getTableFormat(tableFormat);
-			deleteFromGincoBacsData(tableFormatData, submissionId);
 			genericDAO.deleteRawData(tableFormatData.getTableName(), submissionId);
 		}
 
@@ -198,28 +197,8 @@ public class DataService extends AbstractService {
 	}
 
 	/**
-	 * Specific to GINCO. Deletes all data related to the submission inside tables used for visualization.
-	 * 
-	 * @param tableFormatData
-	 *            the tableFormatData
-	 * @throws Exception
-	 */
-	public void deleteFromGincoBacsData(TableFormatData tableFormat, Integer submissionId) throws Exception {
-
-		GeometryDAO geometryDAO = new GeometryDAO();
-		CommuneDAO communeDAO = new CommuneDAO();
-		DepartementDAO departementDAO = new DepartementDAO();
-		MailleDAO mailleDAO = new MailleDAO();
-
-		geometryDAO.deleteGeometriesFromFormat(tableFormat, submissionId);
-		communeDAO.deleteCommunesFromFormat(tableFormat, submissionId);
-		departementDAO.deleteDepartmentsFromFormat(tableFormat, submissionId);
-		mailleDAO.deleteMaillesFromFormat(tableFormat, submissionId);
-	}
-
-	/**
 	 * Submit new data.
-	 * 
+	 *
 	 * @param submissionId
 	 *            the identifier of the submission
 	 * @param userSrid
@@ -282,24 +261,6 @@ public class DataService extends AbstractService {
 					submissionDAO.updateSubmissionStatus(submissionId, SubmissionStep.SUBMISSION_CANCELLED, SubmissionStatus.ERROR);
 				} else {
 					submissionDAO.updateSubmissionStatus(submissionId, SubmissionStep.DATA_INSERTED, SubmissionStatus.ERROR);
-				}
-			}
-
-			// Launch PHP post-treatments (reports generation)
-			if (this.thread == null || !this.thread.isCancelled()) {
-				if ("true".equals(requestParameters.get("CUSTOM_GINCO_TREATMENTS"))) {
-					try {
-						String baseUrl = parameterDAO.getApplicationParameter("site_url");
-						URL myURL = new URL(baseUrl + "/dataset/generate-reports?submissionId=" + submissionId);
-						HttpURLConnection conn = (HttpURLConnection) myURL.openConnection();
-						int responseCode = conn.getResponseCode();
-					} catch (MalformedURLException e) {
-						// new URL() failed
-						logger.debug("Malformed URL exception", e);
-					} catch (IOException e) {
-						// openConnection() failed
-						logger.debug("IOException", e);
-					}
 				}
 			}
 

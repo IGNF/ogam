@@ -24,6 +24,13 @@ Ext.define("OgamDesktop.locale.fr.controller.map.Main", {
 	requestLoadingMessage: 'Veuillez patienter, pendant le chargement de la carte...',
 	getresultsbboxErrorTitle: "Chargement de l'emprise échoué :"
 });
+Ext.define("OgamDesktop.locale.fr.controller.request.PredefinedRequest", {
+    override: "OgamDesktop.controller.request.PredefinedRequest",
+    loadingMsg: 'Chargement...',
+    deletionConfirmTitle: 'Suppression de la requête :',
+    deletionConfirmMessage: 'Êtes-vous sûr de vouloir supprimer la requête?',
+    predefinedRequestDeletionErrorTitle: 'Suppression de la requête échouée:'
+});
 Ext.define("OgamDesktop.locale.fr.ux.request.RequestFieldSet", {
     override: "OgamDesktop.ux.request.RequestFieldSet",
 	criteriaComboEmptyText : "Sélectionner...",
@@ -234,8 +241,13 @@ Ext.define("OgamDesktop.locale.fr.view.request.AdvancedRequest", {
 		text : 'Réinitialiser',
 		tooltip : 'Réinitialiser le formulaire'
 	});
-	// Submit button
+	// Save button
 	Ext.apply(bbar[4], {
+		text : 'Enregistrer',
+		tooltip : 'Enregistrer la requête'
+	});
+	// Submit button
+	Ext.apply(bbar[6], {
 		text : 'Rechercher',
 		tooltip : 'Lancer la requête'
 	});
@@ -253,22 +265,66 @@ Ext.define('OgamDesktop.locale.fr.view.request.AdvancedRequestController', {
 Ext.define('OgamDesktop.locale.fr.view.request.PredefinedRequest', {
 	override:'OgamDesktop.view.request.PredefinedRequest',
 	config:{
-		title: 'Requêtes prédéfinies'
+		title: 'Requêtes enregistrées'
 	},
 	labelColumnHeader : "Libellé",
-	resetButtonText:"Annuler",
+	resetButtonText:"Réinitialiser",
 	resetButtonTooltip: "Réinitialise le formulaire avec les valeurs par défaut",
-	launchRequestButtonText:"OK",
+	launchRequestButtonText:"Rechercher",
 	launchRequestButtonTooltip:"Lance la requête dans la page de consultation",
 	loadingText:"Chargement...",
 	defaultErrorCardPanelText:"Désolé, le chargement a échoué...",
 	criteriaPanelTitle:"Indiquez votre choix :",
-	groupTextTpl:"{name} ({children.length:plural('Requete')})"
+	groupTextTpl:"{name} ({children.length:plural('Requete')})",
+    editRequestButtonTitle:"Editer la requête",
+    editRequestButtonTip:"Ouvre la page de consultation avec la requête préchargée.",
+    removeRequestButtonTitle:"Supprimer la requête",
+    removeRequestButtonTip:"Supprime la requête de manière permanente.",
+    datasetColumnTitle:"Type de données",
+    groupColumnTitle:"Groupe",
+    defaultGroupName:'Non groupée{[values.rows.length > 1 ? "s" : ""]}'
 });
 
 Ext.define('OgamDesktop.locale.fr.view.request.PredefinedRequestSelector', {
 	override:'OgamDesktop.view.request.PredefinedRequestSelector',
-	defaultCardPanelText : 'Veuillez sélectionner une requête...'
+	defaultCardPanelText: 'Veuillez sélectionner une requête...',
+	reqfieldsetsErrorTitle: 'Erreur lors du chargement de la requête :',
+	reqfieldsetsErrorMessage: 'Le chargement de la requête a échoué...',
+	loadingMsg: 'Chargement...'
+});
+Ext.define('OgamDesktop.locale.fr.view.request.SaveRequestWindow', {
+	override:'OgamDesktop.view.request.SaveRequestWindow',
+	config:{
+		title : 'Sauvegarder la requête'
+	},
+    selectionFieldsetTitle:'Sélection de la requête',
+    createRadioFieldLabel:'Créer une nouvelle requête',
+    editRadioFieldLabel:'Modifier une requête existante',
+    resquestComboLabel:'Requête',
+    comboEmptyText:'Sélectionner...',
+    formFieldsetTitle:'Informations sur la requête',
+    groupComboLabel:'Groupe *',
+    labelTextFieldLabel:'Libellé *',
+    definitionTextFieldLabel:'Description',
+    radioFieldContainerLabel:'Portée',
+    privateRadioFieldLabel:'Privée',
+    publicRadioFieldLabel:'Publique',
+	cancelButtonText:'Annuler',
+	cancelButtonTooltip:'Annuler la requête',
+	saveButtonText:'Enregistrer',
+	saveButtonTooltip:'Enregistrer la requête',
+	saveAndDisplayButtonText:'Enregistrer et visualiser',
+	saveAndDisplayButtonTooltip:'Enregistrer et ouvrir la page des requêtes prédéfinies'
+});
+Ext.define('OgamDesktop.locale.fr.view.request.SaveRequestWindowController', {
+	override:'OgamDesktop.view.request.SaveRequestWindowController',
+    loadingText: 'Chargement...',
+	toastTitle_invalidForm: 'Soumission du formulaire:',
+	toastHtml_invalidForm: 'Le formulaire n\'est pas valide. Veuillez corriger l\'erreur(s).',
+	invalidValueSubmittedErrorTitle: 'Soumission du formulaire:',
+	invalidValueSubmittedErrorMessage: 'Un champ est en erreur. Veuillez vérifier vos critères de filtrage.',
+	toastTitle_formSaved: 'Soumission du formulaire:',
+	toastHtml_formSaved: 'Votre requête a été sauvegardée.'
 });
 
 /*

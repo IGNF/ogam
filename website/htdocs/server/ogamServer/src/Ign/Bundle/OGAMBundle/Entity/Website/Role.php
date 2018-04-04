@@ -4,6 +4,8 @@ namespace Ign\Bundle\OGAMBundle\Entity\Website;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\Role\RoleInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use Ign\Bundle\OGAMBundle\Entity\Metadata\Dataset;
+use Ign\Bundle\OGAMBundle\Entity\Metadata\TableSchema;
 
 /**
  * Role
@@ -64,6 +66,19 @@ class Role implements RoleInterface, \Serializable {
 	 *      )
 	 */
 	private $schemas;
+	
+	/**
+	 * The role datasets.
+	 *
+	 * A list of codes corresponding to authorised datasets.
+	 *
+	 * @var array[String] @ORM\ManyToMany(targetEntity="Ign\Bundle\OGAMBundle\Entity\Metadata\Dataset")
+	 *      @ORM\JoinTable(name="dataset_role_restriction",
+	 *      joinColumns={@ORM\JoinColumn(name="role_code", referencedColumnName="role_code")},
+	 *      inverseJoinColumns={@ORM\JoinColumn(name="dataset_id", referencedColumnName="dataset_id")}
+	 *      )
+	 */
+	private $datasets;
 
 	/**
 	 * Constructor
@@ -71,6 +86,7 @@ class Role implements RoleInterface, \Serializable {
 	public function __construct() {
 		$this->permissions = new \Doctrine\Common\Collections\ArrayCollection();
 		$this->schemas = new \Doctrine\Common\Collections\ArrayCollection();
+		$this->datasets = new \Doctrine\Common\Collections\ArrayCollection();
 	}
 
 	/**
@@ -158,6 +174,15 @@ class Role implements RoleInterface, \Serializable {
 	}
 
 	/**
+	 * Get the datasets.
+	 *
+	 * @return \Doctrine\Common\Collections\Collection
+	 */
+	public function getDatasets() {
+	    return $this->datasets;
+	}
+	
+	/**
 	 * Indicate if the role is allowed for a permission.
 	 *
 	 * @param String $permissionName
@@ -244,6 +269,50 @@ class Role implements RoleInterface, \Serializable {
 	public function removePermission(Permission $perm) {
 		$this->permissions->removeElement($perm);
 		return $this;
+	}
+	
+	/**
+	 * add a schema
+	 *
+	 * @param TableSchema $schema
+	 * @return Role
+	 */
+	public function addSchema(TableSchema $schema) {
+	    $this->schemas->add($schema);
+	    return $this;
+	}
+	
+	/**
+	 * remove a schema
+	 *
+	 * @param TableSchema $schema
+	 * @return Role
+	 */
+	public function removeSchema(TableSchema $schema) {
+	    $this->schemas->removeElement($schema);
+	    return $this;
+	}
+	
+	/**
+	 * add a dataset
+	 *
+	 * @param Dataset $dataset
+	 * @return Role
+	 */
+	public function addDataset(Dataset $dataset) {
+	    $this->datasets->add($dataset);
+	    return $this;
+	}
+	
+	/**
+	 * remove a dataset
+	 *
+	 * @param Datasets $datasets
+	 * @return Role
+	 */
+	public function removeDataset(Dataset $dataset) {
+	    $this->datasets->removeElement($dataset);
+	    return $this;
 	}
 
 	/**

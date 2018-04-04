@@ -17,6 +17,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Ign\Bundle\OGAMBundle\Form\DataSubmissionType;
+use Ign\Bundle\OGAMBundle\Exception\ServiceException;
 
 
 /**
@@ -63,6 +64,35 @@ class IntegrationController extends Controller {
 	}
 
 	/**
+	 * Show the data submission report page.
+	 *
+	 * @Route("/show-data-submission-report-page", name="integration_report")
+	 */
+	public function showDataSubmissionReportPageAction(Request $request) {
+
+		// Get the request parameter
+		$submissionId = $request->query->getInt("submissionId");
+
+		$submission = $this->getEntityManger()
+			->getRepository('OGAMBundle:RawData\Submission')
+			->find($submissionId);
+
+		$errors = $this->getEntityManger()
+			->getRepository('OGAMBundle:RawData\CheckError')
+			->getOrderedCheckErrors($submissionId);
+
+		$checks = $this->getEntityManger()
+			->getRepository('OGAMBundle:Metadata\Checks')
+			->getSubmissionCheckCount($submissionId);
+
+		return $this->render('OGAMBundle:Integration:show_data_submission_report_page.html.twig', array(
+			'submission' => $submission,
+			'checks' => $checks,
+			'errors' => $errors
+		));
+	}
+
+	/**
 	 * Show the create data submission page.
 	 *
 	 * @Route("/create-data-submission", name="integration_creation")
@@ -101,7 +131,7 @@ class IntegrationController extends Controller {
 				$this->get('logger')->error('Error while creating new data submission : ' . $e);
 			
 				return $this->render('OGAMBundle:Integration:data_error.html.twig', array(
-					'error' => $e->getMessage()
+				    'error' => $this->get('translator')->trans("An unexpected error occurred.")
 				));
 			}
 			
@@ -267,7 +297,7 @@ class IntegrationController extends Controller {
 				'exception' => $e
 			));
 			return $this->render('OGAMBundle:Integration:data_error.html.twig', array(
-				'error' => $e->getMessage()
+			    'error' => $this->get('translator')->trans("An unexpected error occurred.")
 			));
 		}
 
@@ -291,11 +321,18 @@ class IntegrationController extends Controller {
 		// Send the cancel request to the integration server
 		try {
 			$this->get('ogam.integration_service')->cancelDataSubmission($submissionId);
+
+		} catch (ServiceException $e){
+		    $this->get('logger')->error('Error during cancel: ' . $e);
+
+		    return $this->render('OGAMBundle:Integration:data_error.html.twig', array(
+		        'error' => $this->get('translator')->trans($e->getMessage())
+		    ));
 		} catch (\Exception $e) {
-			$this->get('logger')->error('Error during upload: ' . $e);
+			$this->get('logger')->error('Error during cancel: ' . $e);
 
 			return $this->render('OGAMBundle:Integration:data_error.html.twig', array(
-				'error' => $e->getMessage()
+			    'error' => $this->get('translator')->trans("An unexpected error occurred.")
 			));
 		}
 
@@ -316,10 +353,10 @@ class IntegrationController extends Controller {
 		try {
 			$this->get('ogam.integration_service')->checkDataSubmission($submissionId);
 		} catch (\Exception $e) {
-			$this->getLogger()->error('Error during upload: ' . $e);
+			$this->getLogger()->error('Error during check: ' . $e);
 
 			return $this->render('OGAMBundle:Integration:data_error.html.twig', array(
-				'error' => $e->getMessage()
+			    'error' => $this->get('translator')->trans("An unexpected error occurred.")
 			));
 		}
 
@@ -343,10 +380,10 @@ class IntegrationController extends Controller {
 		try {
 			$this->get('ogam.integration_service')->validateDataSubmission($submissionId);
 		} catch (\Exception $e) {
-			$this->getLogger()->error('Error during upload: ' . $e);
+			$this->getLogger()->error('Error during validate: ' . $e);
 
 			return $this->render('OGAMBundle:Integration:data_error.html.twig', array(
-				'error' => $e->getMessage()
+			    'error' => $this->get('translator')->trans("An unexpected error occurred.")
 			));
 		}
 
@@ -393,7 +430,7 @@ class IntegrationController extends Controller {
 
 			return $this->json(array(
 				'success' => FALSE,
-				"errorMsg" => $e->getMessage()
+			    "errorMessage" => $this->get('translator')->trans("An unexpected error occurred.")
 			)
 			);
 		}

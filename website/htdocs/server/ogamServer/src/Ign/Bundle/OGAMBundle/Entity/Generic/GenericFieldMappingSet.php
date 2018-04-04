@@ -84,7 +84,8 @@ class GenericFieldMappingSet {
 	 * @return GenericField|NULL
 	 */
 	public function getDstField(GenericField $srcField) {
-		return $this->getFieldMapping($srcField)->getDstField();
+	    $fieldMapping = $this->getFieldMapping($srcField);
+	    return $fieldMapping === null ? null : $fieldMapping->getDstField();
 	}
 
 	/**

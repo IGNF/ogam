@@ -19,7 +19,8 @@ Ext.define('OgamDesktop.Application', {
 	],
 	stores: [
 		'map.LayerTreeNode',
-		'result.Grid'
+		'result.Grid',
+		'CurrentUser'
 	],
 	controllers: [
 		'map.Drawing',
@@ -39,6 +40,7 @@ Ext.define('OgamDesktop.Application', {
 		'request.AdvancedRequest',
 		'request.AdvancedRequestController',
 		'request.AdvancedRequestModel',
+		'request.SaveRequestWindow',
 		'request.MainWin',
 		'result.MainWin',
 		'result.GridTab',
@@ -112,47 +114,47 @@ Ext.define('OgamDesktop.Application', {
      */
 	init: function (application) {
 
-	    // Manages the ajax request exceptions
-	    Ext.Ajax.on('requestexception', function(conn, response, options, e) {
-	        var statusCode = response.status,
-	        toastHtml = null,
-	        toastTitle = null;
+		// Manages the ajax request exceptions
+		Ext.Ajax.on('requestexception', function(conn, response, options, e) {
+			var statusCode = response.status,
+			toastHtml = null,
+			toastTitle = null;
 
-	        // Sets the default message
-	        switch (statusCode) {
-	        	case 401 :
-	        		toastTitle = application.toastTitle_401;
-		        	toastHtml = application.toastHtml_401;
+			// Sets the default message
+			switch (statusCode) {
+				case 401 :
+					toastTitle = application.toastTitle_401;
+					toastHtml = application.toastHtml_401;
 					break;
 				case 404 :
 					toastTitle = application.toastTitle_404;
-		        	toastHtml = application.toastHtml_404;
+					toastHtml = application.toastHtml_404;
 					break;
 				case 500 :
 					toastTitle = application.toastTitle_500;
-		        	toastHtml = application.toastHtml_500;
+					toastHtml = application.toastHtml_500;
 					break;
 				default:
-		    		if (response.aborted) {//may be a userchoice don't alert him
-		    			Ext.log({'level':"info"}, 'an connection is aborted');
-		    			return;
-		    		}
+					if (response.aborted) {//may be a userchoice don't alert him
+						Ext.log({'level':"info"}, 'an connection is aborted');
+						return;
+					}
 					toastTitle = application.toastTitle_default + ' ' + statusCode + ' : ' + response.statusText + '.';
-		        	toastHtml = application.toastHtml_default;
+					toastHtml = application.toastHtml_default;
 					break;
-	        }
+			}
 
-	        // Looks for a error message to add
-    		if (response.responseText != undefined) {
-	            var r = Ext.decode(response.responseText, true);
-	            if (r != null && r.errorMessage !== undefined) {
-	                toastHtml += '<br/>' + r.errorMessage;
-	            }
-	        }
+			// Looks for a error message to add
+			if (response.responseText !== undefined) {
+				var r = Ext.decode(response.responseText, true);
+				if (r != null && r.errorMessage !== undefined) {
+					toastHtml += '<br/>' + r.errorMessage;
+				}
+			}
 
-	        // Displays the error message
-	        OgamDesktop.toast(toastHtml, toastTitle);
-	    });
+			// Displays the error message
+			OgamDesktop.toast(toastHtml, toastTitle);
+		});
 	},
 
 	/**
@@ -160,6 +162,13 @@ Ext.define('OgamDesktop.Application', {
 	 */
 	launch: function () {
 		// Loads the grid parameters
-		Ext.Loader.loadScript(Ext.manifest.OgamDesktop.requestServiceUrl +'getgridparameters');      
+		Ext.Loader.loadScript(Ext.manifest.OgamDesktop.requestServiceUrl +'getgridparameters');
+	},
+	
+    /**
+     * Return the current user
+     */
+	getCurrentUser: function(){
+		return Ext.getStore('CurrentUser').getAt(0);
 	}
 });

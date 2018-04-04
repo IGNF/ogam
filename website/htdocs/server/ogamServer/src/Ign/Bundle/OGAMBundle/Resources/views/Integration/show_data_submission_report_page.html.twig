@@ -1,0 +1,99 @@
+{% extends "::base.html.twig" %}
+
+{% block body %}
+
+    <h1>{% trans %}Data integration module{% endtrans %} - {{ 'Submission report'|trans }}</h1>
+
+    <h2>{{ 'Submission details'|trans }}</h2>
+    <table class="sectiontable">
+        <tr>
+            <th style="text-align:center">{% trans %}Submission ID{% endtrans %}</th>
+            <th style="text-align:center">{{ 'Date'|trans }}</th>
+            <th style="text-align:center">{{ 'Provider'|trans }}</th>
+            <th style="text-align:center">{{ 'User'|trans }}</th>
+            <th style="text-align:center">{{ 'Dataset'|trans }}</th>
+            <th style="text-align:center">{{ 'Step'|trans }}</th>
+            <th style="text-align:center">{{ 'Status'|trans }}</th>
+            <th>{{ 'File'|trans }}</th>
+            <th style="text-align:right">{{ 'Lines'|trans }}&nbsp;</th>
+        </tr>
+        <tr class="sectiontableentry0">
+            <td>{{ submission.id|e }}</td>
+            <td>{{ submission.creationDate|date("Y-m-d") }}</td>
+            <td>{{ submission.provider.label|e }}</td>
+            <td>{{ submission.user.login|e }}</td>
+            <td>{{ submission.dataset.label|e }}</td>
+            <td>{{ submission.step|e }}</td>
+            <td>{{ submission.status|e }}</td>
+            <td colspan=2>
+                <table width="100%">
+                    {% for file in submission.files %}
+                        <tr>
+                            <td class="file-name">
+                                <span title="{{ file.fileType|e('html_attr') }}">
+                                    {{ file.fileName|replace({'\\':'/'})|split('/')|last }}
+                                </span>
+                            </td>
+                            <td class="line-number">{{ file.nbLines }}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </td>
+        </tr>
+    </table>
+
+    <h2>{{ 'Errors summary'|trans }}</h2>
+    {% if checks is not empty %}
+        <table class="sectiontable">
+            <tr>
+                <th style="text-align:center">{{ 'Check ID'|trans }}</th>
+                <th style="text-align:center">{{ 'Importance'|trans }}</th>
+                <th style="text-align:center">{{ 'Number of occurrences'|trans }}</th>
+                <th style="text-align:center">{{ 'Label'|trans }}</th>
+                <th style="text-align:center">{{ 'Description'|trans }}</th>
+            </tr>
+            {% for check in checks %}
+                <tr class="sectiontableentry{{ loop.index0 % 2 }}">
+                    <td>{{ check.check_id|e }}</td>
+                    <td>{{ check.importance|e }}</td>
+                    <td>{{ check.count|e }}</td>
+                    <td>{{ check.label|e }}</td>
+                    <td>{{ check.description|e }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <div class="no-submission">{% trans %}No errors found{% endtrans %}</div>
+    {% endif %}
+
+    <h2>{{ 'Errors details (limited to 100)'|trans }}</h2>
+    {% if errors is not empty %}
+      <table class="sectiontable">
+          <tr>
+              <th style="text-align:center">{{ 'Check ID'|trans }}</th>
+              <th style="text-align:center">{{ 'File'|trans }}</th>
+              <th style="text-align:center">{{ 'Data'|trans }}</th>
+              <th style="text-align:center">{{ 'Line'|trans }}</th>
+              <th style="text-align:center">{{ 'Found value'|trans }}</th>
+              <th style="text-align:center">{{ 'Expected value'|trans }}</th>
+              <th style="text-align:center">{{ 'Error message'|trans }}</th>
+          </tr>
+          {% for error in errors %}
+              <tr class="sectiontableentry{{ loop.index0 % 2 }}">
+                  <td>{{ error.checkId|e }}</td>
+                  <td>{{ error.srcFormat|e }}</td>
+                  <td>{{ error.srcData|e }}</td>
+                  <td>{{ error.lineNumber|e }}</td>
+                  <td>{{ error.foundValue|e }}</td>
+                  <td>{{ error.expectedValue|e }}</td>
+                  <td>{{ error.errorMessage|e }}</td>
+              </tr>
+          {% endfor %}
+      </table>
+    {% else %}
+        <div class="no-submission">{% trans %}No errors found{% endtrans %}</div>
+    {% endif %}
+    <p class="subTableLink">
+        <a href="{{ path("integration_list") }}">{{ 'Back'|trans }}</a>
+    </p>
+{% endblock %}

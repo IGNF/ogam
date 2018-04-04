@@ -26,7 +26,7 @@ class ModeTaxrefRepository extends \Doctrine\ORM\EntityRepository {
 	 *        	The locale
 	 *        	return Mode[] The unit mode(s)
 	 */
-	public function getModes(Unit $unit, $locale) {
+    public function getModes(Unit $unit, $locale = "EN") {
 		$rsm = new ResultSetMappingBuilder($this->_em);
 		$rsm->addRootEntityFromClassMetadata($this->_entityName, 'm');
 		$params = [
@@ -58,8 +58,11 @@ class ModeTaxrefRepository extends \Doctrine\ORM\EntityRepository {
 	 *        	The locale
 	 * @return Mode|[Mode] The filtered mode(s)
 	 */
-	public function getModesFilteredByCode(Unit $unit, $code, $locale) {
-		$rsm = new ResultSetMappingBuilder($this->_em);
+	public function getModesFilteredByCode(Unit $unit, $code, $locale = "EN") {
+	    if ($code === null || $code === "") {
+	        throw new \InvalidArgumentException('Invalid arguments.');
+	    }
+	    $rsm = new ResultSetMappingBuilder($this->_em);
 		$rsm->addRootEntityFromClassMetadata($this->_entityName, 'mt');
 		$parameters = array(
 			'unit' => $unit->getUnit(),
@@ -70,13 +73,13 @@ class ModeTaxrefRepository extends \Doctrine\ORM\EntityRepository {
 		$sql .= " FROM mode_taxref mt";
 		$sql .= " LEFT JOIN translation t ON (lang = :lang AND table_format = 'MODE_TAXREF' AND row_pk = mt.unit || ',' || mt.code) ";
 		$sql .= " WHERE unit = :unit";
-		if ($code != null) {
-			if (is_array($code)) {
-				$sql .= " AND code IN ( :code )";
-			} else {
-				$sql .= " AND code = :code";
-			}
+
+		if (is_array($code)) {
+			$sql .= " AND code IN ( :code )";
+		} else {
+			$sql .= " AND code = :code";
 		}
+
 		$sql .= " ORDER BY position, code";
 		
 		$query = $this->_em->createNativeQuery($sql, $rsm);
@@ -96,8 +99,11 @@ class ModeTaxrefRepository extends \Doctrine\ORM\EntityRepository {
 	 *        	The locale
 	 * @return [Mode] The filtered mode(s)
 	 */
-	public function getModesFilteredByLabel(Unit $unit, $query, $locale) {
-		$rsm = new ResultSetMappingBuilder($this->_em);
+	public function getModesFilteredByLabel(Unit $unit, $query, $locale = "EN") {
+	    if ($query === null || $query === "") {
+	        throw new \InvalidArgumentException('Invalid arguments.');
+	    }
+	    $rsm = new ResultSetMappingBuilder($this->_em);
 		$rsm->addRootEntityFromClassMetadata($this->_entityName, 'mt');
 		$parameters = array(
 			'unit' => $unit->getUnit(),
@@ -119,7 +125,7 @@ class ModeTaxrefRepository extends \Doctrine\ORM\EntityRepository {
 	/**
 	 * Returns the mode(s) whose an part of thme is similare to the searched text.
 	 * parts explored : label, vernacular_name,complete_name
-	 * 
+	 *
 	 * @param Unit $unit
 	 *        	The unit
 	 * @param string $query
@@ -132,7 +138,10 @@ class ModeTaxrefRepository extends \Doctrine\ORM\EntityRepository {
 	 *        	max mode return
 	 * @return [Mode] filtered mode (eventually partial =>bound [$start .. $start+$limit])
 	 */
-	public function getTaxrefModesSimilarTo(Unit $unit, $query, $locale, $start = null, $limit = null) {
+	public function getTaxrefModesSimilarTo(Unit $unit, $query, $locale = "EN", $start = null, $limit = null) {
+		if ($query === null || $query === "") {
+			throw new \InvalidArgumentException('Invalid arguments.');
+		}
 		$rsm = new ResultSetMappingBuilder($this->_em);
 		$rsm->addRootEntityFromClassMetadata($this->_entityName, 'mt');
 		$parameters = array(
@@ -144,11 +153,14 @@ class ModeTaxrefRepository extends \Doctrine\ORM\EntityRepository {
 		$sql = "SELECT unit, code, COALESCE(t.label, mt.label) as label, COALESCE(t.definition, mt.definition) as definition, position, parent_code, is_leaf, complete_name, vernacular_name, is_reference";
 		$sql .= " FROM mode_taxref mt";
 		$sql .= " LEFT JOIN translation t ON (lang = :lang AND table_format = 'MODE_TAXREF' AND row_pk = mt.unit || ',' || mt.code) ";
-		$sql .= " WHERE unit = :unit AND (
+		$sql .= " WHERE unit = :unit ";
+		if ($query !== null && $query !== "") {//assume empty query is all the unit
+			$sql .= " AND (
             unaccent(COALESCE(t.label, mt.label)) ilike unaccent(:query_parttern)
             OR unaccent(vernacular_name) ilike unaccent(:query_parttern)
             OR unaccent(complete_name) ilike unaccent(:query_parttern)
             )";
+		}
 		$sql .= " ORDER BY GREATEST(similarity(COALESCE(t.label, mt.label), :query), similarity(vernacular_name,:query) , similarity(complete_name, :query)) DESC, position, code";
 		
 		if ($start !== null && $limit !== null) {
@@ -166,7 +178,7 @@ class ModeTaxrefRepository extends \Doctrine\ORM\EntityRepository {
 	/**
 	 * Return the count of code for a taxref filtered by query.
 	 *
-	 * @param String $unit
+	 * @param Unit $unit
 	 *        	The unit
 	 * @param String $query
 	 *        	the searched text (optional)
@@ -174,15 +186,18 @@ class ModeTaxrefRepository extends \Doctrine\ORM\EntityRepository {
 	 *        	The locale
 	 * @return Integer
 	 */
-	public function getTaxrefModesCount($unit, $query = null, $locale) {
+	public function getTaxrefModesCount(Unit $unit, $query = null, $locale = "EN") {
 		$sql = "SELECT count(*) as count";
 		$sql .= " FROM mode_taxref mt";
 		$sql .= " LEFT JOIN translation t ON (lang = :lang AND table_format = 'MODE_TAXREF' AND row_pk = mt.unit || ',' || mt.code) ";
-		$sql .= " WHERE unit = :unit AND (
+		$sql .= " WHERE unit = :unit " ;
+		if ($query !== null && $query !== "") {//assume empty query is all the unit
+			$sql .= " AND (
             unaccent(COALESCE(t.label, mt.label)) ilike unaccent(:query)
             OR unaccent(vernacular_name) ilike unaccent(:query)
             OR unaccent(complete_name) ilike unaccent(:query)
             )";
+		}
 		$parameters = array(
 			'unit' => $unit->getUnit(),
 			'lang' => $locale,
@@ -204,7 +219,7 @@ class ModeTaxrefRepository extends \Doctrine\ORM\EntityRepository {
 	 *
 	 * Return an array of codes.
 	 *
-	 * @param String $unit
+	 * @param Unit $unit
 	 *        	The unit
 	 * @param String $code
 	 *        	The identifier of the start node in the tree (by default the root node is *)
@@ -214,7 +229,7 @@ class ModeTaxrefRepository extends \Doctrine\ORM\EntityRepository {
 	 *        	The locale
 	 * @return Array[ModeTaxref]
 	 */
-	public function getTaxrefChildrenModes(Unit $unit, $code = '*', $levels = 1, $locale) {
+	public function getTaxrefChildrenModes(Unit $unit, $code = '*', $levels = 1, $locale = "EN") {
 		$rsm = new ResultSetMappingBuilder($this->_em);
 		$rsm->addRootEntityFromClassMetadata($this->_entityName, 'mt');
 		
@@ -254,4 +269,61 @@ class ModeTaxrefRepository extends \Doctrine\ORM\EntityRepository {
 		
 		return $query->getResult();
 	}
+
+	/**
+	* Get the query  in order to get all the children code from the reference taxon of a taxon.
+	* Used when building an SQL WHERE clause for a node of the taxref.
+	*
+	* Return an query
+	*
+	* @param Unit $unit
+	*        	The unit
+	* @param String $code
+	*        	The identifier of the start node in the tree (by default the root node is *)
+	* @param Integer $levels
+	*        	The number of levels of depth (if 0 then no limitation)
+	* @return NativeQuery
+	*/
+	public function getChildrenCodesSqlQuery(Unit $unit, $code, $levels) {
+	    if ($code === null || $code === "") {
+	        throw new \InvalidArgumentException('Invalid arguments.');
+	    }
+	    $rsm = new ResultSetMappingBuilder($this->_em);
+		$rsm->addScalarResult('code', 'code');
+		
+		if ($code === '*') { // fakeroot
+			$firstNode = "	SELECT '*'::character varying, 1 ";
+		} else {
+			$firstNode = "	SELECT code, 1 ";
+			$firstNode .= "	FROM mode_taxref mt ";
+			$firstNode .= "	WHERE unit = :unit ";
+			$firstNode .= "	AND code = :code ";
+		}
+
+		$sql = "WITH RECURSIVE node_list( code, level) AS ( ";
+		$sql .= $firstNode;
+		$sql .= "	UNION ALL ";
+		$sql .= "		SELECT child.code, level + 1 ";
+		$sql .= "		FROM mode_taxref child ";
+		$sql .= "		INNER JOIN node_list on (child.parent_code = node_list.code) ";
+		$sql .= "		WHERE child.unit = :unit ";
+		if ($levels != 0) {
+			$sql .= " AND level < :levels ";
+
+		}
+		$sql .= "	) ";
+		$sql .= "	SELECT code ";
+		$sql .= "	FROM node_list ";
+		
+		$query = $this->_em->createNativeQuery($sql, $rsm);
+		$query->setParameters(array(
+			'unit' => $unit,
+			'code' => $code,
+			'levels' => $levels
+		));
+		
+		return $query;
+		
+	}
+
 }

@@ -173,3 +173,88 @@ COMMENT ON COLUMN HARMONIZED_TREE_DATA.the_geom IS 'geometry of the tree locatio
 
 -- Spatial Index on the_geom 
 CREATE INDEX IX_HARMONIZED_TREE_DATA_SPATIAL_INDEX ON harmonized_data.harmonized_tree_data USING GIST ( the_geom );
+
+
+
+
+
+
+/*****************************************************************/
+/*/!\/!\/!\/!\/!\/!\/!\/!\/!\/!\/!\/!\/!\/!\/!\/!\/!\/!\/!\/!\/!\*/
+/**             TESTS TABLES                                     */
+/*/!\/!\/!\/!\/!\/!\/!\/!\/!\/!\/!\/!\/!\/!\/!\/!\/!\/!\/!\/!\/!\*/
+/*****************************************************************/
+/**=====================================================*/
+/*  TABLE : HARMONIZED_TEST_1                           */
+/**====================================================*/
+CREATE TABLE HARMONIZED_TEST_1(
+ID integer not null,
+TEXT_STRING_STRING TEXT,
+TEXT_STRING_LINK varchar(255),
+TEXT_NUMERIC_INTEGER integer,
+TEXT_NUMERIC_NUMERIC real,
+TEXT_NUMERIC_RANGE real,
+NUMERIC_NUMERIC_NUMERIC real,
+NUMERIC_NUMERIC_RANGE real,
+NUMERIC_NUMERIC_INTEGER integer,
+NUMERIC_NUMERIC_COORDINATE double precision,
+DATE_DATE date,
+TIME_TIME time,
+DATETIME_DATETIME timestamp,
+GEOM_GEOM_POLYGON Geometry(POLYGON, 4326),
+SUBMISSION_ID int,
+CONSTRAINT pk_HARMONIZED_TEST_1 PRIMARY KEY(ID)
+);
+
+
+/**=====================================================*/
+/*  TABLE : HARMONIZED_TEST_2                           */
+/**====================================================*/
+CREATE TABLE HARMONIZED_TEST_2(
+ID int,
+PARENT_ID int,
+SELECT_CODE_CODE_3 varchar(36),
+SELECT_CODE_CODE_10 varchar(36),
+SELECT_CODE_CODE_100 varchar(36),
+SELECT_CODE_DYNAMIC_3 varchar(36),
+SELECT_CODE_DYNAMIC_10 varchar(36),
+SELECT_CODE_DYNAMIC_100 varchar(36),
+SELECT_ARRAY_CODE_3 varchar(36)[],
+SELECT_ARRAY_CODE_10 varchar(36)[],
+SELECT_ARRAY_CODE_100 varchar(36)[],
+SELECT_ARRAY_DYNAMIC_3 varchar(36)[],
+SELECT_ARRAY_DYNAMIC_10 varchar(36)[],
+SELECT_ARRAY_DYNAMIC_100 varchar(36)[],
+GEOM_GEOM_LINESTRING geometry(LINESTRING, 4326),
+CONSTRAINT pk_HARMONIZED_TEST_2 PRIMARY KEY(ID),
+CONSTRAINT fk_HARMONIZED_TEST_2_PARENT_ID FOREIGN KEY (PARENT_ID)
+REFERENCES HARMONIZED_TEST_1 (ID)MATCH SIMPLE
+      ON UPDATE RESTRICT ON DELETE RESTRICT
+);
+
+
+/**=====================================================*/
+/*  TABLE : HARMONIZED_TEST_3                           */
+/**====================================================*/
+CREATE TABLE HARMONIZED_DATA.HARMONIZED_TEST_3(
+ID int not null,
+PARENT_ID int,
+CHECKBOX_BOOLEAN char(1),
+RADIO_BOOLEAN char(1),
+RADIO_CODE_CODE_3 varchar(36),
+RADIO_CODE_CODE_10 varchar(36),
+RADIO_CODE_CODE_100 varchar(36),
+RADIO_CODE_DYNAMIC_3 varchar(36),
+RADIO_CODE_DYNAMIC_10 varchar(36),
+RADIO_CODE_DYNAMIC_100 varchar(36),
+TREE_CODE_TREE varchar(36),
+TREE_ARRAY_TREE varchar(36)[],
+TAXREF_CODE_TAXREF varchar(36),
+TAXREF_ARRAY_TAXREF varchar(36)[],
+IMAGE_IMAGE TEXT,
+GEOM_GEOM_POINT Geometry(Point, 4326),
+CONSTRAINT pk_HARMONIZED_TEST_3 PRIMARY KEY(ID),
+CONSTRAINT fk_HARMONIZED_TEST_3_PARENT_ID FOREIGN KEY (PARENT_ID)
+REFERENCES HARMONIZED_TEST_2 (ID)MATCH SIMPLE
+      ON UPDATE RESTRICT ON DELETE RESTRICT
+);

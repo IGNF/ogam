@@ -343,8 +343,7 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 			text : this.dataEditFSValidateButtonText,
 			tooltip : this.dataEditFSValidateButtonTooltip,
 			handler : this.editData,
-			formBind : true, // The button is desactivated if the form is not
-			// valid
+			formBind : true, // The button is desactivated if the form is not valid
 			scope : this
 		});
 
@@ -455,7 +454,7 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 		}
 
 		// Add a hidden field for the mode (ADD or EDIT)
-		modeItem = {
+		var modeItem = {
 			xtype : 'hidden',
 			name : 'MODE',
 			hiddenName : 'MODE',
@@ -471,7 +470,7 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 
 			// Look for the provider of the data
 			if (OgamDesktop.userProviderId !== dataProvider) {
-				this.validateButton.disable();
+				this.dataEditForm.disable();
 				this.validateButton.setTooltip(this.dataEditFSValidateButtonDisabledTooltip);
 			}
 		}
@@ -737,19 +736,19 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 			}
 			
 			field.treePickerColumns = {
-			    items: [{
-			    	xtype: 'treecolumn',
-		            text: OgamDesktop.ux.request.RequestFieldSet.prototype.taxrefLatinNameColumnTitle,
-		            dataIndex: "label"
-		        },{
-		            text: OgamDesktop.ux.request.RequestFieldSet.prototype.taxrefVernacularNameColumnTitle,
-		            dataIndex: "vernacularName"
-		        },Ext.applyIf({
-			            text: OgamDesktop.ux.request.RequestFieldSet.prototype.taxrefReferentColumnTitle,
-			            dataIndex: "isReference",
-			            flex:0,
-			            witdh:15
-			        }, OgamDesktop.ux.grid.column.Factory.buildBooleanColumnConfig())],
+				items: [{
+					xtype: 'treecolumn',
+					text: OgamDesktop.ux.request.RequestFieldSet.prototype.taxrefLatinNameColumnTitle,
+					dataIndex: "label"
+				},{
+					text: OgamDesktop.ux.request.RequestFieldSet.prototype.taxrefVernacularNameColumnTitle,
+					dataIndex: "vernacularName"
+				},Ext.applyIf({
+						text: OgamDesktop.ux.request.RequestFieldSet.prototype.taxrefReferentColumnTitle,
+						dataIndex: "isReference",
+						flex:0,
+						witdh:15
+					}, OgamDesktop.ux.grid.column.Factory.buildBooleanColumnConfig())],
 				defaults : {
 					flex : 1
 				}
@@ -762,8 +761,8 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 						'<tpl if="!Ext.isEmpty(values.isReference) && values.isReference == 1"><b>{label}</b></tpl>',
 						'<br/>',
 						'<tpl if="!Ext.isEmpty(values.vernacularName) && values.vernacularName != null">({vernacularName})</tpl>',
-			        '</div></tpl>'
-			        ]};
+					'</div></tpl>'
+					]};
 			field.store = {
 				xtype : 'jsonstore',
 				autoDestroy : true,
@@ -832,7 +831,7 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 		// Set the label
 		field.fieldLabel = record.get('label');
 		if (record.get('required') == true) {
-		 	field.fieldLabel += '<span style="color: rgb(255, 0, 0); padding-left: 2px;">*</span> ';
+			field.fieldLabel += '<span style="color: rgb(255, 0, 0); padding-left: 2px;">*</span> ';
 			field.cls = ' required';
 		}
 		else {
@@ -850,7 +849,7 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 			//field.editable = false;
 			if (Ext.Array.contains(['combo','tag','treefield'], field.xtype)){
 				field.selectOnFocus = false; //If selectOnFocus is enabled the combo must be editable: true
-				field.typeAhead= false
+				field.typeAhead= false;
 			}
 			field.cls += ' x-item-disabled';
 		}
@@ -920,7 +919,7 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 
 		// We redirect
 		if (!Ext.isEmpty(obj.redirectLink)) {
-			if( obj.redirectLink.startsWith('#')){//same hash with # bugs with force
+			if( obj.redirectLink.charAt(0) === '#'){//same hash with # bugs with force
 				//maybe an action route
 				this.lookupController().redirectTo(obj.redirectLink.substr(1), true);
 			}
@@ -968,7 +967,7 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 
 		// Return to the index page
 		if (!Ext.isEmpty(obj.redirectLink)) {
-			this.lookupController().redirectTo(obj.redirectLink, true)
+			this.lookupController().redirectTo(obj.redirectLink, true);
 		} else if (obj.success) {
 			this.close();
 			OgamDesktop.toast(obj.message, this.deleteToastTitle);
@@ -1027,7 +1026,7 @@ Ext.define('OgamDesktop.view.edition.Panel', {
         if (this.dataEditForm.isDirty()) {
             return confirm(this.unsavedChangesMessage);
         } else {
-        	return true;
+            return true;
         }
 	}
 });

@@ -24,6 +24,13 @@ Ext.define("OgamDesktop.locale.fr.controller.map.Main", {
 	requestLoadingMessage: 'Please wait, while loading the map...',
 	getresultsbboxErrorTitle: 'Loading of bounding box failed:'
 });
+Ext.define("OgamDesktop.locale.fr.controller.request.PredefinedRequest", {
+    override: "OgamDesktop.controller.request.PredefinedRequest",
+    loadingMsg: 'Loading...',
+    deletionConfirmTitle: 'Deletion of the request :',
+    deletionConfirmMessage: 'Are you sure you want to delete the request?',
+    predefinedRequestDeletionErrorTitle: 'Request deletion failed:'
+});
 Ext.define("OgamDesktop.locale.fr.ux.request.RequestFieldSet", {
     override: "OgamDesktop.ux.request.RequestFieldSet",
 	criteriaComboEmptyText : "Select...",
@@ -234,8 +241,13 @@ Ext.define("OgamDesktop.locale.en.view.request.AdvancedRequest", {
 		text : 'Reset',
 		tooltip : 'Reset the default values of the form'
 	});
-	// Submit button
+	// Save button
 	Ext.apply(bbar[4], {
+		text : 'Save',
+		tooltip : 'Save the request'
+	});
+	// Submit button
+	Ext.apply(bbar[6], {
 		text : 'Search',
 		tooltip : 'Launch the search request'
 	});
@@ -253,22 +265,66 @@ Ext.define('OgamDesktop.locale.en.view.request.AdvancedRequestController', {
 Ext.define('OgamDesktop.locale.en.view.request.PredefinedRequest', {
 	override:'OgamDesktop.view.request.PredefinedRequest',
 	config:{
-		title: 'Predefined requests'
+		title: 'Recorded requests'
 	},
 	labelColumnHeader : "Label",
-	resetButtonText:"Cancel",
+	resetButtonText:"Reset",
 	resetButtonTooltip: "Reset the form with default values",
-	launchRequestButtonText:"OK",
+	launchRequestButtonText:"Search",
 	launchRequestButtonTooltip:"Launch the search request",
 	loadingText:"Loading...",
 	defaultErrorCardPanelText:"Sorry, the search request failed...",
 	criteriaPanelTitle:"Your choice:",
-	groupTextTpl:"{name} ({children.length:plural('Requete')})"
+	groupTextTpl:"{name} ({children.length:plural('Requete')})",
+    editRequestButtonTitle:"Edit the request",
+    editRequestButtonTip:"Open the consultation page with the request loaded.",
+    removeRequestButtonTitle:"Delete the request",
+    removeRequestButtonTip:"Remove the request permanently.",
+    datasetColumnTitle:"Dataset",
+    groupColumnTitle:"Group",
+    defaultGroupName:"Not grouped"
 });
 
 Ext.define('OgamDesktop.locale.en.view.request.PredefinedRequestSelector', {
 	override:'OgamDesktop.view.request.PredefinedRequestSelector',
-	defaultCardPanelText : 'Please select a request...'
+	defaultCardPanelText: 'Please select a request...',
+	reqfieldsetsErrorTitle: 'Request loading failed:',
+	reqfieldsetsErrorMessage: 'Request loading failed...',
+	loadingMsg: 'Loading...'
+});
+Ext.define('OgamDesktop.locale.en.view.request.SaveRequestWindow', {
+	override:'OgamDesktop.view.request.SaveRequestWindow',
+	config:{
+		title : 'Save the request'
+	},
+    selectionFieldsetTitle:'Select the request',
+    createRadioFieldLabel:'Create a new request',
+    editRadioFieldLabel:'Edit an existing request',
+    resquestComboLabel:'Request',
+    comboEmptyText:'Select...',
+    formFieldsetTitle:'Request information',
+    groupComboLabel:'Group *',
+    labelTextFieldLabel:'Label *',
+    definitionTextFieldLabel:'Description',
+    radioFieldContainerLabel:'Privacy',
+    privateRadioFieldLabel:'Private',
+    publicRadioFieldLabel:'Public',
+	cancelButtonText:'Cancel',
+	cancelButtonTooltip:'Cancel the request',
+	saveButtonText:'Save',
+	saveButtonTooltip:'Save the request',
+	saveAndDisplayButtonText:'Save and Display',
+	saveAndDisplayButtonTooltip:'Save and open the predefined requests page'
+});
+Ext.define('OgamDesktop.locale.en.view.request.SaveRequestWindowController', {
+	override:'OgamDesktop.view.request.SaveRequestWindowController',
+    loadingText: 'Loading...',
+	toastTitle_invalidForm: 'Form submission:',
+	toastHtml_invalidForm: 'The form is not valid. Please correct the error(s).',
+	invalidValueSubmittedErrorTitle: 'Form submission:',
+	invalidValueSubmittedErrorMessage: 'A field appears to contain an error. Please check your filter criteria.',
+	toastTitle_formSaved: 'Form submission:',
+	toastHtml_formSaved: 'Your request has been saved.'
 });
 
 /*

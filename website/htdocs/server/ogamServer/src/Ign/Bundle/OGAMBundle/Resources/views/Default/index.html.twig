@@ -1,72 +1,90 @@
 {% extends 'base.html.twig' %}
 
-
 {% block body %}
 <h1>{% trans %}Welcome{% endtrans %}</h1>
 
     {% if (app.user) %}
-    
     <div class="left-column">
-    <div class="moduletable_menu">
-    
-    <h3>{% trans %}Select a menu{% endtrans %}</h3>
-    
-    
-    <ul id="appmenu" class="menu">
-    
-    
-        {% if (app.user and app.user.isAllowed('DATA_INTEGRATION')) %}
-        <li>
-        	<a href="{{ path('integration_home') }}" class="pagelink" >{% trans %}Data Integration{% endtrans %}</a>
-        </li>
-        {% endif %}
-        
-        {% if (app.user and app.user.isAllowed('DATA_QUERY') and app.user.isSchemaAllowed('RAW_DATA')) %}
-        <li>
-        <a href="{{ path('query_home') }}?SCHEMA=RAW_DATA" class="pagelink" >{% trans %}Visualize Raw Data{% endtrans %}</a>
-        </li>
-        {% endif %}
-        
-        
-        {% if (app.user and app.user.isAllowed('DATA_EDITION') and app.user.isSchemaAllowed('RAW_DATA')) %}
-        <li>
-        <a href="{{ path('query_home') }}?SCHEMA=RAW_DATA&tab=edition" class="pagelink" >{% trans %}Add a new localisation{% endtrans %}</a>
-        </li>
-        {% endif %}
-        
-        
-        {% if (app.user and app.user.isAllowed('DATA_HARMONIZATION')) %}
-        <li>
-        <a href="{{ path('harmonization_home') }}" class="pagelink" >{% trans %}Data Harmonization{% endtrans %}</a>
-        </li>
-        {% endif %}
-        
-        
-        {% if (app.user and app.user.isAllowed('DATA_QUERY') and app.user.isSchemaAllowed('HARMONIZED_DATA')) %}
-        <li>
-        <a href="{{ path('query_home') }}?SCHEMA=HARMONIZED_DATA" class="pagelink" >{% trans %}Visualize Harmonized Data{% endtrans %}</a>
-        </li>
-        {% endif %}
-        
-        
-        {% if (app.user and app.user.isAllowed('MANAGE_USERS')) %}
-        <li>
-        <a href="{{ path('usermanagement_home') }}" class="pagelink" >{% trans %}User Administration{% endtrans %}</a>
-        </li>
-        {% endif %}
-        
-        {% if (app.user and app.user.isAllowed('CHECK_CONF')) %}
-        <li>
-        <a href="{{ path('checkconf_showconfig') }}" class="pagelink" >{% trans %}Check Configuration{% endtrans %}</a>
-        </li>
-        {% endif %}
-    
-    
-    </ul>
+        <div class="moduletable_menu">
+            <h3>{% trans %}Select a menu{% endtrans %}</h3>
+            <ul id="appmenu" class="menu">
+                {% if (app.user and app.user.isAllowed('DATA_INTEGRATION')) %}
+                <li>
+                	<a href="{{ path('integration_home') }}" class="pagelink" >{% trans %}Data Integration{% endtrans %}</a>
+                </li>
+                {% endif %}
+                
+                {% if (app.user and app.user.isAllowed('DATA_QUERY') and app.user.isSchemaAllowed('RAW_DATA')) %}
+                <li>
+                <a href="{{ path('query_home') }}?SCHEMA=RAW_DATA" class="pagelink" >{% trans %}Visualize Raw Data{% endtrans %}</a>
+                </li>
+                {% endif %}
+                
+                
+                {% if (app.user and app.user.isAllowed('DATA_EDITION') and app.user.isSchemaAllowed('RAW_DATA')) %}
+                <li>
+                <a href="{{ path('query_home') }}?SCHEMA=RAW_DATA&tab=edition" class="pagelink" >{% trans %}Add a new localisation{% endtrans %}</a>
+                </li>
+                {% endif %}
+                
+                
+                {% if (app.user and app.user.isAllowed('DATA_HARMONIZATION')) %}
+                <li>
+                <a href="{{ path('harmonization_home') }}" class="pagelink" >{% trans %}Data Harmonization{% endtrans %}</a>
+                </li>
+                {% endif %}
+                
+                
+                {% if (app.user and app.user.isAllowed('DATA_QUERY') and app.user.isSchemaAllowed('HARMONIZED_DATA')) %}
+                <li>
+                <a href="{{ path('query_home') }}?SCHEMA=HARMONIZED_DATA" class="pagelink" >{% trans %}Visualize Harmonized Data{% endtrans %}</a>
+                </li>
+                {% endif %}
+                
+                
+                {% if (app.user and app.user.isAllowed('MANAGE_USERS')) %}
+                <li>
+                <a href="{{ path('usermanagement_home') }}" class="pagelink" >{% trans %}User Administration{% endtrans %}</a>
+                </li>
+                {% endif %}
+                
+                {% if (app.user and app.user.isAllowed('CHECK_CONF')) %}
+                <li>
+                <a href="{{ path('checkconf_showconfig') }}" class="pagelink" >{% trans %}Check Configuration{% endtrans %}</a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
     </div>
-    </div>  
-    
+    {% else %}
+    <div class="home-body">
+        <p><b>OGAM</b> (<b>O</b>pen-source <b>G</b>eneric <b>A</b>pplication based on <b>M</b>etadata) est une application web permettant de rapidement monter un site de collecte de données avec un requêteur attributaire et spatial.</p>
+        <p>Ce produit est le fruit d'une collaboration entre différents établissements publics (IGN, ONF, ONEMA, INRAP, INRA...), qui ont su se rassembler afin de réaliser un outil commun pour valoriser leurs données.</p>
+        <h2>Sites publics :</h2>
+        <ul>
+            <li><a href="" target="_blank">Site de démonstration</a>,</li>
+            <li><a href="http://rtm-onf.ifn.fr/" target="_blank">RTM</a> - Restauration des terrains en montagne (ONF),</li>
+            <li><a href="http://inventaire-forestier.ign.fr/edb/" target="_blank">EDB</a> - Données brutes le l'inventaire forestier (IGN),</li>
+            <li><a href="http://oison.ifn.fr/" target="_blank">OISON</a> (ONEMA),</li>
+            <li><a href="http://bronze.ign.fr/" target="_blank">Bronze</a> (INRAP).</li>
+        </ul>
+        <h2>Documentation :</h2>
+        <ul>
+            <li><a href="http://ifn-dev.ign.fr/wiki/index.php/OGAM" target="_blank">Wiki</a>,</li>
+            <li><a href="http://gitlab.dockerforge.ign.fr/ogam/ogam/blob/develop/documentation/ogam_install_fr.md" target="_blank">Documentation d'installation</a>,</li>
+            <li><a href="http://gitlab.dockerforge.ign.fr/ogam/ogam/blob/develop/documentation/development_settings_fr.md" target="_blank">Configuration de développement</a>,</li>
+            <li><a href="http://gitlab.dockerforge.ign.fr/ogam/ogam/blob/develop/documentation/development_commands_fr.md" target="_blank">Commandes usuelles de développement</a>.</li>
+        </ul>
+        <h2>Licence et sources :</h2>
+        <ul>
+            <li>OGAM est sous licence GPL,</li>
+            <li>Le gestionnaire de versions décentralisé "GIT" est utilisé. Le code de l'application est disponible <a href="http://gitlab.dockerforge.ign.fr/ogam/ogam/tree/master">ici</a>.</li>
+        </ul>
+        <h2>Remonté des bugs :</h2>
+        <ul>
+            <li>Le système de suivi de bugs "JIRA" est disponible <a href="http://ifn-dev:8180/jira/browse/OGAM/" target="_blank">ici</a>.</li>
+        </ul>
+    </div>
     {% endif %}
-
 
 {% endblock %}

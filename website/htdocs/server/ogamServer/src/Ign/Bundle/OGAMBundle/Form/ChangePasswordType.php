@@ -9,6 +9,12 @@ use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
+/**
+ * Form used to change a password.
+ *
+ * This form is used by an administrator with full power to change a password without verification.
+ *
+ */
 class ChangePasswordType extends AbstractType {
 
 	/**

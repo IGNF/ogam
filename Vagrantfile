@@ -7,9 +7,9 @@ VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
-  config.vm.box = "debian/jessie64"
+  #config.vm.box = "debian/jessie64"
   config.vm.box_version = "8.6.1"
-  # config.vm.box = "debian/contrib-jessie64" # Box with Virtualbox Guest Additions
+  config.vm.box = "debian/contrib-jessie64" # Box with Virtualbox Guest Additions
  
    #Dev config 
    config.vm.define "ogam_dev" do |ogam_dev|

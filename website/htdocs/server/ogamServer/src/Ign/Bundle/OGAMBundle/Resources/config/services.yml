@@ -110,13 +110,19 @@ services:
     
     OGAMBundle.login_entry_point:
         class: Ign\Bundle\OGAMBundle\EventListener\LoginEntryPoint
-        arguments: [ "@router" ]
+        arguments: [ "@router", "@translator.default" ]
    
     app.exception_controller:
         class: Ign\Bundle\OGAMBundle\Controller\ExceptionController
         arguments: ['@twig', '%kernel.debug%']
-    
+
+    # Mail Manager
+    app.mail_manager:
+        class: Ign\Bundle\OGAMBundle\Services\MailManager
+        arguments: ["@mailer", "@twig", "@logger", "ogam@ign.fr", "OGAM"]
+
 #    ogam.ajaxError:
 #        class: Ign\Bundle\OGAMBundle\EventListener\AjaxErrorListener
+#        arguments: [ "@translator.default" ]
 #        tags:
 #            - { name: kernel.event_listener, event: kernel.exception, priority: 1000 }

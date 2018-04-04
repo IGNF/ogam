@@ -160,9 +160,9 @@ Ext.define('OgamDesktop.controller.map.Layer',{
      * @private
      */
     addChild: function (parentChildrenArray, node) {
-    	var newNode;
-		if (!node.get('isLayer')) { // Create a group
-			newNode = new ol.layer.Group({
+        var newNode;
+        if (!node.get('isLayer')) { // Create a group
+            newNode = new ol.layer.Group({
                 text: node.get('label'),
                 grpId: node.get('nodeId'),
                 visible: !node.get('isHidden'),
@@ -171,30 +171,30 @@ Ext.define('OgamDesktop.controller.map.Layer',{
                 checked: node.get('isChecked'),
                 disabled: node.get('isDisabled')
             });
-			// Add the child to its parent
-			var groupChildren = [];
-        	node.getChildren().each(
-    			function(child){
-    				this.addChild(groupChildren, child);
-    			},
-    			this
-        	);
-        	newNode.setLayers(new ol.Collection(groupChildren));
-        	parentChildrenArray.push(newNode);
-		} else { // Create a layer
-	        var mapCmp = this.getMappanel().child('mapcomponent');
-	        var curRes = mapCmp.getMap().getView().getResolution();
-			var layer = node.getLayer();
+            // Add the child to its parent
+            var groupChildren = [];
+            node.getChildren().each(
+                function(child){
+                    this.addChild(groupChildren, child);
+                },
+                this
+            );
+            newNode.setLayers(new ol.Collection(groupChildren));
+            parentChildrenArray.push(newNode);
+        } else { // Create a layer
+            var mapCmp = this.getMappanel().child('mapcomponent');
+            var curRes = mapCmp.getMap().getView().getResolution();
+            var layer = node.getLayer();
             if (!Ext.isEmpty(layer.getLegendService())) {
                 this.getLegendspanel().fireEvent('readyToBuildLegend', node, curRes);
-            };
+            }
             if (!Ext.isEmpty(layer.getViewService())) {
                 newNode = this.buildOlLayer(node, curRes);
                 // Add the child to its parent
                 parentChildrenArray.push(newNode);
             }
-		}
-	},
+        }
+    },
 
    /**
      * Build a layers collection
@@ -204,10 +204,10 @@ Ext.define('OgamDesktop.controller.map.Layer',{
     buildLayersCollection: function() {
         var layersList = [];
         this.layerTreeNodesStore.each(
-    		function(node){
-    			this.addChild(layersList,node);
-    		},
-    		this
+            function(node){
+                this.addChild(layersList,node);
+            },
+            this
         );
 
         var layersCollection = new Ext.util.MixedCollection();
@@ -223,24 +223,24 @@ Ext.define('OgamDesktop.controller.map.Layer',{
      * @private
      */
     addVectorLayer: function (vectorLayersArray, node) {
-    	var newNode;
-		if (!node.get('isLayer')) { // Node is a group
-			// Loop on the group children nodes
-        	node.getChildren().each(
-    			function(child){
-    				this.addVectorLayer(vectorLayersArray, child);
-    			},
-    			this
-        	);
-		} else { // Node is a layer
-			var layer = node.getLayer();
+        var newNode;
+        if (!node.get('isLayer')) { // Node is a group
+            // Loop on the group children nodes
+            node.getChildren().each(
+                function(child){
+                    this.addVectorLayer(vectorLayersArray, child);
+                },
+                this
+            );
+        } else { // Node is a layer
+            var layer = node.getLayer();
             if (!Ext.isEmpty(layer.getFeatureService())) {
                 // Add the layer to the list
                 vectorLayersArray.push(layer);
             }
-		}
-	},
-	
+        }
+    },
+    
     /**
      * Build a vector layers collection
      * @private
@@ -250,9 +250,9 @@ Ext.define('OgamDesktop.controller.map.Layer',{
         var layersList = [];
         this.layerTreeNodesStore.each(
             function(node){
-    			this.addVectorLayer(layersList,node);
-    		},
-    		this
+                this.addVectorLayer(layersList,node);
+            },
+            this
         );
 
         var layersCollection = new Ext.util.MixedCollection();
@@ -270,6 +270,20 @@ Ext.define('OgamDesktop.controller.map.Layer',{
      */
     buildOlSource: function(layer, service) {
         var serviceType = service.get('config').params.SERVICE;
+
+        var isSameOrigin = function(url1,url2) {
+         // will must be url.origine but ie not implement yet :/
+            var origin1 = url1.protocol + url1.hostname,
+            origin2 = url2.protocol + url2.hostname;
+            return (origin1 === origin2);
+        };
+        var currentPage = window.location || window.document.location;
+        var parseUrl = function(link){
+            var a = document.createElement('a');
+            a.href = link;
+            return a;
+        };
+
         switch (serviceType) {
         case 'WMS':
             // Sets the WMS layer source
@@ -278,7 +292,12 @@ Ext.define('OgamDesktop.controller.map.Layer',{
                 'layers': layer.get('serviceLayerName')
             }, service.get('config').params);
             sourceWMSOpts['urls'] = service.get('config').urls;
+
             sourceWMSOpts['crossOrigin'] = 'anonymous';
+            //IE 11 et edge "bug", apply restriction (credential not send with anonymous even if sameorigin)
+            if ((Ext.isIE11 || Ext.isEdge) && isSameOrigin(parseUrl(sourceWMSOpts['urls'][0]), currentPage )){
+                delete sourceWMSOpts.crossOrigin;
+            }
             sourceWMSOpts['projection'] = OgamDesktop.map.projection;
             sourceWMSOpts['tileGrid'] = new ol.tilegrid.TileGrid({
                 extent : [
@@ -312,6 +331,10 @@ Ext.define('OgamDesktop.controller.map.Layer',{
             sourceWMTSOpts['matrixSet'] = service.get('config').params.matrixSet;
             sourceWMTSOpts['style'] = service.get('config').params.style;
             sourceWMTSOpts['crossOrigin'] = 'anonymous';
+            //IE 11 et edge "bug", apply restriction (credential not send with anonymous even if sameorigin)
+            if ((Ext.isIE11 || Ext.isEdge) && isSameOrigin(parseUrl(sourceWMTSOpts['urls'][0]), currentPage )){
+                delete sourceWMTSOpts.crossOrigin;
+            }
             return new ol.source.WMTS(sourceWMTSOpts);
         default:
             console.error('buildSource: The "' + serviceType + '" service type is not supported.');
@@ -382,7 +405,7 @@ Ext.define('OgamDesktop.controller.map.Layer',{
                     if (node.childNodes.length > 0){ // Node group
                         if (layer.get('expanded')) {
                             node.expand();
-                        };
+                        }
                     } else { // Node
                         var cls = layer.get('disabled') ? 'dvp-tree-node-disabled' : '';
                         node.set("cls", cls);

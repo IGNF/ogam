@@ -6,10 +6,10 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Ign\Bundle\OGAMBundle\Entity\Generic;
 use Ign\Bundle\OGAMBundle\Entity\Mapping\ResultLocation;
 use Ign\Bundle\OGAMBundle\Entity\Generic\QueryForm;
 use Ign\Bundle\OGAMBundle\Entity\Website\PredefinedRequest;
+use Ign\Bundle\OGAMBundle\Entity\Website\PredefinedRequestGroup;
 use Ign\Bundle\OGAMBundle\Entity\Website\PredefinedRequestCriterion;
 use Ign\Bundle\OGAMBundle\Entity\Metadata\Dynamode;
 use Ign\Bundle\OGAMBundle\Entity\Metadata\Unit;
@@ -18,6 +18,18 @@ use Ign\Bundle\OGAMBundle\Entity\Generic\GenericField;
 use Ign\Bundle\OGAMBundle\Entity\Metadata\TableField;
 use Ign\Bundle\OGAMBundle\Entity\Metadata\TableFormat;
 use Ign\Bundle\OGAMBundle\Entity\Metadata\TableTree;
+use Ign\Bundle\OGAMBundle\Repository\Website\PredefinedRequestRepository;
+use Ign\Bundle\OGAMBundle\Entity\Website\PredefinedRequestColumn;
+use Ign\Bundle\OGAMBundle\Entity\Metadata\Dataset;
+use Ign\Bundle\OGAMBundle\Repository\Metadata\DatasetRepository;
+use Ign\Bundle\OGAMBundle\Entity\Website\PredefinedRequestGroupAsso;
+use Ign\Bundle\OGAMBundle\Entity\Metadata\Format;
+use Ign\Bundle\OGAMBundle\Entity\Metadata\Data;
+use Ign\Bundle\OGAMBundle\Entity\Metadata\FormFormat;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Doctrine\DBAL\Driver\PDOException;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
+use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 
 /**
  * @Route("/query")
@@ -85,7 +97,15 @@ class QueryController extends Controller {
 	 */
 	public function ajaxgetdatasetsAction(Request $request) {
 		$this->get('logger')->debug('ajaxgetdatasetsAction');
-		return new JsonResponse($this->get('ogam.manager.query')->getDatasets());
+		try {
+		    return new JsonResponse($this->get('ogam.manager.query')->getDatasets());
+		} catch (\Exception $e) {
+		    $logger->error('Error while getting result : ' . $e);
+		    return new JsonResponse([
+		        'success' => false,
+		        'errorMessage' => $this->get('translator')->trans("An unexpected error occurred.")
+		    ]);
+		}
 	}
 
 	/**
@@ -95,35 +115,43 @@ class QueryController extends Controller {
 		$logger = $this->get('logger');
 		$logger->debug('ajaxgetqueryformAction');
 
-		$filters = json_decode($request->query->get('filter'));
-
-		$datasetId = null;
-		$requestName = null;
-
-		if (is_array($filters)) {
-			foreach ($filters as $aFilter) {
-				switch ($aFilter->property) {
-					case 'processId':
-						$datasetId = $aFilter->value;
-						break;
-					case 'requestName':
-						$requestName = $aFilter->value;
-						break;
-					default:
-						$logger->debug('filter unattended : ' . $aFilter->property);
-				}
-			}
-		} else {
-			$datasetId = json_decode($request->query->get('datasetId'));
-			$requestName = $request->request->get('requestName');
+		try {
+    		$filters = json_decode($request->query->get('filter'));
+    
+    		$datasetId = null;
+    		$requestId = null;
+    
+    		if (is_array($filters)) {
+    			foreach ($filters as $aFilter) {
+    				switch ($aFilter->property) {
+    					case 'processId':
+    						$datasetId = $aFilter->value;
+    						break;
+    					case 'request_id':
+    						$requestId = $aFilter->value;
+    						break;
+    					default:
+    						$logger->debug('filter unattended : ' . $aFilter->property);
+    				}
+    			}
+    		} else {
+    			$datasetId = json_decode($request->query->get('datasetId'));
+    			$requestId = $request->request->get('request_id');
+    		}
+    
+    		$response = new Response();
+    		$response->headers->set('Content-Type', 'application/json');
+    		return $this->render('OGAMBundle:Query:ajaxgetqueryform.json.twig', array(
+    			'forms' => $this->get('ogam.manager.query')
+    				->getQueryForms($datasetId, $requestId)
+    		), $response);
+		} catch (\Exception $e){
+			$logger->error('Error while getting the query forms : ' . $e);
+			return new JsonResponse([
+			    'success' => false,
+			    'errorMessage' => $this->get('translator')->trans("An unexpected error occurred.")
+			]);
 		}
-
-		$response = new Response();
-		$response->headers->set('Content-Type', 'application/json');
-		return $this->render('OGAMBundle:Query:ajaxgetqueryform.json.twig', array(
-			'forms' => $this->get('ogam.manager.query')
-				->getQueryForms($datasetId, $requestName)
-		), $response);
 	}
 
 	/**
@@ -135,46 +163,54 @@ class QueryController extends Controller {
 		$logger = $this->get('logger');
 		$logger->debug('ajaxgetqueryformfieldsAction');
 
-		$filters = json_decode($request->query->get('filter'));
-
-		$datasetId = null;
-
-		if (is_array($filters)) {
-			foreach ($filters as $aFilter) {
-				switch ($aFilter->property) {
-					case 'processId':
-						$datasetId = $aFilter->value;
-						break;
-					case 'form':
-						$formFormat = $aFilter->value;
-						break;
-					case 'fieldsType':
-						$fieldsType = $aFilter->value;
-						break;
-					default:
-						$logger->debug('filter unattended : ' . $aFilter->property);
-				}
-			}
+		try {
+    		$filters = json_decode($request->query->get('filter'));
+    
+    		$datasetId = null;
+    
+    		if (is_array($filters)) {
+    			foreach ($filters as $aFilter) {
+    				switch ($aFilter->property) {
+    					case 'processId':
+    						$datasetId = $aFilter->value;
+    						break;
+    					case 'form':
+    						$formFormat = $aFilter->value;
+    						break;
+    					case 'fieldsType':
+    						$fieldsType = $aFilter->value;
+    						break;
+    					default:
+    						$logger->debug('filter unattended : ' . $aFilter->property);
+    				}
+    			}
+    		}
+    
+    		$query = $request->query->get('query');
+    		$start = $request->query->get('start');
+    		$limit = $request->query->get('limit');
+    
+    		$schema = $this->get('ogam.schema_listener')->getSchema();
+    		$locale = $this->get('ogam.locale_listener')->getLocale();
+    
+    		$response = new Response();
+    		$response->headers->set('Content-Type', 'application/json');
+    		return $this->render('OGAMBundle:Query:ajaxgetqueryformfields.json.twig', array(
+    			'fieldsType' => $fieldsType,
+    			'list' => $this->getDoctrine()
+    				->getRepository(FormField::class)
+    				->getFormFields($datasetId, $formFormat, $schema, $locale, $query, $start, $limit, $fieldsType),
+    			'count' => $this->getDoctrine()
+    				->getRepository(FormField::class)
+    				->getFormFieldsCount($datasetId, $formFormat, $schema, $locale, $query, $fieldsType)
+    		), $response);
+		} catch (\Exception $e) {
+		    $logger->error('Error while getting result : ' . $e);
+		    return new JsonResponse([
+		        'success' => false,
+		        'errorMessage' => $this->get('translator')->trans("An unexpected error occurred.")
+		    ]);
 		}
-
-		$query = $request->query->get('query');
-		$start = $request->query->get('start');
-		$limit = $request->query->get('limit');
-
-		$schema = $this->get('ogam.schema_listener')->getSchema();
-		$locale = $this->get('ogam.locale_listener')->getLocale();
-
-		$response = new Response();
-		$response->headers->set('Content-Type', 'application/json');
-		return $this->render('OGAMBundle:Query:ajaxgetqueryformfields.json.twig', array(
-			'fieldsType' => $fieldsType,
-			'list' => $this->getDoctrine()
-				->getRepository(FormField::class)
-				->getFormFields($datasetId, $formFormat, $schema, $locale, $query, $start, $limit, $fieldsType),
-			'count' => $this->getDoctrine()
-				->getRepository(FormField::class)
-				->getFormFieldsCount($datasetId, $formFormat, $schema, $locale, $query, $fieldsType)
-		), $response);
 	}
 
 	/**
@@ -183,14 +219,22 @@ class QueryController extends Controller {
 	public function ajaxresetresultlocationAction() {
 		$this->get('logger')->debug('ajaxresetresultlocationAction');
 
-		$sessionId = session_id();
-		$this->get('doctrine')
-			->getRepository(ResultLocation::class, 'mapping')
-			->cleanPreviousResults($sessionId);
-
-		return new JsonResponse([
-			'success' => true
-		]);
+		try {
+    		$sessionId = session_id();
+    		$this->get('doctrine')
+    			->getRepository(ResultLocation::class, 'mapping')
+    			->cleanPreviousResults($sessionId);
+    
+    		return new JsonResponse([
+    			'success' => true
+    		]);
+		} catch (\Exception $e) {
+		    $logger->error('Error while getting result : ' . $e);
+		    return new JsonResponse([
+		        'success' => false,
+		        'errorMessage' => $this->get('translator')->trans("An unexpected error occurred.")
+		    ]);
+		}
 	}
 
 	/**
@@ -202,21 +246,20 @@ class QueryController extends Controller {
 		$logger = $this->get('logger');
 		$logger->debug('ajaxbuildrequestAction');
 
-		// Check the validity of the POST
-		if (!$request->isMethod('POST')) {
-			$logger->debug('form is not a POST');
-			return $this->redirectToRoute('homepage');
-		}
-
-		$datasetId = $request->request->getAlnum('datasetId');
-
 		try {
+    		// Check the validity of the POST
+    		if (!$request->isMethod('POST')) {
+    			$logger->debug('form is not a POST');
+    			return $this->redirectToRoute('homepage');
+    		}
+    
+    		$datasetId = $request->request->getAlnum('datasetId');
 
 			// Parse the input parameters and create a request object
 			$queryForm = new QueryForm();
 			$queryForm->setDatasetId($datasetId);
 			foreach ($request->request->all() as $inputName => $inputValue) {
-				if (strpos($inputName, "criteria__") === 0 && !$this->isEmptyCriteria($inputValue)) {
+			    if (strpos($inputName, "criteria__") === 0 && !$this->get('ogam.query_service')->isEmptyCriteria($inputValue)) {
 					$logger->debug('POST var added');
 					$criteriaName = substr($inputName, strlen("criteria__"));
 					$split = explode("__", $criteriaName);
@@ -244,36 +287,15 @@ class QueryController extends Controller {
 				$logger->error('Invalid request.');
 				return new JsonResponse([
 					'success' => false,
-					'errorMessage' => 'Invalid request.'
+				    'errorMessage' => $this->get('translator')->trans("Invalid request.")
 				]);
 			}
 		} catch (\Exception $e) {
 			$logger->error('Error while getting result : ' . $e);
 			return new JsonResponse([
 				'success' => false,
-				'errorMessage' => $e->getMessage()
+			    'errorMessage' => $this->get('translator')->trans("An unexpected error occurred.")
 			]);
-		}
-	}
-
-	/**
-	 * Check if a criteria is empty.
-	 * (not private as this function is extended in custom directory of derivated applications)
-	 *
-	 * @param Undef $criteria
-	 * @return true if empty
-	 */
-	protected function isEmptyCriteria($criteria) {
-		if (is_array($criteria)) {
-			$emptyArray = true;
-			foreach ($criteria as $value) {
-				if ($value != "") {
-					$emptyArray = false;
-				}
-			}
-			return $emptyArray;
-		} else {
-			return ($criteria == "");
 		}
 	}
 
@@ -283,11 +305,10 @@ class QueryController extends Controller {
 	public function ajaxgetresultsbboxAction(Request $request) {
 		$logger = $this->get('logger');
 		$logger->debug('ajaxgetresultsbboxAction');
-
-		$configuration = $this->get('ogam.configuration_manager');
-		ini_set("max_execution_time", $configuration->getConfig('max_execution_time', 480));
-
+		
 		try {
+    		$configuration = $this->get('ogam.configuration_manager');
+    		ini_set("max_execution_time", $configuration->getConfig('max_execution_time', 480));
 
 			// Get the request from the session
 			$queryForm = $request->getSession()->get('query_QueryForm');
@@ -316,7 +337,7 @@ class QueryController extends Controller {
 			$logger->error('Error while getting result : ' . $e);
 			return new JsonResponse([
 				'success' => false,
-				'errorMessage' => $e->getMessage()
+			    'errorMessage' => $this->get('translator')->trans("An unexpected error occurred.")
 			]);
 		}
 	}
@@ -355,7 +376,7 @@ class QueryController extends Controller {
 			$logger->error('Error while getting result : ' . $e);
 			return new JsonResponse([
 				'success' => false,
-				'errorMessage' => $e->getMessage()
+			    'errorMessage' => $this->get('translator')->trans("An unexpected error occurred.")
 			]);
 		}
 	}
@@ -367,22 +388,30 @@ class QueryController extends Controller {
 		$logger = $this->get('logger');
 		$logger->debug('ajaxgetresultrows');
 
-		// Get the datatable parameters
-		$start = $request->request->getInt('start');
-		$length = $request->request->getInt('limit');
-		$sort = $request->request->get('sort');
-		$sortObj = json_decode($sort, true)[0];
-
-		// Call the service to get the definition of the columns
-		$userInfos = [
-			"DATA_QUERY_OTHER_PROVIDER" => $this->getUser() && $this->getUser()->isAllowed('DATA_QUERY_OTHER_PROVIDER')
-		];
-		// Send the result as a JSON String
-		return new JsonResponse([
-			'success' => true,
-			'total' => $request->getSession()->get('query_Count'),
-			'data' => $this->get('ogam.query_service')->getResultRows($start, $length, $sortObj["property"], $sortObj["direction"], $request->getSession(), $userInfos)
-		]);
+		try {
+    		// Get the datatable parameters
+    		$start = $request->request->getInt('start');
+    		$length = $request->request->getInt('limit');
+    		$sort = $request->request->get('sort');
+    		$sortObj = json_decode($sort, true)[0];
+    
+    		// Call the service to get the definition of the columns
+    		$userInfos = [
+    			"DATA_QUERY_OTHER_PROVIDER" => $this->getUser() && $this->getUser()->isAllowed('DATA_QUERY_OTHER_PROVIDER')
+    		];
+    		// Send the result as a JSON String
+    		return new JsonResponse([
+    			'success' => true,
+    			'total' => $request->getSession()->get('query_Count'),
+    			'data' => $this->get('ogam.query_service')->getResultRows($start, $length, $sortObj["property"], $sortObj["direction"], $request->getSession(), $userInfos)
+    		]);
+		} catch (\Exception $e) {
+		    $logger->error('Error while getting result : ' . $e);
+		    return new JsonResponse([
+		        'success' => false,
+		        'errorMessage' => $this->get('translator')->trans("An unexpected error occurred.")
+		    ]);
+		}
 	}
 
 	/**
@@ -392,40 +421,314 @@ class QueryController extends Controller {
 		$logger = $this->get('logger');
 		$logger->debug('ajaxgetpredefinedrequestlist');
 
-		$sort = $request->query->get('sort');
-		$dir = $request->query->getAlpha('dir');
-
-		// Get the predefined values for the forms
-		$schema = $this->get('ogam.schema_listener')->getSchema();
-		$locale = $this->get('ogam.locale_listener')->getLocale();
-		$predefinedRequestRepository = $this->get('doctrine')->getRepository(PredefinedRequest::class);
-		$predefinedRequestList = $predefinedRequestRepository->getPredefinedRequestList($schema, $dir, $sort, $locale);
-
-		$response = new Response();
-		$response->headers->set('Content-Type', 'application/json');
-		return $this->render('OGAMBundle:Query:ajaxgetpredefinedrequestlist.json.twig', array(
-			'data' => $predefinedRequestList
-		), $response);
+		try {
+    		$sort = $request->query->get('sort');
+    		$dir = $request->query->getAlpha('dir');
+    
+    		// Get the predefined values for the forms
+    		$schema = $this->get('ogam.schema_listener')->getSchema();
+    		$locale = $this->get('ogam.locale_listener')->getLocale();
+    		$predefinedRequestRepository = $this->get('doctrine')->getRepository(PredefinedRequest::class);
+    		$predefinedRequestList = $predefinedRequestRepository->getPredefinedRequestList($schema, $dir, $sort, $locale, $this->getUser());
+    
+    		$response = new Response();
+    		$response->headers->set('Content-Type', 'application/json');
+    		return $this->render('OGAMBundle:Query:ajaxgetpredefinedrequestlist.json.twig', array(
+    			'data' => $predefinedRequestList,
+    		    'user' => $this->getUser()
+    		), $response);
+		} catch (\Exception $e) {
+		    $logger->error('Error while getting result : ' . $e);
+		    return new JsonResponse([
+		        'success' => false,
+		        'errorMessage' => $this->get('translator')->trans("An unexpected error occurred.")
+		    ]);
+		}
 	}
 
 	/**
-	 * @Route("/ajaxgetpredefinedrequestcriteria")
+	 * @Route("/ajaxgeteditablepredefinedrequestlist")
 	 */
-	public function ajaxgetpredefinedrequestcriteriaAction(Request $request) {
+	public function ajaxgeteditablepredefinedrequestlistAction(Request $request) {
+	    $logger = $this->get('logger');
+	    $logger->debug('ajaxgeteditablepredefinedrequestlist');
+	    
+	    try {
+    	    $sort = $request->query->get('sort');
+    	    $dir = $request->query->getAlpha('dir');
+    	    
+    	    // Get the predefined values for the forms
+    	    $schema = $this->get('ogam.schema_listener')->getSchema();
+    	    $locale = $this->get('ogam.locale_listener')->getLocale();
+    	    $predefinedRequestRepository = $this->get('doctrine')->getRepository(PredefinedRequest::class);
+    	    $predefinedRequestList = $predefinedRequestRepository->getEditablePredefinedRequestList($schema, $dir, $sort, $locale, $this->getUser());
+    	    
+    	    $response = new Response();
+    	    $response->headers->set('Content-Type', 'application/json');
+    	    return $this->render('OGAMBundle:Query:ajaxgetpredefinedrequestlist.json.twig', array(
+    	        'data' => $predefinedRequestList,
+    	        'user' => $this->getUser()
+    	    ), $response);
+	    } catch (\Exception $e) {
+	        $logger->error('Error while getting result : ' . $e);
+	        return new JsonResponse([
+	            'success' => false,
+	            'errorMessage' => $this->get('translator')->trans("An unexpected error occurred.")
+	        ]);
+	    }
+	}
+	
+	/**
+	 * @Route("/ajaxgetpredefinedgrouplist")
+	 */
+	public function ajaxgetpredefinedgrouplistAction(Request $request) {
 		$logger = $this->get('logger');
-		$logger->debug('ajaxgetpredefinedrequestcriteria');
+		$logger->debug('ajaxgetpredefinedgrouplist');
 
-		$requestName = $request->query->get('request_name');
-		$predefinedRequestCriterionRepository = $this->get('doctrine')->getRepository(PredefinedRequestCriterion::class);
-		$locale = $this->get('ogam.locale_listener')->getLocale();
-
-		$response = new Response();
-		$response->headers->set('Content-Type', 'application/json');
-		return $this->render('OGAMBundle:Query:ajaxgetpredefinedrequestcriteria.html.twig', array(
-			'data' => $predefinedRequestCriterionRepository->getPredefinedRequestCriteria($requestName, $locale)
-		), $response);
+		try {
+    		// Get the predefined values for the forms
+    		$schema = $this->get('ogam.schema_listener')->getSchema();
+    		$locale = $this->get('ogam.locale_listener')->getLocale();
+    		$predefinedRequestGroupRepository = $this->get('doctrine')->getRepository(PredefinedRequestGroup::class);
+    		$predefinedRequestGroupList = $predefinedRequestGroupRepository->getPredefinedRequestGroupList();
+    
+    		$response = new Response();
+    		$response->headers->set('Content-Type', 'application/json');
+    		return $this->render('OGAMBundle:Query:ajaxgetpredefinedrequestgrouplist.json.twig', array(
+    			'data' => $predefinedRequestGroupList
+    		), $response);
+		} catch (\Exception $e) {
+		    $logger->error('Error while getting result : ' . $e);
+		    return new JsonResponse([
+		        'success' => false,
+		        'errorMessage' => $this->get('translator')->trans("An unexpected error occurred.")
+		    ]);
+		}
 	}
 
+
+	/**
+	 * @Route("/predefinedrequest/{id}", requirements={"id" = "\d+"}, defaults={"id" = null})
+	 * @Method("GET")
+	 */
+	public function getPredefinedRequestAction(Request $request) {
+		$logger = $this->get('logger');
+		$logger->debug('getPredefinedRequestAction');
+		
+		try{
+		    // Set the function variables
+		    $requestId = $request->attributes->getInt('id');
+		    $r = $request->request;
+		    $em = $this->getDoctrine()->getManager();
+		    
+		    // Get the predefined request information
+		    $predefinedRequestRepo = $em->getRepository(PredefinedRequest::class);
+		    $pr = $predefinedRequestRepo->find($requestId);
+		    $locale = $this->get('ogam.locale_listener')->getLocale();
+		    $predefinedRequestCriterionRepository = $this->get('doctrine')->getRepository(PredefinedRequestCriterion::class);
+		    $requestCriteria = $predefinedRequestCriterionRepository->getPredefinedRequestCriteria($requestId, $locale);
+		    $predefinedRequestColumnRepository = $this->get('doctrine')->getRepository(PredefinedRequestColumn::class);
+		    $requestColumns = $predefinedRequestColumnRepository->getPredefinedRequestColumns($requestId, $locale);
+
+		    // Check the right
+		    if($pr->getIsPublic() === true) {
+		        if(!$this->getUser()->isAllowed('MANAGE_PUBLIC_REQUEST')){
+		            throw new BadCredentialsException('Invalid credentials.');
+		        }
+		    } elseif ($pr->getIsPublic() === false) {
+		        if(!$this->getUser()->isAllowed('MANAGE_OWNED_PRIVATE_REQUEST')){
+		            throw new BadCredentialsException('Invalid credentials.');
+		        }
+		        if($this->getUser()->getLogin() !== $pr->getUserLogin()->getLogin()) {
+		            throw new BadCredentialsException('Invalid credentials.');
+		        }
+		    }
+		    
+		    $response = new Response();
+		    $response->headers->set('Content-Type', 'application/json');
+		    return $this->render('OGAMBundle:Query:getpredefinedrequest.html.twig', array(
+		        'request'=> $pr,
+		        'criteria' => $requestCriteria,
+		        'columns' => $requestColumns
+		    ), $response);
+		    
+		} catch (\Exception $e){
+		    $logger->error('Error while requesting predefined request : ' . $e);
+		    return new JsonResponse([
+		        'success' => false,
+		        'errorMessage' => $this->get('translator')->trans("An unexpected error occurred.")
+		    ]);
+		}
+	}
+
+
+	/**
+	 * @Route("/predefinedrequest")
+	 * @Method("POST")
+	 */
+	public function createPredefinedrequestAction(Request $request) {
+	    $logger = $this->get('logger');
+	    $logger->debug('createPredefinedrequestAction');
+	    
+	    try{
+    	    // Set the function variables
+    	    $r = $request->request;
+    	    $em = $this->getDoctrine()->getManager();
+    	    
+    	    // Check the right
+    	    if($r->getBoolean('isPublic') === true) {
+        	    if(!$this->getUser()->isAllowed('MANAGE_PUBLIC_REQUEST')){
+        	        throw new BadCredentialsException('Invalid credentials.');
+        	    }
+    	    } elseif ($r->getBoolean('isPublic') === false) {
+    	        if(!$this->getUser()->isAllowed('MANAGE_OWNED_PRIVATE_REQUEST')){
+    	            throw new BadCredentialsException('Invalid credentials.');
+    	        }
+    	    } else {
+    	        throw new \InvalidArgumentException('Invalid arguments.');
+    	    }
+    	    
+    	    // Create the predefined request
+    	    $pr = new PredefinedRequest();
+    	    
+    	    // Edit and add the new data
+    	    $this->get('ogam.query_service')->updatePredefinedRequest ($pr, $r->get('datasetId'), $r->get('label'), $r->get('definition'), $r->getBoolean('isPublic'));
+    	    $this->get('ogam.query_service')->createPRGroupAssociation($pr, $r->getInt('groupId'));
+    	    $this->get('ogam.query_service')->createPRCriteriaAndColumns($pr, $r);
+    	    $em->flush();
+            
+    		return new JsonResponse([
+    		    'success' => true,
+    		    'requestId' => $pr->getRequestId()
+    		]);
+	    } catch (UniqueConstraintViolationException $e){
+    	    $logger->error('Error while creating predefined request : ' . $e);
+    	    return new JsonResponse([
+    	        'success' => false,
+    	        'errorMessage' => $this->get('translator')->trans("That request's label already exists. Please indicate another one.")
+    	    ]);
+	    } catch (\Exception $e){
+	        $logger->error('Error while creating predefined request : ' . $e);
+	        return new JsonResponse([
+	            'success' => false,
+	            'errorMessage' => $this->get('translator')->trans("An unexpected error occurred.")
+	        ]);
+	    }
+	}
+
+	/**
+	 * @Route("/predefinedrequest/{id}", requirements={"id" = "\d+"}, defaults={"id" = null})
+	 * @Method("PUT")
+	 */
+	public function editPredefinedrequestAction(Request $request) {
+	    $logger = $this->get('logger');
+	    $logger->debug('editPredefinedrequestAction');
+	    
+	    try{
+    	    // Set the function variables
+    	    $requestId = $request->attributes->getInt('id');
+    	    $r = $request->request;
+    	    $em = $this->getDoctrine()->getManager();
+    	    
+    	    // Get the predefined request
+    	    $predefinedRequestRepo = $em->getRepository(PredefinedRequest::class);
+    	    $pr = $predefinedRequestRepo->find($requestId);
+    	    
+    	    // Check the right
+    	    if($pr->getIsPublic() === true) {
+    	        if(!$this->getUser()->isAllowed('MANAGE_PUBLIC_REQUEST')){
+    	            throw new BadCredentialsException('Invalid credentials.');
+    	        }
+    	    } elseif ($pr->getIsPublic() === false) {
+    	        if(!$this->getUser()->isAllowed('MANAGE_OWNED_PRIVATE_REQUEST')){
+    	            throw new BadCredentialsException('Invalid credentials.');
+    	        }
+    	        if($this->getUser()->getLogin() !== $pr->getUserLogin()->getLogin()) {
+    	            throw new BadCredentialsException('Invalid credentials.');
+    	        }
+    	    }
+    	    
+    	    // Delete the old data
+    	    $this->get('ogam.query_service')->deletePRGroupAssociations($pr);
+    	    $this->get('ogam.query_service')->deletePRCriteria($pr);
+    	    $this->get('ogam.query_service')->deletePRColumns($pr);
+    	    $em->flush();
+    	    
+    	    // Edit and add the new data
+    	    $this->get('ogam.query_service')->updatePredefinedRequest ($pr, $r->get('datasetId'), $r->get('label'), $r->get('definition'), $r->getBoolean('isPublic'));
+    	    $this->get('ogam.query_service')->createPRGroupAssociation($pr, $r->getInt('groupId'));
+    	    $this->get('ogam.query_service')->createPRCriteriaAndColumns($pr, $r);
+    	    $em->flush();
+    	    
+    	    return new JsonResponse([
+    	        'success' => true,
+    	        'requestId' => $pr->getRequestId()
+    	    ]);
+	    } catch (UniqueConstraintViolationException $e){
+    	    $logger->error('Error while creating predefined request : ' . $e);
+    	    return new JsonResponse([
+    	        'success' => false,
+    	        'errorMessage' => $this->get('translator')->trans("That request's label already exists. Please indicate another one.")
+    	    ]);
+	    } catch (\Exception $e){
+	        $logger->error('Error while updating predefined request : ' . $e);
+	        return new JsonResponse([
+	            'success' => false,
+	            'errorMessage' => $this->get('translator')->trans("An unexpected error occurred.")
+	        ]);
+	    }
+	}
+	
+	/**
+	 * @Route("/predefinedrequest/{id}", requirements={"id" = "\d+"}, defaults={"id" = null})
+	 * @Method("DELETE")
+	 */
+	public function deletePredefinedrequestAction(Request $request) {
+	    $logger = $this->get('logger');
+	    $logger->debug('deletePredefinedrequestAction');
+	    
+	    try {
+    	    // Set the function variables
+    	    $requestId = $request->attributes->getInt('id');
+    	    $em = $this->getDoctrine()->getManager();
+    	    
+    	    // Get the predefined request
+    	    $predefinedRequestRepo = $em->getRepository(PredefinedRequest::class);
+    	    $pr = $predefinedRequestRepo->find($requestId);
+    	    
+    	    // Check the right
+    	    if($pr->getIsPublic() === true) {
+    	        if(!$this->getUser()->isAllowed('MANAGE_PUBLIC_REQUEST')){
+    	            throw new BadCredentialsException('Invalid credentials.');
+    	        }
+    	    } elseif ($pr->getIsPublic() === false) {
+    	        if(!$this->getUser()->isAllowed('MANAGE_OWNED_PRIVATE_REQUEST')){
+    	            throw new BadCredentialsException('Invalid credentials.');
+    	        }
+    	        if($this->getUser()->getLogin() !== $pr->getUserLogin()->getLogin()) {
+    	            throw new BadCredentialsException('Invalid credentials.');
+    	        }
+    	    }
+    	    
+    	    // Delete the old data
+    	    $this->get('ogam.query_service')->deletePRGroupAssociations($pr);
+    	    $this->get('ogam.query_service')->deletePRCriteria($pr);
+    	    $this->get('ogam.query_service')->deletePRColumns($pr);
+    	    $em->remove($pr);
+    	    $em->flush();
+    	    
+    	    return new JsonResponse([
+    	        'success' => true
+    	    ]);
+    	} catch (\Exception $e){
+    	    $logger->error('Error while deleting predefined request : ' . $e);
+    	    return new JsonResponse([
+    	        'success' => false,
+    	        'errorMessage' => $this->get('translator')->trans("An unexpected error occurred.")
+    	    ]);
+    	}
+	}
+	
 	/**
 	 * Get the parameters used to initialise the result grid.
 	 * @Route("/getgridparameters")
@@ -501,7 +804,7 @@ class QueryController extends Controller {
 			$logger->error('Error while getting details : ' . $e);
 			return new JsonResponse([
 				'success' => false,
-				'errorMessage' => $e->getMessage()
+			    'errorMessage' => $this->get('translator')->trans("An unexpected error occurred.")
 			]);
 		}
 	}
@@ -1153,7 +1456,7 @@ class QueryController extends Controller {
 			$logger->error('Error while getting details : ' . $e);
 			return new JsonResponse([
 				'success' => false,
-				'errorMessage' => $e->getMessage()
+			    'errorMessage' => $this->get('translator')->trans("An unexpected error occurred.")
 			]);
 		}
 	}
@@ -1185,7 +1488,7 @@ class QueryController extends Controller {
 			$logger->error('Error while getting details : ' . $e);
 			return new JsonResponse([
 				'success' => false,
-				'errorMessage' => $e->getMessage()
+			    'errorMessage' => $this->get('translator')->trans("An unexpected error occurred.")
 			]);
 		}
 	}
@@ -1200,7 +1503,7 @@ class QueryController extends Controller {
 		$logger->debug('ajaxgetdynamiccodesAction');
 		try {
 			$unitCode = $request->query->get('unit');
-			$query = $request->query->get('query', null);
+			$query = $request->query->get('query', '');
 			$max = 1000;
 			$start = $request->query->getInt('start', 0);
 			$limit = $request->query->getInt('limit', $max);
@@ -1224,7 +1527,7 @@ class QueryController extends Controller {
 			$logger->error('Error while getting details : ' . $e);
 			return new JsonResponse([
 				'success' => false,
-				'errorMessage' => $e->getMessage()
+			    'errorMessage' => $this->get('translator')->trans("An unexpected error occurred.")
 			]);
 		}
 	}
@@ -1263,7 +1566,7 @@ class QueryController extends Controller {
 			$logger->error('Error while getting details : ' . $e);
 			return new JsonResponse([
 				'success' => false,
-				'errorMessage' => $e->getMessage()
+			    'errorMessage' => $this->get('translator')->trans("An unexpected error occurred.")
 			]);
 		}
 	}
@@ -1288,15 +1591,20 @@ class QueryController extends Controller {
 			$unit = $em->find(Unit::class, $unitCode);
 
 			$locale = $this->get('ogam.locale_listener')->getLocale();
-
-			// $em->getRepository(Unit::class)->getModesFilteredByLabel($unit, $query, $locale);
-			$rows = $em->getRepository('OGAMBundle:Metadata\ModeTree')->getTreeModesSimilareTo($unit, $query, $locale, $start, $limit);
-			if (count($rows) < $limit) {
-				// optimisation
-				$count = count($rows);
+			
+			if ($query === null){
+				$rows = $em->getRepository(Unit::class)->getModes($unit, $locale);
+				$count = $em->getRepository('OGAMBundle:Metadata\ModeTree')->getTreeModesSimilareToCount($unit);
 			} else {
-				// TODO use a paginator ?
-				$count = $em->getRepository('OGAMBundle:Metadata\ModeTree')->getTreeModesSimilareToCount($unit, $query, $locale);
+				// $em->getRepository(Unit::class)->getModesFilteredByLabel($unit, $query, $locale);
+				$rows = $em->getRepository('OGAMBundle:Metadata\ModeTree')->getTreeModesSimilareTo($unit, $query, $locale, $start, $limit);
+				if (count($rows) < $limit) {
+					// optimisation
+					$count = count($rows);
+				} else {
+					// TODO use a paginator ?
+					$count = $em->getRepository('OGAMBundle:Metadata\ModeTree')->getTreeModesSimilareToCount($unit, $query, $locale);
+				}
 			}
 			return $this->render('OGAMBundle:Query:ajaxgettreecodes.json.twig', array(
 				'data' => $rows,
@@ -1306,7 +1614,7 @@ class QueryController extends Controller {
 			$logger->error('Error while getting details : ' . $e);
 			return new JsonResponse([
 				'success' => false,
-				'errorMessage' => $e->getMessage()
+			    'errorMessage' => $this->get('translator')->trans("An unexpected error occurred.")
 			]);
 		}
 	}
@@ -1330,13 +1638,17 @@ class QueryController extends Controller {
 			$unit = $em->find(Unit::class, $unitCode);
 
 			$locale = $this->get('ogam.locale_listener')->getLocale();
-
-			$rows = $em->getRepository('OGAMBundle:Metadata\ModeTaxref')->getTaxrefModesSimilarTo($unit, $query, $locale, $start, $limit);
-			if (count($rows) < $limit) {
-				// optimisation
-				$count = count($rows);
+			if ($query === null) {
+				$rows = $em->getRepository(Unit::class)->getModes($unit, $locale);
+				$count = $em->getRepository('OGAMBundle:Metadata\ModeTaxref')->getTaxrefModesCount($unit);
 			} else {
-				$count = $em->getRepository('OGAMBundle:Metadata\ModeTaxref')->getTaxrefModesCount($unit, $query, $locale);
+				$rows = $em->getRepository('OGAMBundle:Metadata\ModeTaxref')->getTaxrefModesSimilarTo($unit, $query, $locale, $start, $limit);
+				if (count($rows) < $limit) {
+					// optimisation
+					$count = count($rows);
+				} else {
+					$count = $em->getRepository('OGAMBundle:Metadata\ModeTaxref')->getTaxrefModesCount($unit, $query, $locale);
+				}
 			}
 			return $this->render('OGAMBundle:Query:ajaxgettaxrefcodes.json.twig', array(
 				'data' => $rows,
@@ -1346,7 +1658,7 @@ class QueryController extends Controller {
 			$logger->error('Error while getting details : ' . $e);
 			return new JsonResponse([
 				'success' => false,
-				'errorMessage' => $e->getMessage()
+			    'errorMessage' => $this->get('translator')->trans("An unexpected error occurred.")
 			]);
 		}
 	}
@@ -1506,7 +1818,7 @@ class QueryController extends Controller {
 			$logger->error('Error while getting details : ' . $e);
 			return new JsonResponse([
 				'success' => false,
-				'errorMessage' => $e->getMessage()
+			    'errorMessage' => $this->get('translator')->trans("An unexpected error occurred.")
 			]);
 		}
 	}

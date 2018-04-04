@@ -13,11 +13,6 @@ class ProxyControllerTest extends AbstractControllerTest {
 				[
 					'uri' => '/proxy/'
 				]
-			],
-			'showReportAction' => [
-				[
-					'uri' => '/proxy/show-report'
-				]
 			]
 		];
 	}
@@ -35,14 +30,6 @@ class ProxyControllerTest extends AbstractControllerTest {
 				[
 					'statusCode' => Response::HTTP_FOUND,
 					'redirectionLocation' => '/'
-				]
-			],
-			'showReportAction' => [
-				[
-					'uri' => '/proxy/show-report',
-					'parameters' => [
-						'submissionId' => 2
-					]
 				]
 			]
 		];

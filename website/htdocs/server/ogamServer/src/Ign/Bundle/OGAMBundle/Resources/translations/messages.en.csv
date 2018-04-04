@@ -144,6 +144,7 @@ Translate this site en;Translate this site in english
 ##########################
 #	Error				 #
 ##########################
+Please login;Please login
 An error occurred;An error occurred
 Page not found;Page not found
 Database Error;Database Error
@@ -174,6 +175,9 @@ User Module;User Module
 Authentication;Authentication
 Username;Username
 Password;Password
+Password_forgotten;Password Forgotten ?
+Password_change_request;Password change request
+Password_change_request_msg;You have requested to reset the password associated with the email address: <b>%email% </b>.<br/>If this address is associated with a user account, you will receive an email giving you the path to follow. Please check your inbox.<br/><b>Note:</b> The email is sent automatically, so check your spam if you do not receive it quickly.
 
 ﻿##########################
 #  Data integration      #
@@ -182,6 +186,10 @@ Submissions;Submissions
 Add data;Add data
 Choose a table:;Choose a table:
 Data integration module;Data integration module
+Submission report;Submission report
+Submission details;Submission details
+Errors summary;Errors summary
+Errors details (limited to 100);Errors details (limited to 100)
 Submit Data;Submit Data
 Submission ID;Submission ID
 Date;Date
@@ -192,6 +200,14 @@ Status;Status
 File;File
 Lines;Lines
 Actions;Actions
+Check ID;Check ID
+Importance;Importance
+Number of occurrences;Number of occurrences
+Description;Description
+Data;Data
+Line;Line
+Found value;Found value
+Error message;Error message
 Create data submission;Create data submission
 Upload Data;Upload Data
 Check data;Check data
@@ -207,6 +223,7 @@ Are you sure?;Are you sure?
 No submission found;No submission found
 Download a file model for;Download a file model for
 File format description;File format description
+Error while cancelling the data submission : Integrity constraints not respected, please check that the linked data exist (when inserting) or not (when deleting) .;Error while cancelling the data submission : Integrity constraints not respected, please check that the linked data exist (when inserting) or not (when deleting) .
 
 ﻿##########################
 #  Data Copy             #
@@ -300,8 +317,7 @@ Role Label;Role Label
 Role Definition;Role Definition
 Permissions;Permissions
 Schemas Permissions;Schemas Permissions
-Dataset Restrictions;Dataset Restrictions
-Layer Restrictions;Layer Restrictions
+Datasets Restrictions;Dataset Restrictions
 
 # User Rights
 Manage users;Manage users
@@ -324,6 +340,7 @@ Raw Data;Raw Data
 #  Data Edition          #
 ##########################
 No %value% found.;No %value% found.
+Form not submitted;Form not submitted
 Invalid form;Invalid form
 Data saved;Data saved - Reloading
 Item cannot be deleted because it has children;Item cannot be deleted because it has children
@@ -337,6 +354,9 @@ Data deleted;Data deleted
 ##########################
 Data Export;Data Export
 Request Criterias;Request Criterias
+Invalid request.;Invalid request.
+That request's label already exists. Please indicate another one.;That request's label already exists. Please indicate another one.
+An unexpected error occurred.;An unexpected error occurred.
 
 ################################
 #  Fil d'ariane (Breadcrumb)   #
@@ -344,6 +364,7 @@ Request Criterias;Request Criterias
 Breadcrumb_Home;Home
 Breadcrumb_Integration;Data integration
 Breadcrumb_Integration_New;Create data submission
+Breadcrumb_Integration_Report;Submission report
 Breadcrumb_Visualization;Visualize data
 Breadcrumb_Harmonization;Harmonize data
 Breadcrumb_Edition;Data edition

@@ -7,14 +7,14 @@ MAP
 NAME OGAM_MAPSERVER
 STATUS ON
 SIZE 600 400
-SYMBOLSET "/vagrant/ogam/mapserver/data/fonts/symbols.sym" 
+SYMBOLSET "@ogam::conf_directory@/mapserver/data/fonts/symbols.sym"
 # EXTENT [xmin] [ymin] [xmax] [ymax]
 EXTENT -2893330 3852395 3086670 8192395
 UNITS meters
-SHAPEPATH "/vagrant/ogam/mapserver/data/"
+SHAPEPATH "@ogam::conf_directory@/mapserver/data/"
 IMAGECOLOR 255 255 255
-FONTSET "/vagrant/ogam/mapserver/data/fonts/fonts.txt"
-CONFIG  "MS_ERRORFILE" "/vagrant/ogam/website/htdocs/logs/mapserver_ogam.log"
+FONTSET "@ogam::conf_directory@/mapserver/data/fonts/fonts.txt"
+CONFIG  "MS_ERRORFILE" "@ogam::log_directory@/mapserver_ogam.log"
 DEBUG 5
 
 #
@@ -22,16 +22,16 @@ DEBUG 5
 #
 WEB
   TEMPLATE "template.html"
-  LOG "/vagrant/ogam/website/htdocs/logs/mapserver_ogam.log"
+  LOG "@ogam::log_directory@/mapserver_ogam.log"
   METADATA
-    WFS_TITLE                       "OGAM MapServer"  
+    WFS_TITLE                       "OGAM MapServer"
     WFS_SRS                         "EPSG:3857"
-    WFS_ABSTRACT                    "OGAM Data"  
+    WFS_ABSTRACT                    "OGAM Data"
     #WFS_MAXFEATURES                "30000"
     WFS_ONLINERESOURCE              "http://localhost/mapserv-ogam"
     WFS_GETFEATURE_FORMATLIST        "geojsonogr,geojsontpl"
     WFS_ENCODING                    "UTF-8"
-    WMS_TITLE                       "OGAM MapServer" 
+    WMS_TITLE                       "OGAM MapServer"
     WMS_ABSTRACT                     "OGAM Mapserver"
     WMS_ACCESSCONSTRAINTS           "none"
     WMS_ONLINERESOURCE              "http://localhost/mapserv-ogam"
@@ -43,7 +43,7 @@ WEB
     QUERYABLE                       "true"
     WCS_LABEL                       "OGAM MapServer"
     WCS_DESCRIPTION                 "OGAM MapServer"
-    WCS_ONLINERESOURCE              "http://localhost/" 
+    WCS_ONLINERESOURCE              "http://localhost/"
     WCS_FEES                        "none"
     WCS_ACCESSCONSTRAINTS           "none"
     WCS_KEYWORDLIST                 "wcs,test"
@@ -69,7 +69,7 @@ PROJECTION
 END
 
 SCALEBAR
-  UNITS kilometers  
+  UNITS kilometers
   INTERVALS 1
   SIZE 100 2
   LABEL
@@ -93,7 +93,7 @@ OUTPUTFORMAT
   MIMETYPE "image/jpeg"
   IMAGEMODE RGB
   EXTENSION "jpg"
-  FORMATOPTION QUALITY=80 
+  FORMATOPTION QUALITY=80
 END
 
 OUTPUTFORMAT
@@ -117,7 +117,7 @@ LEGEND
   KEYSIZE 18 12
   LABEL
     FONT arial_win
-    TYPE TRUETYPE 
+    TYPE TRUETYPE
     ENCODING UTF-8
     SIZE 10
     COLOR 0 0 0
@@ -126,25 +126,25 @@ END
 
 
 #
-# NUTS regions at 1 / 3 000 000 
+# NUTS regions at 1 / 3 000 000
 #
-LAYER  
+LAYER
   NAME nuts_0
   TYPE POLYGON
-  STATUS ON 
+  STATUS ON
   #DEBUG 5
   TEMPLATE "geoJSONTemplate.js"
   METADATA
     WMS_TITLE                   "Pays"
     WFS_TITLE                   "Pays"
     WMS_FEATURE_INFO_MIME_TYPE  "application/json"
-    GML_FEATUREID               "gid" 
+    GML_FEATUREID               "gid"
     GML_INCLUDE_ITEMS           "cell_id"
-    GML_CELL_ID_ALIAS           "Code pays"  
+    GML_CELL_ID_ALIAS           "Code pays"
   END
   DUMP TRUE
   CONNECTIONTYPE postgis
-    PROCESSING "CLOSE_CONNECTION=DEFER" 
+    PROCESSING "CLOSE_CONNECTION=DEFER"
     CONNECTION "user=ogam password=ogam dbname=ogam host=localhost port=5432"
     DATA "the_geom FROM nuts_0 USING UNIQUE gid USING srid=3035"
   LABELITEM "cell_id"
@@ -161,7 +161,7 @@ LAYER
       PARTIALS FALSE
       BUFFER 5
       OUTLINECOLOR 255 255 255
-    END     
+    END
   END
   PROJECTION
     "init=epsg:3035"
@@ -171,14 +171,14 @@ END
 #
 # Departements
 #
-LAYER  
+LAYER
   NAME departements
   TYPE POLYGON
-  STATUS ON 
+  STATUS ON
   METADATA
     WMS_TITLE             "Départements"
     WFS_TITLE             "Départements"
-    GML_FEATUREID         "gid" 
+    GML_FEATUREID         "gid"
     GML_INCLUDE_ITEMS     "nom_depart,dp,perimeter,area,nom_region,ra"
     GML_NOM_DEPART_ALIAS  "Département"
     GML_DP_ALIAS          "Code département"
@@ -189,10 +189,10 @@ LAYER
   END
   DUMP TRUE
   CONNECTIONTYPE postgis
-    PROCESSING "CLOSE_CONNECTION=DEFER" 
+    PROCESSING "CLOSE_CONNECTION=DEFER"
     CONNECTION "user=ogam password=ogam dbname=ogam host=localhost port=5432"
     DATA "the_geom FROM (
-      SELECT st_transform(the_geom, 3035) as the_geom, nom_depart, dp, perimeter, area, nom_region,ra, gid as oid  
+      SELECT st_transform(the_geom, 3035) as the_geom, nom_depart, dp, perimeter, area, nom_region,ra, gid as oid
       FROM mapping.departements
     ) as foo USING UNIQUE oid USING srid=3035"
   CLASSITEM "dp"
@@ -209,7 +209,7 @@ LAYER
       PARTIALS FALSE
       BUFFER 5
       OUTLINECOLOR 255 255 255
-    END     
+    END
   END
   PROJECTION
     "init=epsg:3035"
@@ -219,24 +219,24 @@ END
 #
 # Communes
 #
-LAYER  
+LAYER
   NAME communes
   TYPE POLYGON
   STATUS ON
   METADATA
     WMS_TITLE          "Communes"
     WFS_TITLE          "Communes"
-    GML_FEATUREID      "gid" 
+    GML_FEATUREID      "gid"
     GML_INCLUDE_ITEMS  "nom,code"
     GML_NOM_ALIAS      "Commune"
-    GML_CODE_ALIAS     "Code INSEE" 
+    GML_CODE_ALIAS     "Code INSEE"
   END
   DUMP TRUE
   CONNECTIONTYPE postgis
-  PROCESSING "CLOSE_CONNECTION=DEFER" 
+  PROCESSING "CLOSE_CONNECTION=DEFER"
   CONNECTION "user=ogam password=ogam dbname=ogam host=localhost port=5432"
   DATA "the_geom FROM (
-    SELECT st_transform(the_geom, 3035) as the_geom, nom, code, oid  
+    SELECT st_transform(the_geom, 3035) as the_geom, nom, code, oid
     FROM mapping.communes
   ) as foo USING UNIQUE oid USING srid=3035"
   CLASSITEM "code"
@@ -255,28 +255,28 @@ END
 
 LAYER
   NAME "result_locations_point"
-  GROUP result_locations  
+  GROUP result_locations
   TRANSPARENCY 80
   TYPE POINT
   STATUS ON
   METADATA
     WFS_TITLE          "Résultats : localisations (POINT)"
-    GML_FEATUREID      "oid" 
+    GML_FEATUREID      "oid"
     GML_INCLUDE_ITEMS  "all"
   END
-  DUMP TRUE 
+  DUMP TRUE
   VALIDATION
     'SESSION_ID'     '^[a-zA-Z0-9\-]+$'
   END
   CONNECTIONTYPE postgis
-  PROCESSING "CLOSE_CONNECTION=DEFER" 
+  PROCESSING "CLOSE_CONNECTION=DEFER"
   CONNECTION "user=ogam password=ogam dbname=ogam host=localhost port=5432"
   DATA "the_geom FROM (
     SELECT the_geom, oid FROM result_location
     WHERE GeometryType(the_geom) = 'POINT'
       AND session_id = '%SESSION_ID%'
       AND (format = 'LOCATION_DATA' OR format = 'HARMONIZED_LOCATION_DATA')
-  ) as foo USING UNIQUE oid USING srid=3857"  
+  ) as foo USING UNIQUE oid USING srid=3857"
   SYMBOLSCALEDENOM 3000000
   CLASS
     NAME 'Resultats : localisations' #The use of accent is forbiden here
@@ -295,21 +295,21 @@ END
 #
 # LAYER
 #   NAME "result_locations_polygon"
-#   GROUP result_locations  
+#   GROUP result_locations
 #   TRANSPARENCY 80
 #   TYPE POLYGON
 #   STATUS ON
 #   METADATA
 #     WFS_TITLE          "Résultats : localisation (POLYGONE)"
-#     GML_FEATUREID      "oid" 
-#     GML_INCLUDE_ITEMS  "all"  
+#     GML_FEATUREID      "oid"
+#     GML_INCLUDE_ITEMS  "all"
 #   END
-#   DUMP TRUE 
+#   DUMP TRUE
 #   VALIDATION
 #     'SESSION_ID'     '^[a-zA-Z0-9\-]+$'
 #   END
 #   CONNECTIONTYPE postgis
-#   PROCESSING "CLOSE_CONNECTION=DEFER" 
+#   PROCESSING "CLOSE_CONNECTION=DEFER"
 #   CONNECTION "user=ogam password=ogam dbname=ogam host=localhost port=5432"
 #   DATA "the_geom FROM (
 #     SELECT the_geom, oid FROM result_location
@@ -335,7 +335,7 @@ LAYER
   STATUS ON
   METADATA
     WFS_TITLE          "Résultats : arbres"
-    GML_FEATUREID      "oid" 
+    GML_FEATUREID      "oid"
     GML_INCLUDE_ITEMS  "all"
   END
   DUMP TRUE
@@ -343,7 +343,7 @@ LAYER
     'SESSION_ID'     '^[a-zA-Z0-9\-]+$'
   END
   CONNECTIONTYPE postgis
-  PROCESSING "CLOSE_CONNECTION=DEFER" 
+  PROCESSING "CLOSE_CONNECTION=DEFER"
   CONNECTION "user=ogam password=ogam dbname=ogam host=localhost port=5432"
   DATA "the_geom FROM (
     SELECT the_geom, oid FROM result_location
@@ -361,7 +361,7 @@ LAYER
       SYMBOL "circle"
     END
   END
-END 
+END
 
 #
 # Vector layer for all features
@@ -375,7 +375,7 @@ LAYER
   METADATA
     WMS_TITLE            "Toutes les localisations (POINT)"
     WFS_TITLE            "Toutes les localisations (POINT)"
-    GML_FEATUREID        "oid" 
+    GML_FEATUREID        "oid"
     GML_INCLUDE_ITEMS    "plot_code,lat,long"
     GML_PLOT_CODE_ALIAS  "Code"
     GML_LAT_ALIAS        "Latitude"
@@ -383,10 +383,10 @@ LAYER
   END
   DUMP TRUE
   CONNECTIONTYPE postgis
-  PROCESSING "CLOSE_CONNECTION=DEFER" 
+  PROCESSING "CLOSE_CONNECTION=DEFER"
   CONNECTION "user=ogam password=ogam dbname=ogam host=localhost port=5432"
   DATA "the_geom FROM (
-    SELECT st_transform(the_geom, 3857) as the_geom, plot_code, lat, long, plot_code as oid  
+    SELECT st_transform(the_geom, 3857) as the_geom, plot_code, lat, long, plot_code as oid
     FROM location
   ) as foo USING UNIQUE oid USING srid=3857"
   SYMBOLSCALEDENOM 3000000
@@ -409,7 +409,7 @@ LAYER
   METADATA
     WMS_TITLE            "Tous les arbres"
     WFS_TITLE            "Tous les arbres"
-    GML_FEATUREID        "oid" 
+    GML_FEATUREID        "oid"
     GML_INCLUDE_ITEMS    "plot_code,cycle,tree_id"
     GML_PLOT_CODE_ALIAS  "Code"
     GML_CYCLE_ALIAS      "Cycle"
@@ -417,7 +417,7 @@ LAYER
   END
   DUMP TRUE
   CONNECTIONTYPE postgis
-  PROCESSING "CLOSE_CONNECTION=DEFER" 
+  PROCESSING "CLOSE_CONNECTION=DEFER"
   CONNECTION "user=ogam password=ogam dbname=ogam host=localhost port=5432"
   DATA "the_geom FROM (
     SELECT st_transform(the_geom, 3857) as the_geom, plot_code, cycle, tree_id, plot_code || cycle || tree_id as oid
@@ -433,7 +433,7 @@ LAYER
       SYMBOL "circle"
     END
   END
-END 
+END
 
 #
 # Vector layer for the details panel zoom in image
@@ -543,7 +543,7 @@ LAYER
       PARTIALS FALSE
       BUFFER 5
       OUTLINECOLOR 0 0 0
-    END    
+    END
     STYLE
       SIZE 30
       WIDTH 2
@@ -551,7 +551,7 @@ LAYER
       MINSIZE 30
       OUTLINECOLOR 238 153 0
       SYMBOL "square"
-    END 
+    END
   END
 END
 
@@ -589,7 +589,7 @@ LAYER
       MINSIZE 30
       OUTLINECOLOR 153 238 0
       SYMBOL "square"
-    END 
+    END
   END
 END
 END # Map File

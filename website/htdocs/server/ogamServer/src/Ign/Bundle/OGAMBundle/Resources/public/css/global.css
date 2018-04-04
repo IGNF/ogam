@@ -184,6 +184,15 @@ a.external{
 .left-column {
 	width: 300px;
 }
+.home-body {
+    margin: 50px auto 30px auto;
+    width:70%;
+}
+
+.home-body h2 {
+    text-align: left;
+    margin-bottom: 10px;
+}
 
 #contextual {
 	padding-left: 30px;
@@ -734,6 +743,11 @@ button#form_submit, .zend_form .button button{
 /** login-form **/
 .login-form .form-ct {
 	width: 300px;
+}
+.forgotten_password_link {
+    display: block;
+    margin: 10px 0 0 0;
+    text-align: right;
 }
 
 /**************************************/

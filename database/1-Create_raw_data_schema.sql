@@ -350,3 +350,87 @@ COMMENT ON COLUMN CHECK_ERROR.FOUND_VALUE IS 'The erroreous value (if available)
 COMMENT ON COLUMN CHECK_ERROR.EXPECTED_VALUE IS 'The expected value (if available)';
 COMMENT ON COLUMN CHECK_ERROR.ERROR_MESSAGE IS 'The error message';
 COMMENT ON COLUMN CHECK_ERROR._CREATIONDT IS 'The creation date';
+
+
+
+/*****************************************************************/
+/*/!\/!\/!\/!\/!\/!\/!\/!\/!\/!\/!\/!\/!\/!\/!\/!\/!\/!\/!\/!\/!\*/
+/**             TESTS TABLES                                     */
+/*/!\/!\/!\/!\/!\/!\/!\/!\/!\/!\/!\/!\/!\/!\/!\/!\/!\/!\/!\/!\/!\*/
+/*****************************************************************/
+/**====================================================*/
+/*  TABLE : TEST_1                                     */
+/**====================================================*/
+
+CREATE TABLE TEST_1(
+ID int not null,
+TEXT_STRING_STRING varchar(64),
+TEXT_STRING_LINK varchar(255),
+TEXT_NUMERIC_INTEGER int,
+TEXT_NUMERIC_NUMERIC numeric(8,2),
+TEXT_NUMERIC_RANGE numeric(5,2),
+NUMERIC_NUMERIC_NUMERIC numeric,
+NUMERIC_NUMERIC_RANGE real,
+NUMERIC_NUMERIC_INTEGER int,
+NUMERIC_NUMERIC_COORDINATE real,
+DATE_DATE date,
+TIME_TIME time,
+DATETIME_DATETIME timestamp,
+GEOM_GEOM_POLYGON geometry(Polygon, 4326),
+SUBMISSION_ID int,
+CONSTRAINT pk_TEST_1 PRIMARY KEY(ID)
+);
+
+
+/**====================================================*/
+/*  TABLE : TEST_2                                     */
+/**====================================================*/
+CREATE TABLE TEST_2(
+ID int not null,
+PARENT_ID int not null,
+SELECT_CODE_CODE_3 varchar(36),
+SELECT_CODE_CODE_10 varchar(36),
+SELECT_CODE_CODE_100 varchar(36),
+SELECT_CODE_DYNAMIC_3 varchar(36),
+SELECT_CODE_DYNAMIC_10 varchar(36),
+SELECT_CODE_DYNAMIC_100 varchar(36),
+SELECT_ARRAY_CODE_3 varchar(36)[],
+SELECT_ARRAY_CODE_10 varchar(36)[],
+SELECT_ARRAY_CODE_100 varchar(36)[],
+SELECT_ARRAY_DYNAMIC_3 varchar(36)[],
+SELECT_ARRAY_DYNAMIC_10 varchar(36)[],
+SELECT_ARRAY_DYNAMIC_100 varchar(36)[],
+GEOM_GEOM_LINESTRING geometry(LINESTRING, 4326),
+CONSTRAINT pk_TEST_2 PRIMARY KEY(ID),
+CONSTRAINT fk_TEST_2_PARENT_ID FOREIGN KEY (PARENT_ID)
+REFERENCES TEST_1 (ID)MATCH SIMPLE
+      ON UPDATE RESTRICT ON DELETE RESTRICT
+);
+
+
+/**====================================================*/
+/*  TABLE : TEST_3                                     */
+/**====================================================*/
+CREATE TABLE TEST_3(
+ID int not null,
+PARENT_ID int not null,
+CHECKBOX_BOOLEAN char(1),
+RADIO_BOOLEAN char(1),
+RADIO_CODE_CODE_3 varchar(36),
+RADIO_CODE_CODE_10 varchar(36),
+RADIO_CODE_CODE_100 varchar(36),
+RADIO_CODE_DYNAMIC_3 varchar(36),
+RADIO_CODE_DYNAMIC_10 varchar(36),
+RADIO_CODE_DYNAMIC_100 varchar(36),
+TREE_CODE_TREE varchar(36),
+TREE_ARRAY_TREE varchar(36)[],
+TAXREF_CODE_TAXREF varchar(36),
+TAXREF_ARRAY_TAXREF varchar(36)[],
+IMAGE_IMAGE TEXT,
+GEOM_GEOM_POINT Geometry(Point, 4326),
+CONSTRAINT pk_TEST_3 PRIMARY KEY(ID),
+CONSTRAINT fk_TEST_3_PARENT_ID FOREIGN KEY (PARENT_ID)
+REFERENCES TEST_2 (ID)MATCH SIMPLE
+      ON UPDATE RESTRICT ON DELETE RESTRICT
+)
+;
