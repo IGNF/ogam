@@ -220,7 +220,8 @@ Submit;Submit
 Error;Error
 The expected fields are:;The expected fields are:
 Are you sure?;Are you sure?
-No submission found;No submission found
+No submission found;No submission found.
+No error found;No error found.
 Download a file model for;Download a file model for
 File format description;File format description
 Error while cancelling the data submission : Integrity constraints not respected, please check that the linked data exist (when inserting) or not (when deleting) .;Error while cancelling the data submission : Integrity constraints not respected, please check that the linked data exist (when inserting) or not (when deleting) .

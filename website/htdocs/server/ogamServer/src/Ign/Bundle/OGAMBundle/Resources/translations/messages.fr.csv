@@ -225,6 +225,7 @@ Error;Erreur
 The expected fields are:;Les champs attendus sont:
 Are you sure?;Etes-vous sûr ?
 No submission found;Aucune soumission trouvée.
+No error found;Aucune erreur trouvée.
 Download a file model for;Télécharger un modèle de fichier pour
 File format description;Description des formats de fichiers
 Error while cancelling the data submission : Integrity constraints not respected, please check that the linked data exist (when inserting) or not (when deleting) .;Erreur lors de la suppression des données: Contraintes d'intégrité non respectées, veuillez vérifier que les données associées sont chargées (lors d'une insertion) ou supprimées (lors d'une suppression).
