@@ -14,15 +14,15 @@
         <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
     </head>
     <body>
-    
+
     	<div id="wrapper" class="wrapper">
 
             <div id="main-body-bg" class="main-body-bg"></div>
             <div id="main-body" class="main-body">
-            
+
                 <!-- HEADER -->
                 <div class="header" id="header">
-            
+
                     <div id="banner" class="banner">
                         <a href="{{ path('homepage') }}">
                             {% image '@OGAMBundle/Resources/public/img/banner.jpg' %}
@@ -30,45 +30,45 @@
                             {% endimage %}
                         </a>
                     </div>
-            
+
                     <div id="top" class="top">
-            
+
             			<div id="header-beadcrumb" class="header-beadcrumb" style="float: left">
-	           				{{ wo_render_breadcrumbs() }}            				
+	           				{{ wo_render_breadcrumbs() }}
             			</div>
-            			
+
             			<div id="header-login" class="header-login" style="float: right">
-            				
+
             				<!-- Drapeaux pour changer la langue  -->
             				{% if app.request.getLocale == 'fr' %}
             					<a href="{{ path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')) }}?lang=en" ><div class="en-flag" title="{% trans %}Translate this site en{% endtrans %}">&nbsp;</div></a>
             				{% else %}
             					<a href="{{ path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')) }}?lang=fr" ><div class="fr-flag" title="{% trans %}Translate this site fr{% endtrans %}">&nbsp;</div></a>
             				{% endif %}
-            				
+
             				{% if app.user %}
             					<a href="{{ path('user_changepassword') }}">{% trans %}Change Password{% endtrans %}</a>
             					&nbsp;
             					<a id="logoutLink" href="{{ path('user_logout') }}">{% trans %}Log out{% endtrans %}</a>
             			    {% else %}
-            			    	<a href="{{ path('user_login') }}">{% trans %}Log in{% endtrans %}</a>            			    
-            			    {% endif %}                          			
+            			    	<a href="{{ path('user_login') }}">{% trans %}Log in{% endtrans %}</a>
+            			    {% endif %}
                   		</div>
                   	</div>
-            
+
             	<!-- Fin du header -->
             	</div>
-    
+
                 <!-- CONTENT -->
                 <div class="content" id="content">
-                
+
                     <!--  Flash messages -->
                     {% include ('::flash-messages.html.twig') %}
-                                
+
                 	{% block body %}{% endblock %}
                 </div>
-    
-            
+
+
         <!-- Fin du main-body -->
         </div>
 
@@ -77,20 +77,19 @@
 
     <!-- Fin du wrapper -->
     </div>
-    
+
     <div class="footer"  id="footer">
         <div id="footer-ct" class="footer-ct">
-        	<span title="Build @build_number@">Version @version_number@&nbsp;-&nbsp;</span>
             {{'Layout Copyright'|trans}} &nbsp;
             <a id="lkContact" onclick="sendMail();" href="#">{% trans %}Contact Us{% endtrans %}</a>
         </div>
     </div>
-            
-            
+
+
     </body>
-    
+
   {% block javascripts %}
-  
+
     <script type="text/javascript">
       //Defines the base URL for the scripts
      function sendMail(){
@@ -99,6 +98,6 @@
         document.getElementById('lkContact').href="mailto:" + pre + "@" + suf;
       }
  	 </script>
-  
+
   {% endblock %}
 </html>
