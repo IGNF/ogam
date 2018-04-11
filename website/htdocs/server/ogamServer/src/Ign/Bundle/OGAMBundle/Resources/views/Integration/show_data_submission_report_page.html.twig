@@ -63,7 +63,7 @@
             {% endfor %}
         </table>
     {% else %}
-        <div class="no-submission">{% trans %}No errors found{% endtrans %}</div>
+        <div class="no-submission">{% trans %}No error found{% endtrans %}</div>
     {% endif %}
 
     <h2>{{ 'Errors details (limited to 100)'|trans }}</h2>
@@ -91,7 +91,7 @@
           {% endfor %}
       </table>
     {% else %}
-        <div class="no-submission">{% trans %}No errors found{% endtrans %}</div>
+        <div class="no-submission">{% trans %}No error found{% endtrans %}</div>
     {% endif %}
     <p class="subTableLink">
         <a href="{{ path("integration_list") }}">{{ 'Back'|trans }}</a>

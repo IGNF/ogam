@@ -452,8 +452,8 @@ LAYER
   DATA "the_geom FROM (
     SELECT st_transform(the_geom, 3857) as the_geom, provider_id || '_' || plot_code as oid, provider_id, plot_code
     FROM location
+    WHERE provider_id = '%PROVIDER_ID%' and plot_code = '%PLOT_CODE%'
   ) as foo USING UNIQUE oid USING srid=3857"
-  FILTER "provider_id = '%PROVIDER_ID%' and plot_code = '%PLOT_CODE%'"
   CLASS
     NAME 'Localisations'
     LABEL
@@ -488,8 +488,8 @@ LAYER
   DATA "the_geom FROM (
     SELECT st_transform(the_geom, 3857) as the_geom, provider_id || plot_code || cycle || tree_id as oid, provider_id, plot_code, cycle, tree_id
     FROM tree_data
+    WHERE provider_id = '%PROVIDER_ID%' and plot_code = '%PLOT_CODE%' and cycle = '%CYCLE%' and tree_id = '%TREE_ID%'
   ) as foo USING UNIQUE oid USING srid=3857"
-  FILTER "provider_id = '%PROVIDER_ID%' and plot_code = '%PLOT_CODE%' and cycle = '%CYCLE%' and tree_id = '%TREE_ID%'"
   CLASS
     NAME 'Arbres'
     LABEL
@@ -529,8 +529,8 @@ LAYER
   DATA "the_geom FROM (
     SELECT st_transform(the_geom, 3857) as the_geom, provider_id || '_' || plot_code as oid, provider_id, plot_code
     FROM location
+    WHERE provider_id = '%PROVIDER_ID%' and plot_code = '%PLOT_CODE%'
   ) as foo USING UNIQUE oid USING srid=3857"
-  FILTER "provider_id = '%PROVIDER_ID%' and plot_code = '%PLOT_CODE%'"
   CLASS
     NAME 'Localisations'
     LABEL
@@ -567,8 +567,8 @@ LAYER
   DATA "the_geom FROM (
     SELECT st_transform(the_geom, 3857) as the_geom, provider_id || plot_code || cycle || tree_id as oid, provider_id, plot_code, cycle, tree_id
     FROM tree_data
+    WHERE provider_id = '%PROVIDER_ID%' and plot_code = '%PLOT_CODE%' and cycle = '%CYCLE%' and tree_id = '%TREE_ID%'
   ) as foo USING UNIQUE oid USING srid=3857"
-  FILTER "provider_id = '%PROVIDER_ID%' and plot_code = '%PLOT_CODE%' and cycle = '%CYCLE%' and tree_id = '%TREE_ID%'"
   CLASS
     NAME 'Arbres'
       LABEL
