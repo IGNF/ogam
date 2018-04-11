@@ -15,3 +15,12 @@ The documentation are available into the [Wiki](https://github.com/IGNF/ogam/wik
 ## Licence
 
 OGAM is under [GNU General Public License v3.0](https://github.com/IGNF/ogam/blob/develop/LICENSE.md).
+
+## Clone
+
+The history of the OGAM project is very rich and therefore heavy.
+To quickly clone the project without history you can use one of the two following commands:
+```
+git clone --depth 1 --no-single-branch https://github.com/IGNF/ogam.git
+git clone --depth 1 --no-single-branch git@github.com:IGNF/ogam.git
+```
